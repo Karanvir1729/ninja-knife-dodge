@@ -20,4 +20,4 @@ Open in Godot 4.3, export with the **iOS** preset (generates an Xcode project; `
 
 ## Support / Privacy
 
-See [the support page](https://karanvir1729.github.io/ninja-knife-dodge/) and [privacy policy](https://karanvir1729.github.io/ninja-knife-dodge/privacy.html).
+Questions or bug reports: [open an issue](https://github.com/Karanvir1729/ninja-knife-dodge/issues) or email [mehar.khanna@uwaterloo.ca](mailto:mehar.khanna@uwaterloo.ca). The game collects no data — see the [privacy policy](docs/privacy.md).
