@@ -1,0 +1,37 @@
+[gd_scene load_steps=4 format=3 uid="uid://cbbhdiq2551w3"]
+
+[ext_resource type="Script" path="res://UI/play_ui.gd" id="1_5mh6n"]
+[ext_resource type="Texture2D" uid="uid://chijv1tkljjrx" path="res://graphics/skeleton_sword.png" id="2_d03p8"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ehen8"]
+
+[node name="play_ui" type="CanvasLayer"]
+script = ExtResource("1_5mh6n")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_ehen8")
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 20
+
+[node name="HFlowContainer" type="HFlowContainer" parent="PanelContainer/MarginContainer"]
+layout_mode = 2
+alignment = 2
+
+[node name="TextureRect" type="TextureRect" parent="PanelContainer/MarginContainer/HFlowContainer"]
+layout_mode = 2
+texture = ExtResource("2_d03p8")
+stretch_mode = 4
+
+[node name="Score" type="Label" parent="PanelContainer/MarginContainer/HFlowContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Score: 0"

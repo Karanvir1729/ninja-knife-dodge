@@ -1,0 +1,125 @@
+[gd_scene load_steps=5 format=3 uid="uid://d1jaaguv0vuk6"]
+
+[ext_resource type="Texture2D" uid="uid://b1mnnrutdpjel" path="res://graphics/circle.png" id="1_5hjy1"]
+[ext_resource type="Texture2D" uid="uid://2xcsv0fbfcs0" path="res://graphics/plain-black-background-02fh7564l8qq4m6d.jpg" id="2_r3crh"]
+[ext_resource type="Texture2D" uid="uid://c3gc2at63d5b5" path="res://graphics/photonicbox1.png" id="3_whbf7"]
+[ext_resource type="Texture2D" uid="uid://chijv1tkljjrx" path="res://graphics/skeleton_sword.png" id="4_dyao8"]
+
+[node name="Thumbnail" type="Node2D"]
+metadata/_edit_vertical_guides_ = [-474.0]
+
+[node name="PointLight2D4" type="PointLight2D" parent="."]
+position = Vector2(1298, 696)
+color = Color(1, 0, 0.772549, 1)
+energy = 15.93
+range_layer_max = 1
+texture = ExtResource("1_5hjy1")
+
+[node name="PointLight2D2" type="PointLight2D" parent="."]
+position = Vector2(145, 639)
+color = Color(0.0705882, 1, 0.772549, 1)
+energy = 16.0
+range_layer_max = 1
+texture = ExtResource("1_5hjy1")
+
+[node name="PointLight2D" type="PointLight2D" parent="."]
+position = Vector2(101, 117)
+color = Color(0.0699534, 0, 0.772164, 1)
+energy = 8.0
+range_layer_max = 1
+texture = ExtResource("1_5hjy1")
+
+[node name="Plain-black-background-02Fh7564l8Qq4m6d" type="Sprite2D" parent="."]
+position = Vector2(705, 396.5)
+scale = Vector2(0.732813, 0.730556)
+texture = ExtResource("2_r3crh")
+metadata/_edit_lock_ = true
+
+[node name="Photonicbox1" type="Sprite2D" parent="."]
+position = Vector2(700, 395)
+texture = ExtResource("3_whbf7")
+metadata/_edit_lock_ = true
+
+[node name="SkeletonSword" type="Sprite2D" parent="."]
+position = Vector2(698, 168)
+rotation = 2.35619
+scale = Vector2(3, 3)
+texture = ExtResource("4_dyao8")
+
+[node name="PointLight2D" type="PointLight2D" parent="SkeletonSword"]
+position = Vector2(1.88565, -3.29979)
+scale = Vector2(0.0854751, 0.0854751)
+color = Color(1, 1, 0.0156863, 1)
+energy = 16.0
+texture = ExtResource("1_5hjy1")
+
+[node name="SkeletonSword5" type="Sprite2D" parent="."]
+position = Vector2(950, 247)
+rotation = 3.14159
+scale = Vector2(3, 3)
+texture = ExtResource("4_dyao8")
+
+[node name="PointLight2D" type="PointLight2D" parent="SkeletonSword5"]
+position = Vector2(1.88565, -3.29979)
+scale = Vector2(0.0854751, 0.0854751)
+color = Color(0, 1, 0.0156863, 1)
+energy = 16.0
+texture = ExtResource("1_5hjy1")
+
+[node name="SkeletonSword6" type="Sprite2D" parent="."]
+position = Vector2(702, 616)
+rotation = -0.785398
+scale = Vector2(3, 3)
+texture = ExtResource("4_dyao8")
+
+[node name="PointLight2D" type="PointLight2D" parent="SkeletonSword6"]
+position = Vector2(1.88565, -3.29979)
+scale = Vector2(0.0854751, 0.0854751)
+color = Color(1, 0, 0.0156863, 1)
+energy = 16.0
+texture = ExtResource("1_5hjy1")
+
+[node name="SkeletonSword8" type="Sprite2D" parent="."]
+position = Vector2(949, 535)
+rotation = 4.71239
+scale = Vector2(3, 3)
+texture = ExtResource("4_dyao8")
+
+[node name="PointLight2D" type="PointLight2D" parent="SkeletonSword8"]
+position = Vector2(1.88565, -3.29979)
+scale = Vector2(0.0854751, 0.0854751)
+color = Color(0.662745, 0, 0.564706, 1)
+energy = 16.0
+texture = ExtResource("1_5hjy1")
+
+[node name="SkeletonSword9" type="Sprite2D" parent="."]
+position = Vector2(452, 235)
+rotation = 1.5708
+scale = Vector2(3, 3)
+texture = ExtResource("4_dyao8")
+
+[node name="PointLight2D" type="PointLight2D" parent="SkeletonSword9"]
+position = Vector2(1.88565, -3.29979)
+scale = Vector2(0.0854751, 0.0854751)
+color = Color(0.152941, 0, 0.945098, 1)
+energy = 16.0
+texture = ExtResource("1_5hjy1")
+
+[node name="SkeletonSword10" type="Sprite2D" parent="."]
+position = Vector2(457, 542)
+scale = Vector2(3, 3)
+texture = ExtResource("4_dyao8")
+
+[node name="PointLight2D" type="PointLight2D" parent="SkeletonSword10"]
+position = Vector2(1.88565, -3.29979)
+scale = Vector2(0.0854751, 0.0854751)
+color = Color(1, 0.337255, 0.0156863, 1)
+energy = 16.0
+texture = ExtResource("1_5hjy1")
+
+[node name="PointLight2D5" type="PointLight2D" parent="."]
+position = Vector2(1305, 166)
+color = Color(0.0705882, 1, 0.772549, 1)
+energy = 15.93
+range_layer_max = 1
+texture = ExtResource("1_5hjy1")

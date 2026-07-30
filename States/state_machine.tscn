@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://rluyaoos8002"]
+
+[ext_resource type="Script" path="res://States/state_machine.gd" id="1_iyxqt"]
+
+[node name="StateMachine" type="Node2D" groups=["currentState"]]
+script = ExtResource("1_iyxqt")
+
+[node name="CurrentState" type="Node2D" parent="."]
+
+[node name="SubViewport" type="SubViewport" parent="."]

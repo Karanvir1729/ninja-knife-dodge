@@ -1,0 +1,92 @@
+[gd_scene load_steps=4 format=3 uid="uid://bay7lhes8udmt"]
+
+[ext_resource type="Script" path="res://States/lose_state.gd" id="1_106nb"]
+[ext_resource type="Texture2D" uid="uid://chijv1tkljjrx" path="res://graphics/skeleton_sword.png" id="1_cguvd"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_o2bk5"]
+font_size = 75
+
+[node name="LoseState" type="CanvasLayer"]
+script = ExtResource("1_106nb")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 50
+
+[node name="Rows" type="VBoxContainer" parent="PanelContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="PanelContainer/MarginContainer/Rows"]
+layout_mode = 2
+text = "You Fought Well
+"
+label_settings = SubResource("LabelSettings_o2bk5")
+horizontal_alignment = 1
+
+[node name="Score" type="Label" parent="PanelContainer/MarginContainer/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 100
+text = "Score: 0"
+horizontal_alignment = 1
+
+[node name="Stats" type="Label" parent="PanelContainer/MarginContainer/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "High Score: 0"
+horizontal_alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/Rows"]
+layout_mode = 2
+theme_override_constants/margin_top = 150
+
+[node name="CenterContainer" type="CenterContainer" parent="PanelContainer/MarginContainer/Rows/MarginContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer/Rows/MarginContainer/CenterContainer"]
+layout_mode = 2
+
+[node name="PlayAgain" type="Button" parent="PanelContainer/MarginContainer/Rows/MarginContainer/CenterContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Play Again"
+
+[node name="HFlowContainer" type="HFlowContainer" parent="."]
+offset_right = 64.0
+offset_bottom = 64.0
+scale = Vector2(8, 8)
+
+[node name="TextureRect" type="TextureRect" parent="HFlowContainer"]
+layout_mode = 2
+texture = ExtResource("1_cguvd")
+stretch_mode = 4
+flip_v = true
+
+[node name="HFlowContainer2" type="HFlowContainer" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -64.0
+offset_bottom = 64.0
+grow_horizontal = 0
+rotation = 1.5708
+scale = Vector2(8, 8)
+pivot_offset = Vector2(0, 7)
+
+[node name="TextureRect" type="TextureRect" parent="HFlowContainer2"]
+layout_mode = 2
+texture = ExtResource("1_cguvd")
+stretch_mode = 4
+flip_v = true
+
+[connection signal="pressed" from="PanelContainer/MarginContainer/Rows/MarginContainer/CenterContainer/VBoxContainer/PlayAgain" to="." method="_on_play_again_pressed"]

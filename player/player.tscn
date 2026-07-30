@@ -1,0 +1,23 @@
+[gd_scene load_steps=5 format=3 uid="uid://snvdvywrolby"]
+
+[ext_resource type="Texture2D" uid="uid://c3gc2at63d5b5" path="res://graphics/photonicbox1.png" id="1_nl1qx"]
+[ext_resource type="Script" path="res://player/player.gd" id="1_op82q"]
+[ext_resource type="AudioStream" uid="uid://djv078enrsfyp" path="res://sounds/160756__cosmicembers__fast-swing-air-woosh.wav" id="3_05ih5"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2audb"]
+size = Vector2(122, 123)
+
+[node name="Player" type="CharacterBody2D"]
+script = ExtResource("1_op82q")
+
+[node name="Photonicbox1" type="Sprite2D" parent="."]
+scale = Vector2(0.15, 0.15)
+texture = ExtResource("1_nl1qx")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 0.5)
+scale = Vector2(0.15, 0.15)
+shape = SubResource("RectangleShape2D_2audb")
+
+[node name="jump" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_05ih5")
