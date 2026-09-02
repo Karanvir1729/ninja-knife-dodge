@@ -5,11 +5,16 @@ const PRIVACY_TEXT := """[b]Ninja Knife Dodge does not collect, store, or share 
 
 • The game runs entirely offline and makes no network connections.
 • There are no accounts, no sign-in, no ads, and no third-party analytics or tracking SDKs.
-• Your scores, level progress, settings and tutorial flags are saved only on this device and never leave it. Deleting the app deletes them.
+• Your scores, level progress, power-ups, settings and tutorial flags are saved only on this device and never leave it. Deleting the app deletes them.
 
 Because no data is collected, there is nothing to access, correct, delete, or opt out of.
 
 Questions: mehar.khanna@uwaterloo.ca"""
+
+const ADS_TEXT := """
+
+[b]Optional rewarded ads[/b]
+The game never shows ads on its own. When you tap "Watch ad" for a power-up, hint, skip or second chance, the ad is served by Google AdMob, which may collect device identifiers and usage information under Google's privacy policy. Every reward can also be used without watching an ad."""
 
 const SUPPORT_TEXT := """Found a bug or have an idea?
 
@@ -61,7 +66,7 @@ func _ready() -> void:
 	%ResetBtn.pressed.connect(func(): AudioManager.click(); _show(%Confirm, true))
 	%ConfirmCancel.pressed.connect(func(): AudioManager.back(); _show(%Confirm, false))
 	%ConfirmReset.pressed.connect(_reset)
-	%PrivacyBtn.pressed.connect(func(): _info("PRIVACY", PRIVACY_TEXT))
+	%PrivacyBtn.pressed.connect(func(): _info("PRIVACY", PRIVACY_TEXT + (ADS_TEXT if Ads.is_real() else "")))
 	%SupportBtn.pressed.connect(func(): _info("SUPPORT", SUPPORT_TEXT))
 	%CreditsBtn.pressed.connect(func(): _info("CREDITS", CREDITS_TEXT))
 	%InfoClose.pressed.connect(func(): AudioManager.back(); _show(%Info, false))

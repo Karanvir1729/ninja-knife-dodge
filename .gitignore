@@ -1,2 +1,5 @@
 # Godot 4+ specific ignores
 .godot/
+
+# Claude Code agent worktrees
+.claude/worktrees/
