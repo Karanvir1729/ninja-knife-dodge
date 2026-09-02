@@ -35,7 +35,9 @@ func show_line(who: String, text: String, p_accent: Color, anchor_global: Vector
 	sb.shadow_color = Color(accent, 0.16)
 	%Panel.add_theme_stylebox_override("panel", sb)
 	custom_minimum_size.x = max_width
+	%Text.custom_minimum_size.x = max_width - 44.0
 	size = Vector2(max_width, 0)
+	call_deferred("_fit")
 	_chars = 0.0
 	_typing = true
 	visible = true
@@ -69,7 +71,17 @@ func _finish() -> void:
 	t.tween_property(%Hint, "modulate:a", 1.0, 0.5)
 	t.tween_property(%Hint, "modulate:a", 0.3, 0.5)
 
+## Grow to the panel's wrapped height (autowrap min-size settles a frame late).
+func _fit() -> void:
+	var want: Vector2 = %Panel.get_combined_minimum_size()
+	if absf(size.y - want.y) > 0.5:
+		size.y = want.y
+		pivot_offset = Vector2(size.x * 0.5, size.y)
+		queue_redraw()
+
 func _process(delta: float) -> void:
+	if visible:
+		_fit()
 	if not _typing:
 		return
 	_chars += SPEED * delta
