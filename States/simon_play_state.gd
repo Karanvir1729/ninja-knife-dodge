@@ -74,8 +74,9 @@ func _ready() -> void:
 
 ## Sensei sits at the bottom of the side panel and comments on each phase.
 func _setup_sensei() -> void:
-	if has_node("%Tip"):
-		%Tip.visible = false
+	var tip := %Root.get_node_or_null("H/Side/Tip")
+	if tip:
+		tip.visible = false
 	_sensei = Mascot.new()
 	_sensei.character = "sensei"
 	_sensei.base_scale = 0.42
