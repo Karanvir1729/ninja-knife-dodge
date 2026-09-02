@@ -6,7 +6,7 @@ The 1.x build on the store is the single-game version. 2.0 is a four-game arcade
 
 - Open the project in the Godot version you export with (4.3 or newer; 4.7.2 was used for development). Install that version's **export templates** (Editor > Manage Export Templates).
 - `export_presets.cfg` already has `application/short_version="2.0"` and `application/version="4"`. Bump `application/version` (the build number) before **every** upload, and `short_version` for each store release.
-- The iOS preset targets iPhone **and** iPad (`targeted_device_family=2`), landscape only, minimum iOS 12. The whole UI is safe-area aware and fills 19.5:9 and 4:3 screens; there is no letterboxing to explain to reviewers.
+- The iOS preset targets iPhone **and** iPad (`targeted_device_family=2`), landscape only, minimum iOS 15 (Apple requires 15+ for uploads from spring 2027). The whole UI is safe-area aware and fills 19.5:9 and 4:3 screens; there is no letterboxing to explain to reviewers.
 - Export with the iOS preset (`export_project_only=true` produces an Xcode project), open it in Xcode, set your team and signing, **Archive**, then upload with the Organizer or Transporter.
 
 ## 2. If you ship with rewarded ads
