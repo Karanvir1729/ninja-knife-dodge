@@ -245,6 +245,7 @@ func _setup_guides() -> void:
 	await get_tree().create_timer(0.9).timeout
 	if not SaveData.intro_seen():
 		%SkipIntro.visible = true
+		%Version.visible = false
 		director.run(GuideDirector.intro(SaveData.player_name()))
 	else:
 		director.run(GuideDirector.greeting(SaveData.player_name()))
@@ -272,6 +273,7 @@ func _tip(who: String) -> void:
 
 func _on_script_finished() -> void:
 	%SkipIntro.visible = false
+	%Version.visible = true
 	if not SaveData.intro_seen():
 		SaveData.set_intro_seen()
 		sensei.set_mood("happy")
@@ -280,6 +282,7 @@ func _on_script_finished() -> void:
 func replay_intro() -> void:
 	_show_how(false)
 	%SkipIntro.visible = true
+	%Version.visible = false
 	director.skip_all()
 	director.run(GuideDirector.intro(SaveData.player_name()))
 

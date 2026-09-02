@@ -156,19 +156,6 @@ layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="SkipIntro" type="Button" parent="Root/V/Middle/Left/Stage"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -150.0
-offset_bottom = 46.0
-grow_horizontal = 0
-theme_override_font_sizes/font_size = 17
-text = "SKIP INTRO"
-
 [node name="Cats" type="HBoxContainer" parent="Root/V/Middle"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -179,6 +166,15 @@ theme_override_constants/separation = 18
 [node name="Bottom" type="HBoxContainer" parent="Root/V"]
 layout_mode = 2
 mouse_filter = 2
+
+[node name="SkipIntro" type="Button" parent="Root/V/Bottom"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 17
+text = "SKIP INTRO"
 
 [node name="Version" type="Label" parent="Root/V/Bottom"]
 unique_name_in_owner = true
