@@ -1,0 +1,488 @@
+[gd_scene load_steps=6 format=3 uid="uid://c1settings0000"]
+
+[ext_resource type="Script" path="res://States/settings_state.gd" id="1_st"]
+[ext_resource type="Script" path="res://UI/neon_toggle.gd" id="toggle"]
+[ext_resource type="Texture2D" path="res://graphics/gen/icon_back.png" id="2_back"]
+
+[sub_resource type="StyleBoxFlat" id="row"]
+content_margin_left = 26.0
+content_margin_top = 16.0
+content_margin_right = 26.0
+content_margin_bottom = 16.0
+bg_color = Color(0.0549, 0.0588, 0.0863, 0.86)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.149, 0.165, 0.239, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="danger_panel"]
+content_margin_left = 26.0
+content_margin_top = 22.0
+content_margin_right = 26.0
+content_margin_bottom = 22.0
+bg_color = Color(0.0549, 0.0588, 0.0863, 0.86)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.231, 0.361, 0.35)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[node name="SettingsState" type="CanvasLayer"]
+script = ExtResource("1_st")
+
+[node name="Root" type="MarginContainer" parent="."]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="V" type="VBoxContainer" parent="Root"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Top" type="HBoxContainer" parent="Root/V"]
+layout_mode = 2
+theme_override_constants/separation = 22
+
+[node name="Back" type="Button" parent="Root/V/Top"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"IconButton"
+icon = ExtResource("2_back")
+icon_alignment = 1
+expand_icon = true
+
+[node name="Title" type="Label" parent="Root/V/Top"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"DisplayLabel"
+theme_override_colors/font_outline_color = Color(0.337, 0.941, 1, 0.3)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 50
+text = "SETTINGS"
+
+[node name="Body" type="HBoxContainer" parent="Root/V"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 24
+
+[node name="Left" type="VBoxContainer" parent="Root/V/Body"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="NameRow" type="PanelContainer" parent="Root/V/Body/Left"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/panel = SubResource("row")
+
+[node name="H" type="HBoxContainer" parent="Root/V/Body/Left/NameRow"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="T" type="VBoxContainer" parent="Root/V/Body/Left/NameRow/H"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+
+[node name="Title" type="Label" parent="Root/V/Body/Left/NameRow/H/T"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Ninja name"
+
+[node name="Desc" type="Label" parent="Root/V/Body/Left/NameRow/H/T"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 18
+text = "Shown on the leaderboards. Up to 10 letters."
+autowrap_mode = 3
+
+[node name="NameEdit" type="LineEdit" parent="Root/V/Body/Left/NameRow/H"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 56)
+layout_mode = 2
+size_flags_vertical = 4
+placeholder_text = "NINJA"
+max_length = 10
+
+[node name="MusicRow" type="PanelContainer" parent="Root/V/Body/Left"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/panel = SubResource("row")
+
+[node name="H" type="HBoxContainer" parent="Root/V/Body/Left/MusicRow"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="T" type="VBoxContainer" parent="Root/V/Body/Left/MusicRow/H"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+
+[node name="Title" type="Label" parent="Root/V/Body/Left/MusicRow/H/T"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Music"
+
+[node name="Desc" type="Label" parent="Root/V/Body/Left/MusicRow/H/T"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 18
+text = "Menu and in-game tracks."
+autowrap_mode = 3
+
+[node name="MusicSlider" type="HSlider" parent="Root/V/Body/Left/MusicRow/H"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 40)
+layout_mode = 2
+size_flags_vertical = 4
+value = 80.0
+
+[node name="MusicToggle" type="Button" parent="Root/V/Body/Left/MusicRow/H"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+script = ExtResource("toggle")
+
+[node name="SfxRow" type="PanelContainer" parent="Root/V/Body/Left"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/panel = SubResource("row")
+
+[node name="H" type="HBoxContainer" parent="Root/V/Body/Left/SfxRow"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="T" type="VBoxContainer" parent="Root/V/Body/Left/SfxRow/H"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+
+[node name="Title" type="Label" parent="Root/V/Body/Left/SfxRow/H/T"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Sound effects"
+
+[node name="Desc" type="Label" parent="Root/V/Body/Left/SfxRow/H/T"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 18
+text = "Swooshes, matches and impacts."
+autowrap_mode = 3
+
+[node name="SfxToggle" type="Button" parent="Root/V/Body/Left/SfxRow/H"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+script = ExtResource("toggle")
+
+[node name="HapticsRow" type="PanelContainer" parent="Root/V/Body/Left"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/panel = SubResource("row")
+
+[node name="H" type="HBoxContainer" parent="Root/V/Body/Left/HapticsRow"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="T" type="VBoxContainer" parent="Root/V/Body/Left/HapticsRow/H"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+
+[node name="Title" type="Label" parent="Root/V/Body/Left/HapticsRow/H/T"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Haptics"
+
+[node name="Desc" type="Label" parent="Root/V/Body/Left/HapticsRow/H/T"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 18
+text = "A short buzz on hits and big matches."
+autowrap_mode = 3
+
+[node name="HapticsToggle" type="Button" parent="Root/V/Body/Left/HapticsRow/H"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+script = ExtResource("toggle")
+
+[node name="TutorialRow" type="PanelContainer" parent="Root/V/Body/Left"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/panel = SubResource("row")
+
+[node name="H" type="HBoxContainer" parent="Root/V/Body/Left/TutorialRow"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="T" type="VBoxContainer" parent="Root/V/Body/Left/TutorialRow/H"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+
+[node name="Title" type="Label" parent="Root/V/Body/Left/TutorialRow/H/T"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Tutorials"
+
+[node name="Desc" type="Label" parent="Root/V/Body/Left/TutorialRow/H/T"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 18
+text = "Play both walkthroughs again next time you start a game."
+autowrap_mode = 3
+
+[node name="ReplayBtn" type="Button" parent="Root/V/Body/Left/TutorialRow/H"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 20
+text = "REPLAY"
+
+[node name="Right" type="VBoxContainer" parent="Root/V/Body"]
+custom_minimum_size = Vector2(470, 0)
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="About" type="PanelContainer" parent="Root/V/Body/Right"]
+layout_mode = 2
+
+[node name="V" type="VBoxContainer" parent="Root/V/Body/Right/About"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="C" type="Label" parent="Root/V/Body/Right/About/V"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+text = "ABOUT"
+
+[node name="VersionLabel" type="Label" parent="Root/V/Body/Right/About/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Ninja Knife Dodge v2.0"
+
+[node name="Blurb" type="Label" parent="Root/V/Body/Right/About/V"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 19
+text = "Runs fully offline. No ads, no accounts, no tracking. Scores and settings never leave this device."
+autowrap_mode = 3
+
+[node name="Links" type="HBoxContainer" parent="Root/V/Body/Right/About/V"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PrivacyBtn" type="Button" parent="Root/V/Body/Right/About/V/Links"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TabButton"
+text = "PRIVACY"
+
+[node name="SupportBtn" type="Button" parent="Root/V/Body/Right/About/V/Links"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TabButton"
+text = "SUPPORT"
+
+[node name="CreditsBtn" type="Button" parent="Root/V/Body/Right/About/V/Links"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TabButton"
+text = "CREDITS"
+
+[node name="Danger" type="PanelContainer" parent="Root/V/Body/Right"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("danger_panel")
+
+[node name="V" type="VBoxContainer" parent="Root/V/Body/Right/Danger"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="C" type="Label" parent="Root/V/Body/Right/Danger/V"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_colors/font_color = Color(1, 0.231, 0.361, 1)
+text = "DANGER ZONE"
+
+[node name="T" type="Label" parent="Root/V/Body/Right/Danger/V"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 19
+text = "Wipes both leaderboards, level progress and stats. Your name and settings stay. Asks you to confirm first."
+autowrap_mode = 3
+
+[node name="ResetBtn" type="Button" parent="Root/V/Body/Right/Danger/V"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+theme_type_variation = &"DangerButton"
+text = "RESET PROGRESS"
+
+[node name="Toast" type="Label" parent="Root/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_colors/font_color = Color(0.337, 0.941, 1, 1)
+theme_override_font_sizes/font_size = 17
+text = ""
+horizontal_alignment = 1
+
+[node name="Confirm" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dim" type="ColorRect" parent="Confirm"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0117647, 0.0117647, 0.0313726, 0.72)
+
+[node name="Center" type="CenterContainer" parent="Confirm"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Card" type="PanelContainer" parent="Confirm/Center"]
+custom_minimum_size = Vector2(560, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("danger_panel")
+
+[node name="V" type="VBoxContainer" parent="Confirm/Center/Card"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="T" type="Label" parent="Confirm/Center/Card/V"]
+layout_mode = 2
+theme_type_variation = &"DisplayLabel"
+theme_override_font_sizes/font_size = 42
+text = "RESET EVERYTHING?"
+horizontal_alignment = 1
+
+[node name="S" type="Label" parent="Confirm/Center/Card/V"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+text = "Both leaderboards, all level stars and every stat will be erased. This cannot be undone."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Gap" type="Control" parent="Confirm/Center/Card/V"]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="B" type="HBoxContainer" parent="Confirm/Center/Card/V"]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="ConfirmCancel" type="Button" parent="Confirm/Center/Card/V/B"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_type_variation = &"PrimaryButton"
+text = "KEEP IT"
+
+[node name="ConfirmReset" type="Button" parent="Confirm/Center/Card/V/B"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_type_variation = &"DangerButton"
+text = "RESET"
+
+[node name="Info" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dim" type="ColorRect" parent="Info"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0117647, 0.0117647, 0.0313726, 0.72)
+
+[node name="Center" type="CenterContainer" parent="Info"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Card" type="PanelContainer" parent="Info/Center"]
+custom_minimum_size = Vector2(760, 0)
+layout_mode = 2
+
+[node name="V" type="VBoxContainer" parent="Info/Center/Card"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="InfoTitle" type="Label" parent="Info/Center/Card/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"DisplayLabel"
+theme_override_font_sizes/font_size = 42
+text = "PRIVACY"
+horizontal_alignment = 1
+
+[node name="Scroll" type="ScrollContainer" parent="Info/Center/Card/V"]
+custom_minimum_size = Vector2(0, 360)
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="InfoBody" type="RichTextLabel" parent="Info/Center/Card/V/Scroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+bbcode_enabled = true
+text = ""
+fit_content = true
+
+[node name="InfoClose" type="Button" parent="Info/Center/Card/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"PrimaryButton"
+text = "CLOSE"

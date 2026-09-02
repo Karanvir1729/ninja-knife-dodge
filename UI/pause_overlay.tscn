@@ -1,0 +1,69 @@
+[gd_scene load_steps=2 format=3 uid="uid://c1pauseoverlay"]
+
+[ext_resource type="Script" path="res://UI/pause_overlay.gd" id="1_p"]
+
+[node name="PauseOverlay" type="CanvasLayer"]
+process_mode = 3
+layer = 20
+visible = false
+script = ExtResource("1_p")
+
+[node name="Dim" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0117647, 0.0117647, 0.0313726, 0.72)
+
+[node name="Center" type="CenterContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Card" type="PanelContainer" parent="Center"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(520, 0)
+layout_mode = 2
+
+[node name="V" type="VBoxContainer" parent="Center/Card"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="Title" type="Label" parent="Center/Card/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"DisplayLabel"
+theme_override_font_sizes/font_size = 48
+text = "PAUSED"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Center/Card/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+text = "The daggers wait for no one."
+horizontal_alignment = 1
+
+[node name="Gap" type="Control" parent="Center/Card/V"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="ResumeBtn" type="Button" parent="Center/Card/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"PrimaryButton"
+text = "RESUME"
+
+[node name="RestartBtn" type="Button" parent="Center/Card/V"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "RESTART"
+
+[node name="MenuBtn" type="Button" parent="Center/Card/V"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "MENU"

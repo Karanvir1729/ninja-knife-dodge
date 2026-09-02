@@ -1,10 +1,16 @@
-[gd_scene load_steps=2 format=3 uid="uid://rluyaoos8002"]
+[gd_scene load_steps=4 format=3 uid="uid://rluyaoos8002"]
 
 [ext_resource type="Script" path="res://States/state_machine.gd" id="1_iyxqt"]
+[ext_resource type="PackedScene" path="res://UI/background.tscn" id="2_bg"]
+[ext_resource type="PackedScene" path="res://UI/transition.tscn" id="3_tr"]
 
 [node name="StateMachine" type="Node2D" groups=["currentState"]]
+process_mode = 3
 script = ExtResource("1_iyxqt")
 
-[node name="CurrentState" type="Node2D" parent="."]
+[node name="Background" parent="." instance=ExtResource("2_bg")]
 
-[node name="SubViewport" type="SubViewport" parent="."]
+[node name="CurrentState" type="Node2D" parent="."]
+process_mode = 1
+
+[node name="Transition" parent="." instance=ExtResource("3_tr")]

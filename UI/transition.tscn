@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=3 uid="uid://c1transition0"]
+
+[ext_resource type="Script" path="res://UI/transition.gd" id="1_tr"]
+
+[node name="Transition" type="CanvasLayer"]
+layer = 100
+script = ExtResource("1_tr")
+
+[node name="Fade" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.027451, 0.031373, 0.05098, 1)

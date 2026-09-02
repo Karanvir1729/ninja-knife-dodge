@@ -1,92 +1,311 @@
-[gd_scene load_steps=4 format=3 uid="uid://bay7lhes8udmt"]
+[gd_scene load_steps=8 format=3 uid="uid://bay7lhes8udmt"]
 
 [ext_resource type="Script" path="res://States/lose_state.gd" id="1_106nb"]
 [ext_resource type="Texture2D" uid="uid://chijv1tkljjrx" path="res://graphics/skeleton_sword.png" id="1_cguvd"]
+[ext_resource type="Texture2D" path="res://graphics/gen/icon_star.png" id="3_star"]
 
-[sub_resource type="LabelSettings" id="LabelSettings_o2bk5"]
-font_size = 75
+[sub_resource type="StyleBoxFlat" id="card"]
+content_margin_left = 48.0
+content_margin_top = 36.0
+content_margin_right = 48.0
+content_margin_bottom = 40.0
+bg_color = Color(0.0549, 0.0588, 0.0863, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.337, 0.941, 1, 0.35)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0.337, 0.941, 1, 0.12)
+shadow_size = 40
+
+[sub_resource type="StyleBoxFlat" id="chip_gold"]
+content_margin_left = 14.0
+content_margin_top = 6.0
+content_margin_right = 14.0
+content_margin_bottom = 6.0
+bg_color = Color(1, 0.847, 0.302, 0.16)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.847, 0.302, 0.5)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="chip_cyan"]
+content_margin_left = 14.0
+content_margin_top = 6.0
+content_margin_right = 14.0
+content_margin_bottom = 6.0
+bg_color = Color(0.337, 0.941, 1, 0.1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.337, 0.941, 1, 0.4)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="stat"]
+content_margin_left = 10.0
+content_margin_top = 14.0
+content_margin_right = 10.0
+content_margin_bottom = 14.0
+bg_color = Color(0.0863, 0.0941, 0.149, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.149, 0.165, 0.239, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [node name="LoseState" type="CanvasLayer"]
 script = ExtResource("1_106nb")
 
-[node name="PanelContainer" type="PanelContainer" parent="."]
+[node name="DaggerL" type="Sprite2D" parent="."]
+modulate = Color(0.337, 0.941, 1, 0.16)
+position = Vector2(90, 90)
+rotation = 0.785398
+scale = Vector2(7, 7)
+texture = ExtResource("1_cguvd")
+
+[node name="DaggerR" type="Sprite2D" parent="."]
+modulate = Color(1, 0.31, 0.847, 0.16)
+position = Vector2(1318, 90)
+rotation = 2.35619
+scale = Vector2(7, 7)
+texture = ExtResource("1_cguvd")
+
+[node name="Root" type="MarginContainer" parent="."]
+unique_name_in_owner = true
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="PanelContainer"]
+[node name="Center" type="CenterContainer" parent="Root"]
 layout_mode = 2
-theme_override_constants/margin_top = 50
 
-[node name="Rows" type="VBoxContainer" parent="PanelContainer/MarginContainer"]
+[node name="Card" type="PanelContainer" parent="Root/Center"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(820, 0)
 layout_mode = 2
+theme_override_styles/panel = SubResource("card")
+
+[node name="V" type="VBoxContainer" parent="Root/Center/Card"]
+layout_mode = 2
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="Title" type="Label" parent="Root/Center/Card/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"DisplayLabel"
+theme_override_font_sizes/font_size = 50
+text = "YOU FOUGHT WELL"
+horizontal_alignment = 1
+
+[node name="ScoreRow" type="HBoxContainer" parent="Root/Center/Card/V"]
+layout_mode = 2
+theme_override_constants/separation = 30
+alignment = 1
+
+[node name="ScoreCol" type="VBoxContainer" parent="Root/Center/Card/V/ScoreRow"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="ScoreCaps" type="Label" parent="Root/Center/Card/V/ScoreRow/ScoreCol"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+text = "SCORE"
+horizontal_alignment = 1
+
+[node name="ScoreVal" type="Label" parent="Root/Center/Card/V/ScoreRow/ScoreCol"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"DisplayLabel"
+theme_override_colors/font_outline_color = Color(0.337, 0.941, 1, 0.35)
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 112
+text = "0"
+horizontal_alignment = 1
+
+[node name="Chips" type="VBoxContainer" parent="Root/Center/Card/V/ScoreRow"]
+layout_mode = 2
+size_flags_vertical = 4
 theme_override_constants/separation = 10
 
-[node name="Title" type="Label" parent="PanelContainer/MarginContainer/Rows"]
-layout_mode = 2
-text = "You Fought Well
-"
-label_settings = SubResource("LabelSettings_o2bk5")
-horizontal_alignment = 1
-
-[node name="Score" type="Label" parent="PanelContainer/MarginContainer/Rows"]
+[node name="RecordChip" type="PanelContainer" parent="Root/Center/Card/V/ScoreRow/Chips"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 100
-text = "Score: 0"
-horizontal_alignment = 1
+theme_override_styles/panel = SubResource("chip_gold")
 
-[node name="Stats" type="Label" parent="PanelContainer/MarginContainer/Rows"]
+[node name="H" type="HBoxContainer" parent="Root/Center/Card/V/ScoreRow/Chips/RecordChip"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Star" type="TextureRect" parent="Root/Center/Card/V/ScoreRow/Chips/RecordChip/H"]
+modulate = Color(1, 0.847, 0.302, 1)
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("3_star")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="L" type="Label" parent="Root/Center/Card/V/ScoreRow/Chips/RecordChip/H"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_colors/font_color = Color(1, 0.847, 0.302, 1)
+theme_override_font_sizes/font_size = 19
+text = "NEW RECORD"
+
+[node name="RankChip" type="PanelContainer" parent="Root/Center/Card/V/ScoreRow/Chips"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
-text = "High Score: 0"
-horizontal_alignment = 1
+theme_override_styles/panel = SubResource("chip_cyan")
 
-[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/MarginContainer/Rows"]
-layout_mode = 2
-theme_override_constants/margin_top = 150
-
-[node name="CenterContainer" type="CenterContainer" parent="PanelContainer/MarginContainer/Rows/MarginContainer"]
-layout_mode = 2
-
-[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer/Rows/MarginContainer/CenterContainer"]
-layout_mode = 2
-
-[node name="PlayAgain" type="Button" parent="PanelContainer/MarginContainer/Rows/MarginContainer/CenterContainer/VBoxContainer"]
+[node name="RankLabel" type="Label" parent="Root/Center/Card/V/ScoreRow/Chips/RankChip"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 32
-text = "Play Again"
+theme_type_variation = &"CapsLabel"
+theme_override_colors/font_color = Color(0.337, 0.941, 1, 1)
+theme_override_font_sizes/font_size = 19
+text = "#1 ON THE BOARD"
 
-[node name="HFlowContainer" type="HFlowContainer" parent="."]
-offset_right = 64.0
-offset_bottom = 64.0
-scale = Vector2(8, 8)
-
-[node name="TextureRect" type="TextureRect" parent="HFlowContainer"]
+[node name="BestLine" type="Label" parent="Root/Center/Card/V/ScoreRow/Chips"]
+unique_name_in_owner = true
 layout_mode = 2
-texture = ExtResource("1_cguvd")
-stretch_mode = 4
-flip_v = true
+theme_type_variation = &"CapsLabel"
+text = "BEST 0"
 
-[node name="HFlowContainer2" type="HFlowContainer" parent="."]
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -64.0
-offset_bottom = 64.0
-grow_horizontal = 0
-rotation = 1.5708
-scale = Vector2(8, 8)
-pivot_offset = Vector2(0, 7)
-
-[node name="TextureRect" type="TextureRect" parent="HFlowContainer2"]
+[node name="Stats" type="HBoxContainer" parent="Root/Center/Card/V"]
 layout_mode = 2
-texture = ExtResource("1_cguvd")
-stretch_mode = 4
-flip_v = true
+theme_override_constants/separation = 14
 
-[connection signal="pressed" from="PanelContainer/MarginContainer/Rows/MarginContainer/CenterContainer/VBoxContainer/PlayAgain" to="." method="_on_play_again_pressed"]
+[node name="S1" type="PanelContainer" parent="Root/Center/Card/V/Stats"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("stat")
+
+[node name="V" type="VBoxContainer" parent="Root/Center/Card/V/Stats/S1"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="DodgedVal" type="Label" parent="Root/Center/Card/V/Stats/S1/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"NumberLabel"
+text = "0"
+horizontal_alignment = 1
+
+[node name="C" type="Label" parent="Root/Center/Card/V/Stats/S1/V"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_font_sizes/font_size = 15
+text = "DODGED"
+horizontal_alignment = 1
+
+[node name="S2" type="PanelContainer" parent="Root/Center/Card/V/Stats"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("stat")
+
+[node name="V" type="VBoxContainer" parent="Root/Center/Card/V/Stats/S2"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="WavesVal" type="Label" parent="Root/Center/Card/V/Stats/S2/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"NumberLabel"
+text = "0"
+horizontal_alignment = 1
+
+[node name="C" type="Label" parent="Root/Center/Card/V/Stats/S2/V"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_font_sizes/font_size = 15
+text = "WAVES"
+horizontal_alignment = 1
+
+[node name="S3" type="PanelContainer" parent="Root/Center/Card/V/Stats"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("stat")
+
+[node name="V" type="VBoxContainer" parent="Root/Center/Card/V/Stats/S3"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="NearVal" type="Label" parent="Root/Center/Card/V/Stats/S3/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"NumberLabel"
+theme_override_colors/font_color = Color(0.302, 1, 0.651, 1)
+text = "0"
+horizontal_alignment = 1
+
+[node name="C" type="Label" parent="Root/Center/Card/V/Stats/S3/V"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_font_sizes/font_size = 15
+text = "NEAR MISSES"
+horizontal_alignment = 1
+
+[node name="S4" type="PanelContainer" parent="Root/Center/Card/V/Stats"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("stat")
+
+[node name="V" type="VBoxContainer" parent="Root/Center/Card/V/Stats/S4"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="TimeVal" type="Label" parent="Root/Center/Card/V/Stats/S4/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"NumberLabel"
+text = "0:00"
+horizontal_alignment = 1
+
+[node name="C" type="Label" parent="Root/Center/Card/V/Stats/S4/V"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_font_sizes/font_size = 15
+text = "SURVIVED"
+horizontal_alignment = 1
+
+[node name="Buttons" type="HBoxContainer" parent="Root/Center/Card/V"]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="PlayAgain" type="Button" parent="Root/Center/Card/V/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 2
+theme_type_variation = &"PrimaryButton"
+text = "PLAY AGAIN"
+
+[node name="Board" type="Button" parent="Root/Center/Card/V/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "LEADERBOARD"
+
+[node name="Menu" type="Button" parent="Root/Center/Card/V/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "MENU"

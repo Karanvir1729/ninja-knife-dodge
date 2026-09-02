@@ -1,22 +1,32 @@
-[gd_scene load_steps=4 format=3 uid="uid://bwyvlmtrfy4x6"]
+[gd_scene load_steps=5 format=3 uid="uid://bwyvlmtrfy4x6"]
 
-[ext_resource type="Texture2D" uid="uid://b1mnnrutdpjel" path="res://graphics/circle.png" id="1_ahxhs"]
+[ext_resource type="Texture2D" path="res://graphics/gen/glow.png" id="1_glow"]
 [ext_resource type="Script" path="res://objects/helper.gd" id="1_rvtba"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1n6rc"]
 size = Vector2(158, 140)
 
+[sub_resource type="CanvasItemMaterial" id="add"]
+blend_mode = 1
+
 [node name="helper" type="Area2D"]
+collision_layer = 128
+collision_mask = 0
 script = ExtResource("1_rvtba")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_1n6rc")
 
-[node name="PointLight2D" type="PointLight2D" parent="."]
-energy = 16.0
-range_layer_max = 1
-texture = ExtResource("1_ahxhs")
-texture_scale = 0.25
+[node name="Glow" type="Sprite2D" parent="."]
+material = SubResource("add")
+modulate = Color(0.75, 0.97, 1, 0.9)
+scale = Vector2(0.55, 0.55)
+texture = ExtResource("1_glow")
+
+[node name="Core" type="Sprite2D" parent="."]
+material = SubResource("add")
+modulate = Color(1, 1, 1, 0.9)
+scale = Vector2(0.14, 0.14)
+texture = ExtResource("1_glow")
 
 [connection signal="input_event" from="." to="." method="_on_input_event"]
-[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]

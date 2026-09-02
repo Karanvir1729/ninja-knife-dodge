@@ -1,0 +1,502 @@
+[gd_scene load_steps=13 format=3 uid="uid://c1matchplay000"]
+
+[ext_resource type="Script" path="res://States/match_play_state.gd" id="1_mp"]
+[ext_resource type="Script" path="res://match/board_view.gd" id="2_board"]
+[ext_resource type="PackedScene" path="res://UI/pause_overlay.tscn" id="3_pause"]
+[ext_resource type="Texture2D" path="res://graphics/gen/icon_pause.png" id="icon_pause"]
+[ext_resource type="Texture2D" path="res://graphics/gen/icon_star.png" id="icon_star"]
+[ext_resource type="Texture2D" path="res://graphics/gen/shuriken.png" id="shuriken"]
+[ext_resource type="Texture2D" path="res://graphics/gen/special_line_h.png" id="ov_line"]
+[ext_resource type="Texture2D" path="res://graphics/gen/special_burst.png" id="ov_burst"]
+[ext_resource type="Texture2D" path="res://graphics/gen/special_prism.png" id="ov_prism"]
+
+[sub_resource type="StyleBoxFlat" id="board_panel"]
+content_margin_left = 20.0
+content_margin_top = 20.0
+content_margin_right = 20.0
+content_margin_bottom = 20.0
+bg_color = Color(0.0549, 0.0588, 0.0863, 0.86)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.31, 0.847, 0.35)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(1, 0.31, 0.847, 0.1)
+shadow_size = 40
+
+[sub_resource type="StyleBoxFlat" id="combo"]
+content_margin_left = 24.0
+content_margin_top = 14.0
+content_margin_right = 24.0
+content_margin_bottom = 14.0
+bg_color = Color(1, 0.31, 0.847, 0.1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.31, 0.847, 0.4)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="toast"]
+content_margin_left = 30.0
+content_margin_top = 12.0
+content_margin_right = 30.0
+content_margin_bottom = 12.0
+bg_color = Color(0.027, 0.031, 0.051, 0.86)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.31, 0.847, 0.5)
+corner_radius_top_left = 30
+corner_radius_top_right = 30
+corner_radius_bottom_right = 30
+corner_radius_bottom_left = 30
+shadow_color = Color(1, 0.31, 0.847, 0.2)
+shadow_size = 18
+
+[sub_resource type="StyleBoxFlat" id="bar_fill"]
+bg_color = Color(1, 0.31, 0.847, 1)
+corner_radius_top_left = 11
+corner_radius_top_right = 11
+corner_radius_bottom_right = 11
+corner_radius_bottom_left = 11
+shadow_color = Color(1, 0.31, 0.847, 0.45)
+shadow_size = 8
+
+[node name="MatchPlayState" type="Node2D"]
+script = ExtResource("1_mp")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Root" type="MarginContainer" parent="UI"]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="H" type="HBoxContainer" parent="UI/Root"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 40
+
+[node name="BoardCenter" type="CenterContainer" parent="UI/Root/H"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="BoardPanel" type="PanelContainer" parent="UI/Root/H/BoardCenter"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(704, 704)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("board_panel")
+
+[node name="Board" type="Control" parent="UI/Root/H/BoardCenter/BoardPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("2_board")
+
+[node name="Side" type="VBoxContainer" parent="UI/Root/H"]
+custom_minimum_size = Vector2(540, 0)
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 16
+
+[node name="Header" type="HBoxContainer" parent="UI/Root/H/Side"]
+layout_mode = 2
+
+[node name="T" type="VBoxContainer" parent="UI/Root/H/Side/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="C" type="Label" parent="UI/Root/H/Side/Header/T"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_font_sizes/font_size = 16
+text = "SHURIKEN MATCH"
+
+[node name="LevelLabel" type="Label" parent="UI/Root/H/Side/Header/T"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"DisplayLabel"
+theme_override_colors/font_outline_color = Color(1, 0.31, 0.847, 0.35)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 54
+text = "LEVEL 1"
+
+[node name="PauseBtn" type="Button" parent="UI/Root/H/Side/Header"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_vertical = 0
+theme_type_variation = &"IconButton"
+icon = ExtResource("icon_pause")
+icon_alignment = 1
+expand_icon = true
+
+[node name="Grid" type="HBoxContainer" parent="UI/Root/H/Side"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="MovesPanel" type="PanelContainer" parent="UI/Root/H/Side/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="V" type="VBoxContainer" parent="UI/Root/H/Side/Grid/MovesPanel"]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="C" type="Label" parent="UI/Root/H/Side/Grid/MovesPanel/V"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_font_sizes/font_size = 16
+text = "MOVES LEFT"
+horizontal_alignment = 1
+
+[node name="MovesVal" type="Label" parent="UI/Root/H/Side/Grid/MovesPanel/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"DisplayLabel"
+theme_override_font_sizes/font_size = 62
+text = "0"
+horizontal_alignment = 1
+
+[node name="ScorePanel" type="PanelContainer" parent="UI/Root/H/Side/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="V" type="VBoxContainer" parent="UI/Root/H/Side/Grid/ScorePanel"]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="C" type="Label" parent="UI/Root/H/Side/Grid/ScorePanel/V"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_font_sizes/font_size = 16
+text = "SCORE"
+horizontal_alignment = 1
+
+[node name="ScoreVal" type="Label" parent="UI/Root/H/Side/Grid/ScorePanel/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"DisplayLabel"
+theme_override_font_sizes/font_size = 62
+text = "0"
+horizontal_alignment = 1
+theme_override_colors/font_outline_color = Color(1, 0.31, 0.847, 0.35)
+theme_override_constants/outline_size = 8
+[node name="TargetPanel" type="PanelContainer" parent="UI/Root/H/Side"]
+layout_mode = 2
+
+[node name="V" type="VBoxContainer" parent="UI/Root/H/Side/TargetPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Top" type="HBoxContainer" parent="UI/Root/H/Side/TargetPanel/V"]
+layout_mode = 2
+
+[node name="C" type="Label" parent="UI/Root/H/Side/TargetPanel/V/Top"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_type_variation = &"CapsLabel"
+theme_override_font_sizes/font_size = 16
+text = "TARGET"
+
+[node name="TargetVal" type="Label" parent="UI/Root/H/Side/TargetPanel/V/Top"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"NumberLabel"
+theme_override_font_sizes/font_size = 26
+text = "5,000"
+
+[node name="BarBox" type="Control" parent="UI/Root/H/Side/TargetPanel/V"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+
+[node name="TargetBar" type="ProgressBar" parent="UI/Root/H/Side/TargetPanel/V/BarBox"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 4.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/fill = SubResource("bar_fill")
+value = 0.0
+show_percentage = false
+
+[node name="Star1" type="TextureRect" parent="UI/Root/H/Side/TargetPanel/V/BarBox"]
+unique_name_in_owner = true
+modulate = Color(0.204, 0.227, 0.333, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -17.0
+offset_top = -2.0
+offset_right = 17.0
+offset_bottom = 2.0
+texture = ExtResource("icon_star")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Star2" type="TextureRect" parent="UI/Root/H/Side/TargetPanel/V/BarBox"]
+unique_name_in_owner = true
+modulate = Color(0.204, 0.227, 0.333, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -17.0
+offset_top = -2.0
+offset_right = 17.0
+offset_bottom = 2.0
+texture = ExtResource("icon_star")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Star3" type="TextureRect" parent="UI/Root/H/Side/TargetPanel/V/BarBox"]
+unique_name_in_owner = true
+modulate = Color(0.204, 0.227, 0.333, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -17.0
+offset_top = -2.0
+offset_right = 17.0
+offset_bottom = 2.0
+texture = ExtResource("icon_star")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Bottom" type="HBoxContainer" parent="UI/Root/H/Side/TargetPanel/V"]
+layout_mode = 2
+
+[node name="StarsCaption" type="Label" parent="UI/Root/H/Side/TargetPanel/V/Bottom"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"CapsLabel"
+theme_override_colors/font_color = Color(0.353, 0.38, 0.502, 1)
+theme_override_font_sizes/font_size = 15
+text = "0 OF 3 STARS"
+
+[node name="ToGo" type="Label" parent="UI/Root/H/Side/TargetPanel/V/Bottom"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_colors/font_color = Color(0.353, 0.38, 0.502, 1)
+theme_override_font_sizes/font_size = 15
+text = "5,000 TO GO"
+
+[node name="ComboBanner" type="PanelContainer" parent="UI/Root/H/Side"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/panel = SubResource("combo")
+
+[node name="H" type="HBoxContainer" parent="UI/Root/H/Side/ComboBanner"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="ComboLabel" type="Label" parent="UI/Root/H/Side/ComboBanner/H"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"DisplayLabel"
+theme_override_colors/font_color = Color(1, 0.31, 0.847, 1)
+theme_override_font_sizes/font_size = 30
+text = "COMBO x3"
+
+[node name="ComboSub" type="Label" parent="UI/Root/H/Side/ComboBanner/H"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 19
+text = "Cascade bonus active"
+
+[node name="Spacer" type="Control" parent="UI/Root/H/Side"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="Legend" type="VBoxContainer" parent="UI/Root/H/Side"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="C" type="Label" parent="UI/Root/H/Side/Legend"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_font_sizes/font_size = 14
+text = "SPECIALS"
+
+[node name="H" type="HBoxContainer" parent="UI/Root/H/Side/Legend"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="L1" type="PanelContainer" parent="UI/Root/H/Side/Legend/H"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"RaisedPanel"
+
+[node name="H" type="HBoxContainer" parent="UI/Root/H/Side/Legend/H/L1"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Icon" type="Control" parent="UI/Root/H/Side/Legend/H/L1/H"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="S" type="TextureRect" parent="UI/Root/H/Side/Legend/H/L1/H/Icon"]
+modulate = Color(0.337, 0.941, 1, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource("shuriken")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="O" type="TextureRect" parent="UI/Root/H/Side/Legend/H/L1/H/Icon"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource("ov_line")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="T" type="Label" parent="UI/Root/H/Side/Legend/H/L1/H"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 15
+text = "4 in a row: Line"
+
+[node name="L2" type="PanelContainer" parent="UI/Root/H/Side/Legend/H"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"RaisedPanel"
+
+[node name="H" type="HBoxContainer" parent="UI/Root/H/Side/Legend/H/L2"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Icon" type="Control" parent="UI/Root/H/Side/Legend/H/L2/H"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="S" type="TextureRect" parent="UI/Root/H/Side/Legend/H/L2/H/Icon"]
+modulate = Color(1, 0.847, 0.302, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource("shuriken")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="O" type="TextureRect" parent="UI/Root/H/Side/Legend/H/L2/H/Icon"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource("ov_burst")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="T" type="Label" parent="UI/Root/H/Side/Legend/H/L2/H"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 15
+text = "L or T: Burst"
+
+[node name="L3" type="PanelContainer" parent="UI/Root/H/Side/Legend/H"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"RaisedPanel"
+
+[node name="H" type="HBoxContainer" parent="UI/Root/H/Side/Legend/H/L3"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Icon" type="Control" parent="UI/Root/H/Side/Legend/H/L3/H"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="S" type="TextureRect" parent="UI/Root/H/Side/Legend/H/L3/H/Icon"]
+modulate = Color(1, 1, 1, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource("shuriken")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="O" type="TextureRect" parent="UI/Root/H/Side/Legend/H/L3/H/Icon"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource("ov_prism")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="T" type="Label" parent="UI/Root/H/Side/Legend/H/L3/H"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 15
+text = "5 in a row: Prism"
+
+[node name="Popups" type="Control" parent="UI"]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="ToastBox" type="CenterContainer" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Toast" type="Label" parent="UI/ToastBox"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"DisplayLabel"
+theme_override_styles/normal = SubResource("toast")
+theme_override_colors/font_color = Color(1, 0.31, 0.847, 1)
+theme_override_colors/font_outline_color = Color(0.027, 0.031, 0.051, 0.9)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 30
+text = "LAST MOVE"
+horizontal_alignment = 1
+
+[node name="Pause" parent="." instance=ExtResource("3_pause")]

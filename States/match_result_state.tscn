@@ -1,0 +1,249 @@
+[gd_scene load_steps=5 format=3 uid="uid://c1matchresult0"]
+
+[ext_resource type="Script" path="res://States/match_result_state.gd" id="1_mr"]
+[ext_resource type="Texture2D" path="res://graphics/gen/icon_star.png" id="icon_star"]
+
+[sub_resource type="StyleBoxFlat" id="card"]
+content_margin_left = 48.0
+content_margin_top = 36.0
+content_margin_right = 48.0
+content_margin_bottom = 40.0
+bg_color = Color(0.0549, 0.0588, 0.0863, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.31, 0.847, 0.4)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(1, 0.31, 0.847, 0.14)
+shadow_size = 40
+
+[sub_resource type="StyleBoxFlat" id="chip_magenta"]
+content_margin_left = 14.0
+content_margin_top = 6.0
+content_margin_right = 14.0
+content_margin_bottom = 6.0
+bg_color = Color(1, 0.31, 0.847, 0.1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.31, 0.847, 0.4)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="MatchResultState" type="CanvasLayer"]
+script = ExtResource("1_mr")
+
+[node name="Confetti" type="Node2D" parent="."]
+
+[node name="Root" type="MarginContainer" parent="."]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Center" type="CenterContainer" parent="Root"]
+layout_mode = 2
+
+[node name="Card" type="PanelContainer" parent="Root/Center"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(820, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("card")
+
+[node name="V" type="VBoxContainer" parent="Root/Center/Card"]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="LevelCaps" type="Label" parent="Root/Center/Card/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_colors/font_color = Color(1, 0.31, 0.847, 1)
+text = "LEVEL 7"
+horizontal_alignment = 1
+
+[node name="Title" type="Label" parent="Root/Center/Card/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"DisplayLabel"
+theme_override_colors/font_outline_color = Color(1, 0.31, 0.847, 0.35)
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 58
+text = "CLEARED"
+horizontal_alignment = 1
+
+[node name="Stars" type="HBoxContainer" parent="Root/Center/Card/V"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="S1" type="TextureRect" parent="Root/Center/Card/V/Stars"]
+unique_name_in_owner = true
+modulate = Color(0.149, 0.165, 0.239, 1)
+custom_minimum_size = Vector2(84, 84)
+layout_mode = 2
+size_flags_vertical = 8
+texture = ExtResource("icon_star")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="S2" type="TextureRect" parent="Root/Center/Card/V/Stars"]
+unique_name_in_owner = true
+modulate = Color(0.149, 0.165, 0.239, 1)
+custom_minimum_size = Vector2(108, 108)
+layout_mode = 2
+texture = ExtResource("icon_star")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="S3" type="TextureRect" parent="Root/Center/Card/V/Stars"]
+unique_name_in_owner = true
+modulate = Color(0.149, 0.165, 0.239, 1)
+custom_minimum_size = Vector2(84, 84)
+layout_mode = 2
+size_flags_vertical = 8
+texture = ExtResource("icon_star")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ScoreRow" type="HBoxContainer" parent="Root/Center/Card/V"]
+layout_mode = 2
+theme_override_constants/separation = 40
+alignment = 1
+
+[node name="ScoreCol" type="VBoxContainer" parent="Root/Center/Card/V/ScoreRow"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="C" type="Label" parent="Root/Center/Card/V/ScoreRow/ScoreCol"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+text = "SCORE"
+horizontal_alignment = 1
+
+[node name="ScoreVal" type="Label" parent="Root/Center/Card/V/ScoreRow/ScoreCol"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"DisplayLabel"
+theme_override_font_sizes/font_size = 96
+text = "0"
+horizontal_alignment = 1
+
+[node name="Lines" type="VBoxContainer" parent="Root/Center/Card/V/ScoreRow"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 10
+
+[node name="R1" type="HBoxContainer" parent="Root/Center/Card/V/ScoreRow/Lines"]
+layout_mode = 2
+theme_override_constants/separation = 30
+
+[node name="C" type="Label" parent="Root/Center/Card/V/ScoreRow/Lines/R1"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+text = "TARGET"
+
+[node name="TargetLine" type="Label" parent="Root/Center/Card/V/ScoreRow/Lines/R1"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"NumberLabel"
+theme_override_font_sizes/font_size = 22
+text = "5,000"
+horizontal_alignment = 2
+
+[node name="BonusRow" type="HBoxContainer" parent="Root/Center/Card/V/ScoreRow/Lines"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 30
+
+[node name="C" type="Label" parent="Root/Center/Card/V/ScoreRow/Lines/BonusRow"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+text = "MOVES BONUS"
+
+[node name="BonusLine" type="Label" parent="Root/Center/Card/V/ScoreRow/Lines/BonusRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"NumberLabel"
+theme_override_colors/font_color = Color(0.302, 1, 0.651, 1)
+theme_override_font_sizes/font_size = 22
+text = "+3 x 100"
+horizontal_alignment = 2
+
+[node name="R3" type="HBoxContainer" parent="Root/Center/Card/V/ScoreRow/Lines"]
+layout_mode = 2
+theme_override_constants/separation = 30
+
+[node name="C" type="Label" parent="Root/Center/Card/V/ScoreRow/Lines/R3"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+text = "BEST"
+
+[node name="BestLine" type="Label" parent="Root/Center/Card/V/ScoreRow/Lines/R3"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"NumberLabel"
+theme_override_colors/font_color = Color(1, 0.847, 0.302, 1)
+theme_override_font_sizes/font_size = 22
+text = "6,120"
+horizontal_alignment = 2
+
+[node name="RankChip" type="PanelContainer" parent="Root/Center/Card/V/ScoreRow/Lines"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+theme_override_styles/panel = SubResource("chip_magenta")
+
+[node name="RankLabel" type="Label" parent="Root/Center/Card/V/ScoreRow/Lines/RankChip"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_colors/font_color = Color(1, 0.31, 0.847, 1)
+theme_override_font_sizes/font_size = 17
+text = "#1 ON THE BOARD"
+
+[node name="Hint" type="Label" parent="Root/Center/Card/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+text = "Look for four-in-a-row swaps."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Buttons" type="HBoxContainer" parent="Root/Center/Card/V"]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="NextBtn" type="Button" parent="Root/Center/Card/V/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 2
+theme_type_variation = &"MagentaButton"
+text = "NEXT LEVEL"
+
+[node name="RetryBtn" type="Button" parent="Root/Center/Card/V/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "RETRY"
+
+[node name="LevelsBtn" type="Button" parent="Root/Center/Card/V/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "LEVELS"

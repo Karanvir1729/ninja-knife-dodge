@@ -1,0 +1,162 @@
+[gd_scene load_steps=4 format=3 uid="uid://c1leaderboard0"]
+
+[ext_resource type="Script" path="res://States/leaderboard_state.gd" id="1_lb"]
+[ext_resource type="Texture2D" path="res://graphics/gen/icon_back.png" id="2_back"]
+
+[sub_resource type="StyleBoxFlat" id="tabs_bg"]
+content_margin_left = 6.0
+content_margin_top = 6.0
+content_margin_right = 6.0
+content_margin_bottom = 6.0
+bg_color = Color(0.0549, 0.0588, 0.0863, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.149, 0.165, 0.239, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="LeaderboardState" type="CanvasLayer"]
+script = ExtResource("1_lb")
+
+[node name="Root" type="MarginContainer" parent="."]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="V" type="VBoxContainer" parent="Root"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Top" type="HBoxContainer" parent="Root/V"]
+layout_mode = 2
+theme_override_constants/separation = 22
+
+[node name="Back" type="Button" parent="Root/V/Top"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"IconButton"
+icon = ExtResource("2_back")
+icon_alignment = 1
+expand_icon = true
+
+[node name="Title" type="Label" parent="Root/V/Top"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"DisplayLabel"
+theme_override_colors/font_outline_color = Color(0.337, 0.941, 1, 0.3)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 50
+text = "LEADERBOARDS"
+
+[node name="Spacer" type="Control" parent="Root/V/Top"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Tabs" type="PanelContainer" parent="Root/V/Top"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("tabs_bg")
+
+[node name="H" type="HBoxContainer" parent="Root/V/Top/Tabs"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="KnifeTab" type="Button" parent="Root/V/Top/Tabs/H"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TabButton"
+toggle_mode = true
+button_pressed = true
+text = "KNIFE DODGE"
+
+[node name="MatchTab" type="Button" parent="Root/V/Top/Tabs/H"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TabButton"
+toggle_mode = true
+text = "SHURIKEN MATCH"
+
+[node name="Body" type="HBoxContainer" parent="Root/V"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 24
+
+[node name="Scroll" type="ScrollContainer" parent="Root/V/Body"]
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_scroll_mode = 0
+
+[node name="Rows" type="VBoxContainer" parent="Root/V/Body/Scroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="Right" type="VBoxContainer" parent="Root/V/Body"]
+custom_minimum_size = Vector2(420, 0)
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="StatsPanel" type="PanelContainer" parent="Root/V/Body/Right"]
+layout_mode = 2
+
+[node name="V" type="VBoxContainer" parent="Root/V/Body/Right/StatsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="C" type="Label" parent="Root/V/Body/Right/StatsPanel/V"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+text = "YOUR STATS"
+
+[node name="StatsGrid" type="GridContainer" parent="Root/V/Body/Right/StatsPanel/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/h_separation = 14
+theme_override_constants/v_separation = 14
+columns = 2
+
+[node name="MilestonePanel" type="PanelContainer" parent="Root/V/Body/Right"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="V" type="VBoxContainer" parent="Root/V/Body/Right/MilestonePanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="C" type="Label" parent="Root/V/Body/Right/MilestonePanel/V"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_font_sizes/font_size = 15
+text = "NEXT MILESTONE"
+
+[node name="MilestoneText" type="RichTextLabel" parent="Root/V/Body/Right/MilestonePanel/V"]
+unique_name_in_owner = true
+layout_mode = 2
+bbcode_enabled = true
+text = "Dodge [color=#56f0ff]150[/color] daggers in one run to earn the Blade Dancer title."
+fit_content = true
+
+[node name="MilestoneBar" type="ProgressBar" parent="Root/V/Body/Right/MilestonePanel/V"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+value = 60.0
+show_percentage = false
+
+[node name="Note" type="Label" parent="Root/V/Body/Right"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_colors/font_color = Color(0.353, 0.38, 0.502, 1)
+theme_override_font_sizes/font_size = 15
+text = "SCORES LIVE ONLY ON THIS DEVICE"
+horizontal_alignment = 1

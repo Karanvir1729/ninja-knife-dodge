@@ -1,35 +1,64 @@
-[gd_scene load_steps=7 format=3 uid="uid://dfmobgmmpktfx"]
+[gd_scene load_steps=10 format=3 uid="uid://dfmobgmmpktfx"]
 
 [ext_resource type="Script" path="res://States/play_state.gd" id="1_bqs3e"]
 [ext_resource type="PackedScene" uid="uid://snvdvywrolby" path="res://player/player.tscn" id="2_c73dv"]
 [ext_resource type="PackedScene" uid="uid://cbbhdiq2551w3" path="res://UI/play_ui.tscn" id="2_ng5uu"]
-[ext_resource type="Texture2D" uid="uid://2xcsv0fbfcs0" path="res://graphics/plain-black-background-02fh7564l8qq4m6d.jpg" id="4_8h65h"]
 [ext_resource type="PackedScene" uid="uid://dgu8ftk8qc8ut" path="res://objects/spawner.tscn" id="4_bybmm"]
-[ext_resource type="AudioStream" path="res://sounds/Mysterious.mp3" id="6_mc0gk"]
+[ext_resource type="PackedScene" path="res://UI/pause_overlay.tscn" id="5_pause"]
+[ext_resource type="Texture2D" path="res://graphics/gen/spark.png" id="6_spark"]
 
-[node name="PlayState" type="Node2D" groups=["playstate"]]
+[sub_resource type="CanvasItemMaterial" id="add"]
+blend_mode = 1
+
+[sub_resource type="Gradient" id="death_grad"]
+offsets = PackedFloat32Array(0, 0.4, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 0.54, 0.24, 1, 1, 0.2, 0.2, 0)
+
+[node name="PlayState" type="Node2D"]
 script = ExtResource("1_bqs3e")
-
-[node name="play_ui" parent="." instance=ExtResource("2_ng5uu")]
-
-[node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(960, 540)
-texture = ExtResource("4_8h65h")
-
-[node name="Player" parent="." groups=["player"] instance=ExtResource("2_c73dv")]
-unique_name_in_owner = true
-position = Vector2(226, 212)
-
-[node name="Spawn" type="Timer" parent="."]
-wait_time = 2.0
 
 [node name="Knives" type="Node2D" parent="." groups=["knives"]]
 unique_name_in_owner = true
 
+[node name="Player" parent="." groups=["player"] instance=ExtResource("2_c73dv")]
+unique_name_in_owner = true
+position = Vector2(704, 300)
+
+[node name="DeathFX" type="CPUParticles2D" parent="."]
+material = SubResource("add")
+emitting = false
+amount = 90
+lifetime = 0.9
+one_shot = true
+explosiveness = 1.0
+texture = ExtResource("6_spark")
+spread = 180.0
+gravity = Vector2(0, 120)
+initial_velocity_min = 120.0
+initial_velocity_max = 520.0
+scale_amount_min = 0.6
+scale_amount_max = 1.8
+color_ramp = SubResource("death_grad")
+
+[node name="Spawn" type="Timer" parent="."]
+wait_time = 2.0
+
 [node name="Spawner" parent="." instance=ExtResource("4_bybmm")]
 
-[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("6_mc0gk")
-autoplay = true
+[node name="HUD" parent="." instance=ExtResource("2_ng5uu")]
+
+[node name="FlashLayer" type="CanvasLayer" parent="."]
+layer = 15
+
+[node name="Flash" type="ColorRect" parent="FlashLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 0)
+
+[node name="Pause" parent="." instance=ExtResource("5_pause")]
 
 [connection signal="timeout" from="Spawn" to="." method="_on_spawn_timeout"]

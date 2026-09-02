@@ -1,54 +1,68 @@
 extends CanvasLayer
-var knife_scene : PackedScene = preload("res://objects/knife.tscn")
+## Main menu: pick a game, or head to the leaderboards / settings.
 
-func _ready():
-	resize()
-	get_tree().get_root().size_changed.connect(resize)
-	
-func init(params):
+func init(_params: Dictionary) -> void:
 	pass
-	
-func resize():
-	for child in $Knives.get_children():
-		child.queue_free()
-	for child in $Lights.get_children():
-		child.queue_free()
-		
-	var knife_texture = load("res://graphics/skeleton_sword.png")
-	var circle_texture = load("res://graphics/circle.png")
-	
-	var player = $HFlowContainer
-	for i in range(6):
-		var angle = 2 * PI * i / 6
-		
-		# Calculate the position of each dot
-		var x = 200 * cos(angle) + (player.position.x + 40)
-		var y = 200 * sin(angle) + (player.position.y + 40)
-		# Create a new Sprite2D node
-		var knife_sprite = Sprite2D.new()
-		# Assign the texture to the sprite
-		knife_sprite.texture = knife_texture
-		knife_sprite.position = Vector2(x, y)
-		knife_sprite.rotation = (player.position - knife_sprite.position).angle()
-		$Knives.add_child(knife_sprite)
-		
-		var light = PointLight2D.new()
-		light.texture = circle_texture
-		light.energy = 8
-		
-		x = 400 * cos(angle) + (player.position.x + 40)
-		y = 400 * sin(angle) + (player.position.y + 40)
-		light.position = Vector2(x, y)  # Adjust as needed
-		light.range_layer_max = 1
-		light.color = "#a90090"
-		# Add the light to the scene
-		$Lights.add_child(light)
 
-func _on_button_pressed():
-	if FileAccess.file_exists("user://tutorial_done"):
-		get_tree().call_group("currentState", "change", "play", {})
+func _ready() -> void:
+	var bg := get_tree().get_first_node_in_group("background")
+	if bg: bg.set_mood("menu")
+	AudioManager.play_music("menu")
+	Globals.apply_safe_margins(%Root, 34)
+	get_viewport().size_changed.connect(func(): Globals.apply_safe_margins(%Root, 34))
+	_refresh()
+	%KnifeCard.pressed.connect(_start_knife)
+	%KnifePlay.pressed.connect(_start_knife)
+	%MatchCard.pressed.connect(_start_match)
+	%MatchPlay.pressed.connect(_start_match)
+	%TrophyBtn.pressed.connect(func(): AudioManager.click(); Globals.go("leaderboard"))
+	%BoardBtn.pressed.connect(func(): AudioManager.click(); Globals.go("leaderboard"))
+	%GearBtn.pressed.connect(func(): AudioManager.click(); Globals.go("settings"))
+	%HowBtn.pressed.connect(func(): AudioManager.click(); _show_how(true))
+	%HowClose.pressed.connect(func(): AudioManager.back(); _show_how(false))
+	%HowDim.gui_input.connect(func(e): if e is InputEventMouseButton and e.pressed: _show_how(false))
+	%HowKnife.pressed.connect(func(): AudioManager.click(); Globals.go("tutorial"))
+	%HowMatch.pressed.connect(func(): AudioManager.click(); Globals.go("match_tutorial"))
+	%HowTo.visible = false
+	_enter_animation()
+
+func _refresh() -> void:
+	%PlayerName.text = SaveData.player_name()
+	var k: Dictionary = SaveData.knife_stats()
+	%KnifeBest.text = str(int(k.best))
+	%KnifeRuns.text = str(int(k.runs))
+	var next_level := SaveData.match_next_level()
+	%MatchLevel.text = str(next_level)
+	%MatchStars.text = str(SaveData.match_total_stars())
+	%Version.text = "V%s  ·  OFFLINE  ·  NO ADS  ·  NO TRACKING" % Globals.VERSION
+
+func _start_knife() -> void:
+	AudioManager.click()
+	if SaveData.tutorial_done("knife"):
+		Globals.go("play")
 	else:
-		var f = FileAccess.open("user://tutorial_done", FileAccess.WRITE)
-		f.store_8(1)
-		f.close()
-		get_tree().call_group("currentState", "change", "tutorial", {})
+		Globals.go("tutorial")
+
+func _start_match() -> void:
+	AudioManager.click()
+	Globals.go("match_levels")
+
+func _show_how(open: bool) -> void:
+	%HowTo.visible = open
+
+func _enter_animation() -> void:
+	%TitleBlock.modulate.a = 0.0
+	%TitleBlock.position.x -= 30
+	var t := create_tween()
+	t.set_parallel(true)
+	t.tween_property(%TitleBlock, "modulate:a", 1.0, 0.45)
+	t.tween_property(%TitleBlock, "position:x", %TitleBlock.position.x + 30, 0.45).set_ease(Tween.EASE_OUT)
+	var i := 0
+	for card in [%KnifeCard, %MatchCard]:
+		card.modulate.a = 0.0
+		card.position.x += 40
+		var ct := create_tween()
+		ct.set_parallel(true)
+		ct.tween_property(card, "modulate:a", 1.0, 0.4).set_delay(0.1 + i * 0.1)
+		ct.tween_property(card, "position:x", card.position.x - 40, 0.45).set_delay(0.1 + i * 0.1).set_ease(Tween.EASE_OUT)
+		i += 1

@@ -1,15 +1,32 @@
-[gd_scene load_steps=5 format=3 uid="uid://do22ytxynv4rh"]
+[gd_scene load_steps=8 format=3 uid="uid://do22ytxynv4rh"]
 
 [ext_resource type="Script" path="res://objects/knife.gd" id="1_hlr6r"]
 [ext_resource type="Texture2D" uid="uid://chijv1tkljjrx" path="res://graphics/skeleton_sword.png" id="2_gbvng"]
-[ext_resource type="Texture2D" uid="uid://b1mnnrutdpjel" path="res://graphics/circle.png" id="3_s40fk"]
+[ext_resource type="Texture2D" path="res://graphics/gen/tip_glow.png" id="3_glow"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_qgc2r"]
 radius = 2.0
 height = 48.0
 
+[sub_resource type="CircleShape2D" id="near_shape"]
+radius = 62.0
+
+[sub_resource type="CanvasItemMaterial" id="add"]
+blend_mode = 1
+
+[sub_resource type="Gradient" id="unused"]
+
 [node name="Knife" type="Area2D"]
+collision_layer = 2
+collision_mask = 1
 script = ExtResource("1_hlr6r")
+
+[node name="Glow" type="Sprite2D" parent="."]
+material = SubResource("add")
+modulate = Color(0.66, 0, 0.57, 0.85)
+position = Vector2(50, 0)
+scale = Vector2(2.2, 2.2)
+texture = ExtResource("3_glow")
 
 [node name="SkeletonSword" type="Sprite2D" parent="."]
 position = Vector2(40, 4.76837e-07)
@@ -26,13 +43,18 @@ position = Vector2(3, 0)
 scale = Vector2(0.05, 0.25)
 
 [node name="Start" type="Timer" parent="."]
+one_shot = true
 
-[node name="PointLight2D" type="PointLight2D" parent="."]
-color = Color(0.661828, 9.44325e-05, 0.566544, 1)
-energy = 6.0
-range_layer_max = 1
-texture = ExtResource("3_s40fk")
+[node name="NearMiss" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 1
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NearMiss"]
+position = Vector2(46, 0)
+shape = SubResource("near_shape")
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
 [connection signal="screen_exited" from="offScreen" to="." method="_on_off_screen_screen_exited"]
 [connection signal="timeout" from="Start" to="." method="_on_start_timeout"]
+[connection signal="body_exited" from="NearMiss" to="." method="_on_near_miss_body_exited"]

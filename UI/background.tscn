@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://c1background00"]
+
+[ext_resource type="Script" path="res://UI/background.gd" id="1_bg"]
+
+[node name="Background" type="Node2D"]
+z_index = -10
+script = ExtResource("1_bg")
