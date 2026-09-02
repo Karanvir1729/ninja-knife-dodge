@@ -1,0 +1,110 @@
+[gd_scene load_steps=3 format=3 uid="uid://c1offeroverlay"]
+
+[ext_resource type="Script" path="res://UI/offer_overlay.gd" id="1_offer"]
+
+[sub_resource type="StyleBoxFlat" id="card"]
+content_margin_left = 40.0
+content_margin_top = 30.0
+content_margin_right = 40.0
+content_margin_bottom = 32.0
+bg_color = Color(0.0549, 0.0588, 0.0863, 0.94)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.847, 0.302, 0.5)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(1, 0.847, 0.302, 0.14)
+shadow_size = 40
+
+[node name="OfferOverlay" type="CanvasLayer"]
+process_mode = 3
+layer = 30
+script = ExtResource("1_offer")
+
+[node name="Dim" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0117647, 0.0117647, 0.0313726, 0.74)
+
+[node name="Center" type="CenterContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Card" type="PanelContainer" parent="Center"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(600, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("card")
+
+[node name="V" type="VBoxContainer" parent="Center/Card"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="Caps" type="Label" parent="Center/Card/V"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_colors/font_color = Color(1, 0.847, 0.302, 1)
+text = "POWER-UP"
+horizontal_alignment = 1
+
+[node name="Title" type="Label" parent="Center/Card/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"DisplayLabel"
+theme_override_font_sizes/font_size = 42
+text = "OUT OF MOVES?"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Blurb" type="Label" parent="Center/Card/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+text = ""
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Reward" type="Label" parent="Center/Card/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_colors/font_color = Color(0.302, 1, 0.651, 1)
+text = "REWARD: +5 MOVES"
+horizontal_alignment = 1
+
+[node name="Gap" type="Control" parent="Center/Card/V"]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="Buttons" type="VBoxContainer" parent="Center/Card/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="UseBtn" type="Button" parent="Center/Card/V/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"PrimaryButton"
+text = "USE ONE  ·  1 LEFT"
+
+[node name="AdBtn" type="Button" parent="Center/Card/V/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MagentaButton"
+text = "WATCH AD  ·  +5 MOVES"
+
+[node name="NoBtn" type="Button" parent="Center/Card/V/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "NO THANKS"

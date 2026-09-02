@@ -2,6 +2,6 @@
 
 [ext_resource type="Script" path="res://UI/background.gd" id="1_bg"]
 
-[node name="Background" type="Node2D"]
+[node name="Background" type="Node2D" groups=["background"]]
 z_index = -10
 script = ExtResource("1_bg")
