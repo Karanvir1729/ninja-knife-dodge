@@ -509,7 +509,22 @@ func resolve_move(a: Vector2i, b: Vector2i) -> Dictionary:
 		first_created = plan.created
 		steps.append({"type": "clear", "cells": first_cells.keys(), "created": first_created, "triggered": exp.triggered, "combo": "", "score": first_score, "chain": 0})
 	total += first_score
-	# Cascade
+	var cascade := resolve_cascades()
+	steps.append_array(cascade.steps)
+	total += int(cascade.score)
+	chain = int(cascade.max_chain)
+	return {"valid": true, "score": total, "max_chain": chain, "steps": steps}
+
+## Drop, refill and chain-react until the board is stable. This is the tail of
+## resolve_move after its first clear, exposed so other single-clear actions
+## (the hammer booster) can reuse it. Returns {score, max_chain, steps} where
+## steps alternate "fall" and "clear" entries in the same shape as resolve_move
+## (the first entry is always a "fall", even if nothing moved). Cascade clears
+## are scored with chain_multiplier starting at chain 1.
+func resolve_cascades() -> Dictionary:
+	var steps := []
+	var total := 0
+	var chain := 0
 	while true:
 		var moves := apply_gravity()
 		var spawned := refill()
@@ -530,7 +545,7 @@ func resolve_move(a: Vector2i, b: Vector2i) -> Dictionary:
 		total += s
 		if chain > 40:
 			break
-	return {"valid": true, "score": total, "max_chain": chain, "steps": steps}
+	return {"score": total, "max_chain": chain, "steps": steps}
 
 ## Best immediate move by score (used for hints and the tuning bot). Returns [a, b] or [].
 func best_move() -> Array:

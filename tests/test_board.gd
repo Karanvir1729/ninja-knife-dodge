@@ -20,6 +20,8 @@ func _init() -> void:
 	test_five_creates_prism()
 	test_prism_swap_clears_color()
 	test_gravity_and_refill()
+	test_resolve_cascades()
+	test_smash_single_cell()
 	test_shuffle_keeps_colors()
 	test_tutorial_layouts()
 	test_level_curve()
@@ -127,6 +129,38 @@ func test_gravity_and_refill() -> void:
 	var spawned := m.refill()
 	check(spawned.size() == 2, "refill spawns two tiles")
 	check(m.count_empty() == 0, "no empties after refill")
+
+func test_resolve_cascades() -> void:
+	var m := BoardModel.new(4, 4, 3, 8)
+	# Row 0 already holds a match on an otherwise stable board.
+	m.load_layout([[0, 0, 0, 1], [1, 2, 1, 2], [2, 1, 2, 0], [0, 2, 0, 1]])
+	check(m.has_matches(), "cascade fixture starts with a pre-existing match")
+	var res := m.resolve_cascades()
+	check(res.steps.size() >= 3 and res.steps[0].type == "fall" and res.steps[1].type == "clear", "resolve_cascades returns fall/clear steps (%d)" % res.steps.size())
+	check(int(res.steps[1].chain) == 1 and int(res.max_chain) >= 1, "pre-existing match is scored as chain 1")
+	var first_clear := int(round(3 * BoardModel.BASE_TILE_SCORE * BoardModel.chain_multiplier(1)))
+	check(int(res.score) >= first_clear, "cascade score uses the chain multiplier (%d >= %d)" % [int(res.score), first_clear])
+	check(res.steps[res.steps.size() - 1].type == "fall", "last step is the settling fall")
+	check(m.count_empty() == 0, "board is full after resolve_cascades")
+	check(not m.has_matches(), "board is stable after resolve_cascades")
+	var res2 := m.resolve_cascades()
+	check(res2.steps.size() == 1 and res2.steps[0].moves.is_empty() and res2.steps[0].spawned.is_empty() and int(res2.score) == 0, "stable board: one empty fall step and no score")
+
+func test_smash_single_cell() -> void:
+	var m := BoardModel.new(8, 8, 6, 9)
+	m.fill_random()
+	var cell := Vector2i(0, 0)
+	m.clear_cells({cell: true})
+	check(m.count_empty() == 1 and m.get_color(cell) == BoardModel.EMPTY, "smash clears exactly one cell")
+	var res := m.resolve_cascades()
+	check(res.steps[0].type == "fall" and res.steps[0].moves.is_empty() and res.steps[0].spawned.size() == 1 and res.steps[0].spawned[0].cell == cell, "top-left smash refills one tile with nothing falling")
+	check(m.count_empty() == 0, "board is full after the smash refill")
+	check(not m.has_matches(), "board is stable after the smash refill")
+	var mid := Vector2i(3, 5)
+	m.clear_cells({mid: true})
+	var res2 := m.resolve_cascades()
+	check(res2.steps[0].moves.size() == 5 and res2.steps[0].spawned.size() == 1 and res2.steps[0].spawned[0].cell == Vector2i(3, 0), "mid-column smash drops the five tiles above and refills the top")
+	check(m.count_empty() == 0 and not m.has_matches(), "board full and stable after a mid-column smash")
 
 func test_shuffle_keeps_colors() -> void:
 	var m := BoardModel.new(8, 8, 6, 6)

@@ -11,6 +11,7 @@ signal special_fired(kind: int, at: Vector2, combo: String)
 signal tiles_cleared(count: int, chain: int, at: Vector2, score: int)
 signal shuffled
 signal tile_pressed(cell: Vector2i)
+signal smashed(result: Dictionary)
 
 const TILE_SCENE := preload("res://match/tile.tscn")
 const HINT_DELAY := 5.0
@@ -23,6 +24,7 @@ var busy := false
 var interactive := true
 var allowed_move: Array = []   # tutorial: only this swap is accepted
 var hints_enabled := true
+var hammer_mode := false       # next tile press smashes that tile (hammer booster)
 
 var _tiles := {}   # Vector2i -> MatchTile
 var _selected: Variant = null
@@ -119,9 +121,16 @@ func _process(delta: float) -> void:
 		return
 	_idle += delta
 	if _idle > HINT_DELAY and _hint_tiles.is_empty() and _selected == null:
-		_show_hint()
+		show_hint()
 
-func _show_hint() -> void:
+## Light up the best move (or the tutorial's allowed move). Used by the free
+## idle hint and by the HINT booster, so it works whether or not the idle
+## timer has fired.
+func show_hint() -> void:
+	if model == null or busy:
+		return
+	_clear_hint()
+	_deselect()
 	var mv := allowed_move if not allowed_move.is_empty() else model.best_move()
 	if mv.is_empty():
 		return
@@ -129,6 +138,9 @@ func _show_hint() -> void:
 		if _tiles.has(cell):
 			_tiles[cell].start_hint()
 			_hint_tiles.append(_tiles[cell])
+
+func has_hint() -> bool:
+	return not _hint_tiles.is_empty()
 
 func _clear_hint() -> void:
 	for t in _hint_tiles:
@@ -148,6 +160,11 @@ func _gui_input(event: InputEvent) -> void:
 			_clear_hint()
 			if _press_cell != null:
 				tile_pressed.emit(_press_cell)
+				if hammer_mode and not busy:
+					var target: Vector2i = _press_cell
+					_press_cell = null
+					_dragging = false
+					smash(target)
 		else:
 			if _dragging and _press_cell != null:
 				var d: Vector2 = event.position - _press_pos
@@ -258,10 +275,11 @@ func _animate_clear(step: Dictionary) -> void:
 	for trig in step.triggered:
 		_special_fx(trig.cell, trig.special)
 		special_fired.emit(trig.special, global_position + cell_center(trig.cell), step.combo)
-	if step.chain > 0:
+	var sfx: String = str(step.get("sfx", "combo" if step.chain > 0 else "match"))
+	if sfx == "combo":
 		AudioManager.play_sfx("combo", 1.0 + minf(step.chain, 6) * 0.08)
-	else:
-		AudioManager.play_sfx("match", 1.0)
+	elif sfx != "":
+		AudioManager.play_sfx(sfx, 1.0)
 	var last: Tween = null
 	for cell in cells:
 		if _tiles.has(cell):
@@ -308,9 +326,43 @@ func _animate_fall(step: Dictionary) -> void:
 	else:
 		await get_tree().process_frame
 
-func _reshuffle() -> void:
+## Shuffle booster: reshuffle right away without spending a move. Unlike the
+## automatic dead-board shuffle this does not emit `shuffled` (the caller
+## announces it) and changes neither score nor moves.
+func reshuffle_now() -> void:
+	if busy or model == null:
+		return
+	_clear_hint()
+	_deselect()
+	await _reshuffle(false)
+
+## Hammer booster: clear just this one tile (no move spent), then drop, refill
+## and resolve any cascades exactly like the tail of a normal move.
+func smash(cell: Vector2i) -> void:
+	if busy or model == null or not _tiles.has(cell):
+		return
 	busy = true
-	shuffled.emit()
+	hammer_mode = false
+	_clear_hint()
+	_deselect()
+	var tile: MatchTile = _tiles[cell]
+	_hammer_fx(tile.position, tile.color_index)
+	model.clear_cells({cell: true})
+	var clear_step := {"type": "clear", "cells": [cell], "created": [], "triggered": [], "combo": "", "score": BoardModel.BASE_TILE_SCORE, "chain": 0, "sfx": "hammer"}
+	await _play_steps([clear_step])
+	var cascade: Dictionary = model.resolve_cascades()
+	await _play_steps(cascade.steps)
+	busy = false
+	_idle = 0.0
+	smashed.emit({"cell": cell, "score": BoardModel.BASE_TILE_SCORE + int(cascade.score), "max_chain": int(cascade.max_chain)})
+	if not model.has_valid_move():
+		await _reshuffle()
+	board_settled.emit()
+
+func _reshuffle(announce: bool = true) -> void:
+	busy = true
+	if announce:
+		shuffled.emit()
 	AudioManager.play_sfx("shuffle")
 	var t := create_tween()
 	t.set_parallel(true)
@@ -323,6 +375,12 @@ func _reshuffle() -> void:
 	busy = false
 
 # ------------------------------------------------------------------ effects
+
+func _hammer_fx(at: Vector2, color_index: int) -> void:
+	AudioManager.vibrate(35)
+	_ring_fx(at, Color.WHITE, 1.4)
+	for i in 3:
+		_shards(at, color_index, true)
 
 func _shards(at: Vector2, color_index: int, bright: bool) -> void:
 	var col: Color = Globals.GEM_COLORS[color_index % Globals.GEM_COLORS.size()]

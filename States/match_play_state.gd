@@ -3,6 +3,7 @@ extends Node2D
 
 const SIDE_WIDTH := 540.0
 const MARGIN := 34
+const BOOSTERS := ["hint", "moves", "shuffle", "hammer"]
 
 var level := 1
 var params := {}
@@ -14,6 +15,9 @@ var _shown_score := 0.0
 var _score_tween: Tween
 var _stars_lit := 0
 var _combo_tween: Tween
+var _offer_open := false
+var _dialog: OfferOverlay
+var _extra_moves_offered := false   # the out-of-moves offer comes once per attempt
 
 func init(p: Dictionary) -> void:
 	level = int(p.get("level", 1))
@@ -36,6 +40,8 @@ func _ready() -> void:
 	%Board.special_created.connect(_on_special_created)
 	%Board.special_fired.connect(_on_special_fired)
 	%Board.shuffled.connect(func(): _toast("NO MOVES LEFT. RESHUFFLING."))
+	%Board.smashed.connect(_on_smashed)
+	_setup_boosters()
 	%PauseBtn.pressed.connect(toggle_pause)
 	$Pause.set_title("PAUSED", "The shurikens hold still.", Globals.MAGENTA)
 	$Pause.resume.connect(toggle_pause)
@@ -75,6 +81,8 @@ func _update_hud(instant: bool = false) -> void:
 	%MovesVal.text = str(moves_left)
 	if moves_left <= 3:
 		%MovesVal.add_theme_color_override("font_color", Globals.RED if moves_left <= 1 else Globals.ORANGE)
+	else:
+		%MovesVal.remove_theme_color_override("font_color")
 	if instant:
 		_shown_score = score
 		%ScoreVal.text = Globals.format_number(score)
@@ -146,9 +154,131 @@ func _on_settled() -> void:
 	if score >= int(params.stars[2]):
 		_finish(true, moves_left * 100)
 	elif moves_left <= 0:
-		_finish(score >= int(params.target))
+		if score >= int(params.target):
+			_finish(true)
+		elif not _extra_moves_offered and (SaveData.booster_count("moves") > 0 or Ads.available("moves")):
+			_extra_moves_offered = true
+			_offer_extra_moves()
+		else:
+			_finish(false)
 	elif moves_left == 1:
 		_toast("LAST MOVE", 1.4)
+
+## Out of moves without reaching the target: one chance to buy five more.
+func _offer_extra_moves() -> void:
+	%Board.interactive = false
+	_toast("OUT OF MOVES", 1.2)
+	await get_tree().create_timer(0.8).timeout
+	if ended or not is_inside_tree():
+		return
+	_offer_open = true
+	_dialog = OfferOverlay.open(get_tree(), "moves")
+	var ok: bool = await _dialog.finished
+	_dialog = null
+	_offer_open = false
+	if ended or not is_inside_tree():
+		return
+	_refresh_badges()
+	if ok:
+		%Board.interactive = true
+		_apply_booster("moves")
+	else:
+		_finish(false)
+
+# ---------------------------------------------------------------- boosters
+
+func _setup_boosters() -> void:
+	for kind in BOOSTERS:
+		var b := _booster_button(kind)
+		b.pressed.connect(func(): _on_booster(kind))
+	SaveData.boosters_changed.connect(_refresh_badges)
+	_refresh_badges()
+
+func _booster_button(kind: String) -> Button:
+	match kind:
+		"hint": return %HintBtn
+		"moves": return %MovesBtn
+		"shuffle": return %ShuffleBtn
+		_: return %HammerBtn
+
+func _refresh_badges() -> void:
+	for kind in BOOSTERS:
+		var badge: Label = _booster_button(kind).get_node("Badge")
+		var n := SaveData.booster_count(kind)
+		if n > 0:
+			badge.text = str(n)
+			_tint_badge(badge, Globals.MAGENTA, Globals.BG0)
+		elif Ads.available(kind):
+			badge.text = "AD"
+			_tint_badge(badge, Globals.GOLD, Globals.BG0)
+		else:
+			badge.text = "0"
+			_tint_badge(badge, Globals.LINE2, Globals.MUTED)
+
+func _tint_badge(badge: Label, bg: Color, fg: Color) -> void:
+	var sb: StyleBoxFlat = badge.get_theme_stylebox("normal").duplicate()
+	sb.bg_color = bg
+	badge.add_theme_stylebox_override("normal", sb)
+	badge.add_theme_color_override("font_color", fg)
+
+## Tap on a booster button: spend one if owned, otherwise offer an ad for it.
+func _on_booster(kind: String) -> void:
+	if ended or paused or _offer_open:
+		return
+	if kind == "hammer" and %Board.hammer_mode:
+		%Board.hammer_mode = false
+		_set_hammer_armed(false)
+		AudioManager.back()
+		return
+	if kind != "moves" and %Board.busy:
+		return
+	AudioManager.click()
+	if SaveData.booster_count(kind) > 0:
+		if SaveData.use_booster(kind):
+			_apply_booster(kind)
+	else:
+		_offer(kind)
+
+func _offer(kind: String) -> void:
+	_offer_open = true
+	%Board.interactive = false
+	_dialog = OfferOverlay.open(get_tree(), kind)
+	var ok: bool = await _dialog.finished
+	_dialog = null
+	_offer_open = false
+	if not is_inside_tree():
+		return
+	%Board.interactive = not ended
+	_refresh_badges()
+	if ok and not ended:
+		_apply_booster(kind)
+
+func _apply_booster(kind: String) -> void:
+	match kind:
+		"hint":
+			%Board.show_hint()
+		"moves":
+			moves_left += 5
+			_update_hud()
+			_toast("+5 MOVES", 1.4)
+			_popup("+5", %MovesVal.global_position + Vector2(%MovesVal.size.x * 0.5, 4), Globals.GREEN, 30)
+		"shuffle":
+			_toast("RESHUFFLED", 1.4)
+			await %Board.reshuffle_now()
+		"hammer":
+			%Board.hammer_mode = true
+			_set_hammer_armed(true)
+			_toast("TAP A SHURIKEN TO SMASH IT", 2.4)
+
+func _set_hammer_armed(on: bool) -> void:
+	%HammerBtn.modulate = Globals.GOLD if on else Color.WHITE
+
+func _on_smashed(result: Dictionary) -> void:
+	_set_hammer_armed(false)
+	score += int(result.score)
+	_update_hud()
+	if int(result.max_chain) >= 1:
+		_show_combo(int(result.max_chain) + 1)
 
 func _finish(cleared: bool, bonus: int = 0) -> void:
 	ended = true
@@ -167,8 +297,14 @@ func _finish(cleared: bool, bonus: int = 0) -> void:
 		"stars": MatchLevels.stars_for(level, score), "target": int(params.target),
 	})
 
+## Never leave a booster dialog floating over the next screen.
+func _exit_tree() -> void:
+	if is_instance_valid(_dialog):
+		_dialog.queue_free()
+		_dialog = null
+
 func toggle_pause() -> void:
-	if ended:
+	if ended or _offer_open:
 		return
 	paused = not paused
 	get_tree().paused = paused

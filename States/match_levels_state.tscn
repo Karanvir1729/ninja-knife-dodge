@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://c1matchlevels0"]
+[gd_scene load_steps=6 format=3 uid="uid://c1matchlevels0"]
 
 [ext_resource type="Script" path="res://States/match_levels_state.gd" id="1_ml"]
 [ext_resource type="Texture2D" path="res://graphics/gen/icon_back.png" id="2_back"]
 [ext_resource type="Texture2D" path="res://graphics/gen/icon_star.png" id="3_star"]
+[ext_resource type="Script" path="res://match/level_map.gd" id="4_map"]
 
 [sub_resource type="StyleBoxFlat" id="chip_gold"]
 content_margin_left = 16.0
@@ -118,13 +119,16 @@ theme_override_font_sizes/font_size = 16
 text = "TARGET 1,650  ·  22 MOVES  ·  5 COLOURS"
 
 [node name="Scroll" type="ScrollContainer" parent="Root/V"]
-layout_mode = 2
-size_flags_vertical = 3
-horizontal_scroll_mode = 0
-
-[node name="Grid" type="HFlowContainer" parent="Root/V/Scroll"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/h_separation = 12
-theme_override_constants/v_separation = 12
+size_flags_vertical = 3
+horizontal_scroll_mode = 3
+vertical_scroll_mode = 0
+
+[node name="Map" type="Control" parent="Root/V/Scroll"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(7800, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 3
+script = ExtResource("4_map")

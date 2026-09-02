@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://c1matchplay000"]
+[gd_scene load_steps=19 format=3 uid="uid://c1matchplay000"]
 
 [ext_resource type="Script" path="res://States/match_play_state.gd" id="1_mp"]
 [ext_resource type="Script" path="res://match/board_view.gd" id="2_board"]
@@ -9,6 +9,10 @@
 [ext_resource type="Texture2D" path="res://graphics/gen/special_line_h.png" id="ov_line"]
 [ext_resource type="Texture2D" path="res://graphics/gen/special_burst.png" id="ov_burst"]
 [ext_resource type="Texture2D" path="res://graphics/gen/special_prism.png" id="ov_prism"]
+[ext_resource type="Texture2D" path="res://graphics/gen/icon_hint.png" id="icon_hint"]
+[ext_resource type="Texture2D" path="res://graphics/gen/icon_moves.png" id="icon_moves"]
+[ext_resource type="Texture2D" path="res://graphics/gen/icon_restart.png" id="icon_restart"]
+[ext_resource type="Script" path="res://match/hammer_icon.gd" id="hammer_icon"]
 
 [sub_resource type="StyleBoxFlat" id="board_panel"]
 content_margin_left = 20.0
@@ -61,6 +65,17 @@ corner_radius_bottom_right = 30
 corner_radius_bottom_left = 30
 shadow_color = Color(1, 0.31, 0.847, 0.2)
 shadow_size = 18
+
+[sub_resource type="StyleBoxFlat" id="badge"]
+content_margin_left = 6.0
+content_margin_top = 0.0
+content_margin_right = 6.0
+content_margin_bottom = 0.0
+bg_color = Color(1, 0.31, 0.847, 1)
+corner_radius_top_left = 13
+corner_radius_top_right = 13
+corner_radius_bottom_right = 13
+corner_radius_bottom_left = 13
 
 [sub_resource type="StyleBoxFlat" id="bar_fill"]
 bg_color = Color(1, 0.31, 0.847, 1)
@@ -306,6 +321,186 @@ theme_type_variation = &"CapsLabel"
 theme_override_colors/font_color = Color(0.353, 0.38, 0.502, 1)
 theme_override_font_sizes/font_size = 15
 text = "5,000 TO GO"
+
+[node name="Boosters" type="HBoxContainer" parent="UI/Root/H/Side"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="HintBox" type="VBoxContainer" parent="UI/Root/H/Side/Boosters"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="HintBtn" type="Button" parent="UI/Root/H/Side/Boosters/HintBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_type_variation = &"IconButton"
+icon = ExtResource("icon_hint")
+icon_alignment = 1
+expand_icon = true
+
+[node name="Badge" type="Label" parent="UI/Root/H/Side/Boosters/HintBox/HintBtn"]
+custom_minimum_size = Vector2(26, 26)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -18.0
+offset_top = -8.0
+offset_right = 8.0
+offset_bottom = 18.0
+grow_horizontal = 0
+mouse_filter = 2
+theme_type_variation = &"NumberLabel"
+theme_override_colors/font_color = Color(0.027, 0.031, 0.051, 1)
+theme_override_font_sizes/font_size = 15
+theme_override_styles/normal = SubResource("badge")
+text = "3"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="C" type="Label" parent="UI/Root/H/Side/Boosters/HintBox"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_font_sizes/font_size = 15
+text = "HINT"
+horizontal_alignment = 1
+
+[node name="MovesBox" type="VBoxContainer" parent="UI/Root/H/Side/Boosters"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="MovesBtn" type="Button" parent="UI/Root/H/Side/Boosters/MovesBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_type_variation = &"IconButton"
+icon = ExtResource("icon_moves")
+icon_alignment = 1
+expand_icon = true
+
+[node name="Badge" type="Label" parent="UI/Root/H/Side/Boosters/MovesBox/MovesBtn"]
+custom_minimum_size = Vector2(26, 26)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -18.0
+offset_top = -8.0
+offset_right = 8.0
+offset_bottom = 18.0
+grow_horizontal = 0
+mouse_filter = 2
+theme_type_variation = &"NumberLabel"
+theme_override_colors/font_color = Color(0.027, 0.031, 0.051, 1)
+theme_override_font_sizes/font_size = 15
+theme_override_styles/normal = SubResource("badge")
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="C" type="Label" parent="UI/Root/H/Side/Boosters/MovesBox"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_font_sizes/font_size = 15
+text = "+5 MOVES"
+horizontal_alignment = 1
+
+[node name="ShuffleBox" type="VBoxContainer" parent="UI/Root/H/Side/Boosters"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="ShuffleBtn" type="Button" parent="UI/Root/H/Side/Boosters/ShuffleBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_type_variation = &"IconButton"
+icon = ExtResource("icon_restart")
+icon_alignment = 1
+expand_icon = true
+
+[node name="Badge" type="Label" parent="UI/Root/H/Side/Boosters/ShuffleBox/ShuffleBtn"]
+custom_minimum_size = Vector2(26, 26)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -18.0
+offset_top = -8.0
+offset_right = 8.0
+offset_bottom = 18.0
+grow_horizontal = 0
+mouse_filter = 2
+theme_type_variation = &"NumberLabel"
+theme_override_colors/font_color = Color(0.027, 0.031, 0.051, 1)
+theme_override_font_sizes/font_size = 15
+theme_override_styles/normal = SubResource("badge")
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="C" type="Label" parent="UI/Root/H/Side/Boosters/ShuffleBox"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_font_sizes/font_size = 15
+text = "SHUFFLE"
+horizontal_alignment = 1
+
+[node name="HammerBox" type="VBoxContainer" parent="UI/Root/H/Side/Boosters"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="HammerBtn" type="Button" parent="UI/Root/H/Side/Boosters/HammerBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_type_variation = &"IconButton"
+
+[node name="HammerIcon" type="Control" parent="UI/Root/H/Side/Boosters/HammerBox/HammerBtn"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("hammer_icon")
+
+[node name="Badge" type="Label" parent="UI/Root/H/Side/Boosters/HammerBox/HammerBtn"]
+custom_minimum_size = Vector2(26, 26)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -18.0
+offset_top = -8.0
+offset_right = 8.0
+offset_bottom = 18.0
+grow_horizontal = 0
+mouse_filter = 2
+theme_type_variation = &"NumberLabel"
+theme_override_colors/font_color = Color(0.027, 0.031, 0.051, 1)
+theme_override_font_sizes/font_size = 15
+theme_override_styles/normal = SubResource("badge")
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="C" type="Label" parent="UI/Root/H/Side/Boosters/HammerBox"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_font_sizes/font_size = 15
+text = "HAMMER"
+horizontal_alignment = 1
 
 [node name="ComboBanner" type="PanelContainer" parent="UI/Root/H/Side"]
 unique_name_in_owner = true

@@ -8,6 +8,7 @@ var moves_left := 0
 var bonus := 0
 var stars := 0
 var target := 0
+var _offer: OfferOverlay
 
 func init(p: Dictionary) -> void:
 	level = int(p.get("level", 1))
@@ -47,7 +48,30 @@ func _ready() -> void:
 	%LevelsBtn.pressed.connect(func(): AudioManager.back(); Globals.go("match_levels"))
 	%Hint.visible = not cleared
 	%Hint.text = _hint_text()
+	%SkipBtn.visible = not cleared and SaveData.match_attempts(level) >= 2
+	%SkipBtn.pressed.connect(_skip)
 	_animate()
+
+## After two failed attempts: skip the level (booster or ad) with one star.
+func _skip() -> void:
+	AudioManager.click()
+	%SkipBtn.disabled = true
+	_offer = OfferOverlay.open(get_tree(), "skip")
+	var ok: bool = await _offer.finished
+	_offer = null
+	if not is_inside_tree():
+		return
+	if ok:
+		SaveData.skip_match_level(level)
+		AudioManager.play_sfx("unlock")
+		Globals.go("match_levels")
+	else:
+		%SkipBtn.disabled = false
+
+func _exit_tree() -> void:
+	if is_instance_valid(_offer):
+		_offer.queue_free()
+		_offer = null
 
 func _hint_text() -> String:
 	var gap := target - score
