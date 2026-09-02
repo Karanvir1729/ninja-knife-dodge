@@ -92,7 +92,7 @@ func _run() -> void:
 		print("TOUR  preset ", tag, " visible rect ", vr)
 		_check(absf(vr.size.aspect() - float(preset[1]) / preset[2]) < 0.02, "%s: viewport aspect matches window (%.2f)" % [tag, vr.size.aspect()])
 		await _go("start")
-		await _wait(0.6)
+		await _wait(2.6)
 		await _shot("%s_01_menu" % tag)
 		var start := _sm().get_node("CurrentState").get_child(0)
 		start.get_node("%HowTo").visible = true

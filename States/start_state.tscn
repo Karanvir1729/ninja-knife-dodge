@@ -1,93 +1,13 @@
-[gd_scene load_steps=16 format=3 uid="uid://070fe7u3i6dv"]
+[gd_scene load_steps=8 format=3 uid="uid://070fe7u3i6dv"]
 
 [ext_resource type="Script" path="res://States/start_state.gd" id="1_prv3t"]
-[ext_resource type="Texture2D" path="res://graphics/gen/icon_play.png" id="icon_play"]
+[ext_resource type="PackedScene" path="res://UI/speech_bubble.tscn" id="2_bubble"]
 [ext_resource type="Texture2D" path="res://graphics/gen/icon_trophy.png" id="icon_trophy"]
 [ext_resource type="Texture2D" path="res://graphics/gen/icon_gear.png" id="icon_gear"]
-[ext_resource type="Texture2D" path="res://graphics/gen/icon_star.png" id="icon_star"]
 [ext_resource type="Texture2D" path="res://graphics/gen/glow.png" id="glow"]
 [ext_resource type="Texture2D" path="res://graphics/gen/player_star.png" id="player_star"]
-[ext_resource type="Texture2D" path="res://graphics/gen/shuriken.png" id="shuriken"]
 
 [sub_resource type="StyleBoxEmpty" id="empty"]
-
-[sub_resource type="StyleBoxFlat" id="card_cyan"]
-bg_color = Color(0.0549, 0.0588, 0.0863, 0.86)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.337, 0.941, 1, 0.5)
-corner_radius_top_left = 14
-corner_radius_top_right = 14
-corner_radius_bottom_right = 14
-corner_radius_bottom_left = 14
-shadow_color = Color(0.337, 0.941, 1, 0.12)
-shadow_size = 30
-
-[sub_resource type="StyleBoxFlat" id="card_cyan_hover"]
-bg_color = Color(0.0863, 0.0941, 0.149, 0.92)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.337, 0.941, 1, 0.9)
-corner_radius_top_left = 14
-corner_radius_top_right = 14
-corner_radius_bottom_right = 14
-corner_radius_bottom_left = 14
-shadow_color = Color(0.337, 0.941, 1, 0.22)
-shadow_size = 36
-
-[sub_resource type="StyleBoxFlat" id="chip_cyan"]
-content_margin_left = 10.0
-content_margin_top = 4.0
-content_margin_right = 10.0
-content_margin_bottom = 4.0
-bg_color = Color(0.337, 0.941, 1, 0.14)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-
-[sub_resource type="StyleBoxFlat" id="card_magenta"]
-bg_color = Color(0.0549, 0.0588, 0.0863, 0.86)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 0.31, 0.847, 0.5)
-corner_radius_top_left = 14
-corner_radius_top_right = 14
-corner_radius_bottom_right = 14
-corner_radius_bottom_left = 14
-shadow_color = Color(1, 0.31, 0.847, 0.12)
-shadow_size = 30
-
-[sub_resource type="StyleBoxFlat" id="card_magenta_hover"]
-bg_color = Color(0.0863, 0.0941, 0.149, 0.92)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 0.31, 0.847, 0.9)
-corner_radius_top_left = 14
-corner_radius_top_right = 14
-corner_radius_bottom_right = 14
-corner_radius_bottom_left = 14
-shadow_color = Color(1, 0.31, 0.847, 0.22)
-shadow_size = 36
-
-[sub_resource type="StyleBoxFlat" id="chip_magenta"]
-content_margin_left = 10.0
-content_margin_top = 4.0
-content_margin_right = 10.0
-content_margin_bottom = 4.0
-bg_color = Color(1, 0.31, 0.847, 0.14)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
 
 [node name="StartState" type="CanvasLayer"]
 script = ExtResource("1_prv3t")
@@ -99,25 +19,26 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 48
-theme_override_constants/margin_top = 34
-theme_override_constants/margin_right = 48
-theme_override_constants/margin_bottom = 34
+mouse_filter = 2
 
 [node name="V" type="VBoxContainer" parent="Root"]
 layout_mode = 2
-theme_override_constants/separation = 10
+mouse_filter = 2
+theme_override_constants/separation = 8
 
 [node name="TopBar" type="HBoxContainer" parent="Root/V"]
 layout_mode = 2
+mouse_filter = 2
 
 [node name="Profile" type="HBoxContainer" parent="Root/V/TopBar"]
 layout_mode = 2
+mouse_filter = 2
 theme_override_constants/separation = 16
 
 [node name="AvatarBox" type="Control" parent="Root/V/TopBar/Profile"]
 custom_minimum_size = Vector2(46, 46)
 layout_mode = 2
+mouse_filter = 2
 
 [node name="Glow" type="TextureRect" parent="Root/V/TopBar/Profile/AvatarBox"]
 modulate = Color(0.337, 0.941, 1, 0.9)
@@ -129,6 +50,7 @@ offset_left = -14.0
 offset_top = -14.0
 offset_right = 14.0
 offset_bottom = 14.0
+mouse_filter = 2
 texture = ExtResource("glow")
 expand_mode = 1
 stretch_mode = 5
@@ -142,12 +64,14 @@ offset_left = 8.0
 offset_top = 8.0
 offset_right = -8.0
 offset_bottom = -8.0
+mouse_filter = 2
 texture = ExtResource("player_star")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="Names" type="VBoxContainer" parent="Root/V/TopBar/Profile"]
 layout_mode = 2
+mouse_filter = 2
 theme_override_constants/separation = 0
 
 [node name="C" type="Label" parent="Root/V/TopBar/Profile/Names"]
@@ -166,6 +90,7 @@ text = "NINJA"
 [node name="Spacer" type="Control" parent="Root/V/TopBar"]
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 2
 
 [node name="Icons" type="HBoxContainer" parent="Root/V/TopBar"]
 layout_mode = 2
@@ -192,361 +117,68 @@ expand_icon = true
 [node name="Middle" type="HBoxContainer" parent="Root/V"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 40
+mouse_filter = 2
+theme_override_constants/separation = 28
 
-[node name="TitleBlock" type="VBoxContainer" parent="Root/V/Middle"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(500, 0)
+[node name="Left" type="VBoxContainer" parent="Root/V/Middle"]
+custom_minimum_size = Vector2(480, 0)
 layout_mode = 2
-size_flags_vertical = 4
-theme_override_constants/separation = 22
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 6
 
-[node name="Title" type="Label" parent="Root/V/Middle/TitleBlock"]
+[node name="TitleBlock" type="VBoxContainer" parent="Root/V/Middle/Left"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 2
+
+[node name="Title" type="Label" parent="Root/V/Middle/Left/TitleBlock"]
 layout_mode = 2
 theme_type_variation = &"DisplayLabel"
 theme_override_colors/font_outline_color = Color(0.337, 0.941, 1, 0.32)
 theme_override_constants/outline_size = 12
-theme_override_constants/line_spacing = -8
-theme_override_font_sizes/font_size = 88
-text = "NINJA
-KNIFE
+theme_override_constants/line_spacing = -6
+theme_override_font_sizes/font_size = 64
+text = "NINJA KNIFE
 DODGE"
 
-[node name="Subtitle" type="Label" parent="Root/V/Middle/TitleBlock"]
-custom_minimum_size = Vector2(460, 0)
+[node name="Sub" type="Label" parent="Root/V/Middle/Left/TitleBlock"]
 layout_mode = 2
-size_flags_horizontal = 0
-theme_type_variation = &"MutedLabel"
-theme_override_font_sizes/font_size = 24
-text = "Two games. One void. A lone star, a hail of daggers, and a grid of shurikens waiting to be aligned."
-autowrap_mode = 3
+theme_type_variation = &"CapsLabel"
+theme_override_font_sizes/font_size = 15
+text = "FOUR GAMES  ·  ONE VOID"
 
-[node name="Spacer" type="Control" parent="Root/V/Middle"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Cards" type="VBoxContainer" parent="Root/V/Middle"]
-layout_mode = 2
-size_flags_vertical = 4
-theme_override_constants/separation = 22
-
-[node name="KnifeCard" type="Button" parent="Root/V/Middle/Cards"]
+[node name="Stage" type="Control" parent="Root/V/Middle/Left"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(660, 196)
+custom_minimum_size = Vector2(0, 250)
 layout_mode = 2
-theme_override_styles/normal = SubResource("card_cyan")
-theme_override_styles/hover = SubResource("card_cyan_hover")
-theme_override_styles/pressed = SubResource("card_cyan_hover")
-theme_override_styles/hover_pressed = SubResource("card_cyan_hover")
-theme_override_styles/focus = SubResource("empty")
+size_flags_vertical = 3
+mouse_filter = 2
 
-[node name="H" type="HBoxContainer" parent="Root/V/Middle/Cards/KnifeCard"]
+[node name="SkipIntro" type="Button" parent="Root/V/Middle/Left/Stage"]
+unique_name_in_owner = true
+visible = false
 layout_mode = 1
-anchors_preset = 15
+anchors_preset = 1
+anchor_left = 1.0
 anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 30.0
-offset_top = 24.0
-offset_right = -30.0
-offset_bottom = -24.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-theme_override_constants/separation = 28
-
-[node name="IconBox" type="PanelContainer" parent="Root/V/Middle/Cards/KnifeCard/H"]
-custom_minimum_size = Vector2(120, 120)
-layout_mode = 2
-size_flags_vertical = 4
-mouse_filter = 2
-theme_type_variation = &"RaisedPanel"
-
-[node name="C" type="CenterContainer" parent="Root/V/Middle/Cards/KnifeCard/H/IconBox"]
-layout_mode = 2
-mouse_filter = 2
-
-[node name="Glow" type="TextureRect" parent="Root/V/Middle/Cards/KnifeCard/H/IconBox/C"]
-modulate = Color(1, 0.54, 0.24, 0.7)
-custom_minimum_size = Vector2(110, 110)
-layout_mode = 2
-mouse_filter = 2
-texture = ExtResource("glow")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="C2" type="CenterContainer" parent="Root/V/Middle/Cards/KnifeCard/H/IconBox"]
-layout_mode = 2
-mouse_filter = 2
-
-[node name="Star" type="TextureRect" parent="Root/V/Middle/Cards/KnifeCard/H/IconBox/C2"]
-modulate = Color(1, 0.96, 0.88, 1)
-custom_minimum_size = Vector2(62, 62)
-layout_mode = 2
-mouse_filter = 2
-texture = ExtResource("player_star")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Info" type="VBoxContainer" parent="Root/V/Middle/Cards/KnifeCard/H"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-mouse_filter = 2
-theme_override_constants/separation = 8
-
-[node name="Chip" type="PanelContainer" parent="Root/V/Middle/Cards/KnifeCard/H/Info"]
-layout_mode = 2
-size_flags_horizontal = 0
-mouse_filter = 2
-theme_override_styles/panel = SubResource("chip_cyan")
-
-[node name="L" type="Label" parent="Root/V/Middle/Cards/KnifeCard/H/Info/Chip"]
-layout_mode = 2
-theme_type_variation = &"CapsLabel"
-theme_override_colors/font_color = Color(0.337, 0.941, 1, 1)
-theme_override_font_sizes/font_size = 16
-text = "REFLEX"
-
-[node name="Title" type="Label" parent="Root/V/Middle/Cards/KnifeCard/H/Info"]
-layout_mode = 2
-theme_type_variation = &"DisplayLabel"
-theme_override_font_sizes/font_size = 38
-text = "KNIFE DODGE"
-
-[node name="Desc" type="Label" parent="Root/V/Middle/Cards/KnifeCard/H/Info"]
-layout_mode = 2
-theme_type_variation = &"MutedLabel"
-theme_override_font_sizes/font_size = 20
-text = "Tap to bounce away from your finger. Outlast the daggers of light."
-autowrap_mode = 3
-
-[node name="Stats" type="HBoxContainer" parent="Root/V/Middle/Cards/KnifeCard/H/Info"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = 28
-
-[node name="KnifeBestBox" type="HBoxContainer" parent="Root/V/Middle/Cards/KnifeCard/H/Info/Stats"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = 8
-
-[node name="C" type="Label" parent="Root/V/Middle/Cards/KnifeCard/H/Info/Stats/KnifeBestBox"]
-layout_mode = 2
-theme_type_variation = &"CapsLabel"
+offset_left = -150.0
+offset_bottom = 46.0
+grow_horizontal = 0
 theme_override_font_sizes/font_size = 17
-text = "BEST"
+text = "SKIP INTRO"
 
-[node name="KnifeBest" type="Label" parent="Root/V/Middle/Cards/KnifeCard/H/Info/Stats/KnifeBestBox"]
+[node name="Cats" type="HBoxContainer" parent="Root/V/Middle"]
 unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"NumberLabel"
-theme_override_colors/font_color = Color(0.922, 0.933, 0.973, 1)
-theme_override_font_sizes/font_size = 22
-text = "0"
-
-
-[node name="KnifeRunsBox" type="HBoxContainer" parent="Root/V/Middle/Cards/KnifeCard/H/Info/Stats"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = 8
-
-[node name="C" type="Label" parent="Root/V/Middle/Cards/KnifeCard/H/Info/Stats/KnifeRunsBox"]
-layout_mode = 2
-theme_type_variation = &"CapsLabel"
-theme_override_font_sizes/font_size = 17
-text = "RUNS"
-
-[node name="KnifeRuns" type="Label" parent="Root/V/Middle/Cards/KnifeCard/H/Info/Stats/KnifeRunsBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"NumberLabel"
-theme_override_colors/font_color = Color(0.922, 0.933, 0.973, 1)
-theme_override_font_sizes/font_size = 22
-text = "0"
-
-[node name="KnifePlay" type="Button" parent="Root/V/Middle/Cards/KnifeCard/H"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(76, 76)
-layout_mode = 2
-size_flags_vertical = 4
-theme_type_variation = &"PrimaryIconButton"
-icon = ExtResource("icon_play")
-icon_alignment = 1
-expand_icon = true
-
-[node name="MatchCard" type="Button" parent="Root/V/Middle/Cards"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(660, 196)
-layout_mode = 2
-theme_override_styles/normal = SubResource("card_magenta")
-theme_override_styles/hover = SubResource("card_magenta_hover")
-theme_override_styles/pressed = SubResource("card_magenta_hover")
-theme_override_styles/hover_pressed = SubResource("card_magenta_hover")
-theme_override_styles/focus = SubResource("empty")
-
-[node name="H" type="HBoxContainer" parent="Root/V/Middle/Cards/MatchCard"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 30.0
-offset_top = 24.0
-offset_right = -30.0
-offset_bottom = -24.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-theme_override_constants/separation = 28
-
-[node name="IconBox" type="PanelContainer" parent="Root/V/Middle/Cards/MatchCard/H"]
-custom_minimum_size = Vector2(120, 120)
 layout_mode = 2
 size_flags_vertical = 4
 mouse_filter = 2
-theme_type_variation = &"RaisedPanel"
-
-[node name="G" type="GridContainer" parent="Root/V/Middle/Cards/MatchCard/H/IconBox"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_constants/h_separation = 8
-theme_override_constants/v_separation = 8
-columns = 2
-
-[node name="S0" type="TextureRect" parent="Root/V/Middle/Cards/MatchCard/H/IconBox/G"]
-modulate = Color(0.337, 0.941, 1, 1)
-custom_minimum_size = Vector2(42, 42)
-layout_mode = 2
-mouse_filter = 2
-texture = ExtResource("shuriken")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="S1" type="TextureRect" parent="Root/V/Middle/Cards/MatchCard/H/IconBox/G"]
-modulate = Color(1, 0.31, 0.847, 1)
-custom_minimum_size = Vector2(42, 42)
-layout_mode = 2
-mouse_filter = 2
-texture = ExtResource("shuriken")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="S2" type="TextureRect" parent="Root/V/Middle/Cards/MatchCard/H/IconBox/G"]
-modulate = Color(1, 0.847, 0.302, 1)
-custom_minimum_size = Vector2(42, 42)
-layout_mode = 2
-mouse_filter = 2
-texture = ExtResource("shuriken")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="S3" type="TextureRect" parent="Root/V/Middle/Cards/MatchCard/H/IconBox/G"]
-modulate = Color(0.302, 1, 0.651, 1)
-custom_minimum_size = Vector2(42, 42)
-layout_mode = 2
-mouse_filter = 2
-texture = ExtResource("shuriken")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Info" type="VBoxContainer" parent="Root/V/Middle/Cards/MatchCard/H"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-mouse_filter = 2
-theme_override_constants/separation = 8
-
-[node name="Chip" type="PanelContainer" parent="Root/V/Middle/Cards/MatchCard/H/Info"]
-layout_mode = 2
-size_flags_horizontal = 0
-mouse_filter = 2
-theme_override_styles/panel = SubResource("chip_magenta")
-
-[node name="L" type="Label" parent="Root/V/Middle/Cards/MatchCard/H/Info/Chip"]
-layout_mode = 2
-theme_type_variation = &"CapsLabel"
-theme_override_colors/font_color = Color(1, 0.31, 0.847, 1)
-theme_override_font_sizes/font_size = 16
-text = "PUZZLE"
-
-[node name="Title" type="Label" parent="Root/V/Middle/Cards/MatchCard/H/Info"]
-layout_mode = 2
-theme_type_variation = &"DisplayLabel"
-theme_override_font_sizes/font_size = 38
-text = "SHURIKEN MATCH"
-
-[node name="Desc" type="Label" parent="Root/V/Middle/Cards/MatchCard/H/Info"]
-layout_mode = 2
-theme_type_variation = &"MutedLabel"
-theme_override_font_sizes/font_size = 20
-text = "Line up three shurikens. Hit the target before your moves run out."
-autowrap_mode = 3
-
-[node name="Stats" type="HBoxContainer" parent="Root/V/Middle/Cards/MatchCard/H/Info"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = 28
-
-[node name="MatchLevelBox" type="HBoxContainer" parent="Root/V/Middle/Cards/MatchCard/H/Info/Stats"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = 8
-
-[node name="C" type="Label" parent="Root/V/Middle/Cards/MatchCard/H/Info/Stats/MatchLevelBox"]
-layout_mode = 2
-theme_type_variation = &"CapsLabel"
-theme_override_font_sizes/font_size = 17
-text = "LEVEL"
-
-[node name="MatchLevel" type="Label" parent="Root/V/Middle/Cards/MatchCard/H/Info/Stats/MatchLevelBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"NumberLabel"
-theme_override_colors/font_color = Color(0.922, 0.933, 0.973, 1)
-theme_override_font_sizes/font_size = 22
-text = "0"
-
-
-[node name="MatchStarsBox" type="HBoxContainer" parent="Root/V/Middle/Cards/MatchCard/H/Info/Stats"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = 8
-
-[node name="C" type="Label" parent="Root/V/Middle/Cards/MatchCard/H/Info/Stats/MatchStarsBox"]
-layout_mode = 2
-theme_type_variation = &"CapsLabel"
-theme_override_font_sizes/font_size = 17
-text = "STARS"
-
-[node name="MatchStars" type="Label" parent="Root/V/Middle/Cards/MatchCard/H/Info/Stats/MatchStarsBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"NumberLabel"
-theme_override_colors/font_color = Color(1, 0.847, 0.302, 1)
-theme_override_font_sizes/font_size = 22
-text = "0"
-
-[node name="StarIcon" type="TextureRect" parent="Root/V/Middle/Cards/MatchCard/H/Info/Stats/MatchStarsBox"]
-modulate = Color(1, 0.847, 0.302, 1)
-custom_minimum_size = Vector2(18, 18)
-layout_mode = 2
-size_flags_vertical = 4
-mouse_filter = 2
-texture = ExtResource("icon_star")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="MatchPlay" type="Button" parent="Root/V/Middle/Cards/MatchCard/H"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(76, 76)
-layout_mode = 2
-size_flags_vertical = 4
-theme_type_variation = &"MagentaIconButton"
-icon = ExtResource("icon_play")
-icon_alignment = 1
-expand_icon = true
+theme_override_constants/separation = 18
 
 [node name="Bottom" type="HBoxContainer" parent="Root/V"]
 layout_mode = 2
+mouse_filter = 2
 
 [node name="Version" type="Label" parent="Root/V/Bottom"]
 unique_name_in_owner = true
@@ -554,12 +186,13 @@ layout_mode = 2
 size_flags_vertical = 4
 theme_type_variation = &"CapsLabel"
 theme_override_colors/font_color = Color(0.353, 0.38, 0.502, 1)
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 15
 text = "V2.0  ·  OFFLINE  ·  NO ADS  ·  NO TRACKING"
 
 [node name="Spacer" type="Control" parent="Root/V/Bottom"]
 layout_mode = 2
 size_flags_horizontal = 3
+mouse_filter = 2
 
 [node name="Buttons" type="HBoxContainer" parent="Root/V/Bottom"]
 layout_mode = 2
@@ -568,14 +201,28 @@ theme_override_constants/separation = 12
 [node name="BoardBtn" type="Button" parent="Root/V/Bottom/Buttons"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 19
 text = "LEADERBOARDS"
 
 [node name="HowBtn" type="Button" parent="Root/V/Bottom/Buttons"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 19
 text = "HOW TO PLAY"
+
+[node name="Actors" type="Node2D" parent="."]
+unique_name_in_owner = true
+
+[node name="Bubbles" type="Control" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Bubble" parent="Bubbles" instance=ExtResource("2_bubble")]
+unique_name_in_owner = true
 
 [node name="HowTo" type="Control" parent="."]
 unique_name_in_owner = true
@@ -628,21 +275,10 @@ text = "Pick a walkthrough. Each takes under a minute."
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="Gap" type="Control" parent="HowTo/Center/Card/V"]
-custom_minimum_size = Vector2(0, 8)
-layout_mode = 2
-
-[node name="HowKnife" type="Button" parent="HowTo/Center/Card/V"]
+[node name="HowButtons" type="VBoxContainer" parent="HowTo/Center/Card/V"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"PrimaryButton"
-text = "KNIFE DODGE"
-
-[node name="HowMatch" type="Button" parent="HowTo/Center/Card/V"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_type_variation = &"MagentaButton"
-text = "SHURIKEN MATCH"
+theme_override_constants/separation = 10
 
 [node name="HowClose" type="Button" parent="HowTo/Center/Card/V"]
 unique_name_in_owner = true
