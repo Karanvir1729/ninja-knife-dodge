@@ -1,0 +1,301 @@
+[gd_scene load_steps=10 format=3 uid="uid://c1drawplay0000"]
+
+[ext_resource type="Script" path="res://States/draw_play_state.gd" id="1_dp"]
+[ext_resource type="Script" path="res://draw/draw_fx.gd" id="2_fx"]
+[ext_resource type="PackedScene" path="res://UI/pause_overlay.tscn" id="3_pause"]
+[ext_resource type="Texture2D" path="res://graphics/gen/icon_pause.png" id="icon_pause"]
+[ext_resource type="Texture2D" path="res://graphics/gen/icon_star.png" id="icon_star"]
+
+[sub_resource type="Shader" id="vignette"]
+code = "shader_type canvas_item;
+
+uniform vec4 tint : source_color = vec4(1.0, 0.231, 0.361, 1.0);
+uniform float strength : hint_range(0.0, 1.0) = 0.0;
+
+void fragment() {
+	vec2 d = UV - vec2(0.5);
+	float v = smoothstep(0.15, 0.85, length(d) * 1.4);
+	COLOR = vec4(tint.rgb, (0.18 + 0.82 * v) * strength);
+}"
+
+[sub_resource type="ShaderMaterial" id="vignette_mat"]
+resource_local_to_scene = true
+shader = SubResource("vignette")
+shader_parameter/tint = Color(1, 0.231, 0.361, 1)
+shader_parameter/strength = 0.0
+
+[sub_resource type="StyleBoxFlat" id="pill"]
+content_margin_left = 26.0
+content_margin_top = 10.0
+content_margin_right = 26.0
+content_margin_bottom = 10.0
+bg_color = Color(0.0549, 0.0588, 0.0863, 0.82)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.541, 0.239, 0.55)
+corner_radius_top_left = 28
+corner_radius_top_right = 28
+corner_radius_bottom_right = 28
+corner_radius_bottom_left = 28
+shadow_color = Color(1, 0.541, 0.239, 0.18)
+shadow_size = 16
+
+[sub_resource type="StyleBoxFlat" id="toast"]
+content_margin_left = 30.0
+content_margin_top = 12.0
+content_margin_right = 30.0
+content_margin_bottom = 12.0
+bg_color = Color(0.027, 0.031, 0.051, 0.86)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.541, 0.239, 0.5)
+corner_radius_top_left = 30
+corner_radius_top_right = 30
+corner_radius_bottom_right = 30
+corner_radius_bottom_left = 30
+shadow_color = Color(1, 0.541, 0.239, 0.2)
+shadow_size = 18
+
+[node name="DrawPlayState" type="Node2D"]
+script = ExtResource("1_dp")
+
+[node name="Targets" type="Node2D" parent="."]
+unique_name_in_owner = true
+
+[node name="FX" type="Node2D" parent="."]
+z_index = 4
+script = ExtResource("2_fx")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="Root" type="MarginContainer" parent="HUD"]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 28
+
+[node name="Rows" type="VBoxContainer" parent="HUD/Root"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Top" type="HBoxContainer" parent="HUD/Root/Rows"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Left" type="VBoxContainer" parent="HUD/Root/Rows/Top"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="ScoreCaps" type="Label" parent="HUD/Root/Rows/Top/Left"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+text = "SCORE"
+
+[node name="Score" type="Label" parent="HUD/Root/Rows/Top/Left"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"DisplayLabel"
+theme_override_colors/font_outline_color = Color(1, 0.541, 0.239, 0.35)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 60
+text = "000000"
+
+[node name="Sub" type="HBoxContainer" parent="HUD/Root/Rows/Top/Left"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BestCaps" type="Label" parent="HUD/Root/Rows/Top/Left/Sub"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+text = "BEST"
+
+[node name="BestVal" type="Label" parent="HUD/Root/Rows/Top/Left/Sub"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"NumberLabel"
+theme_override_font_sizes/font_size = 20
+text = "0"
+
+[node name="Gap" type="Control" parent="HUD/Root/Rows/Top/Left/Sub"]
+custom_minimum_size = Vector2(14, 0)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="TimeCaps" type="Label" parent="HUD/Root/Rows/Top/Left/Sub"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+text = "TIME"
+
+[node name="TimeVal" type="Label" parent="HUD/Root/Rows/Top/Left/Sub"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"NumberLabel"
+theme_override_font_sizes/font_size = 20
+text = "0:00"
+
+[node name="Center" type="CenterContainer" parent="HUD/Root/Rows/Top"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="PillAnchor" type="VBoxContainer" parent="HUD/Root/Rows/Top/Center"]
+layout_mode = 2
+size_flags_vertical = 0
+mouse_filter = 2
+
+[node name="ComboPill" type="PanelContainer" parent="HUD/Root/Rows/Top/Center/PillAnchor"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("pill")
+
+[node name="H" type="HBoxContainer" parent="HUD/Root/Rows/Top/Center/PillAnchor/ComboPill"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="ComboCaps" type="Label" parent="HUD/Root/Rows/Top/Center/PillAnchor/ComboPill/H"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"CapsLabel"
+theme_override_colors/font_color = Color(1, 0.541, 0.239, 1)
+text = "COMBO"
+
+[node name="Sep" type="ColorRect" parent="HUD/Root/Rows/Top/Center/PillAnchor/ComboPill/H"]
+custom_minimum_size = Vector2(1, 24)
+layout_mode = 2
+size_flags_vertical = 4
+color = Color(0.204, 0.227, 0.333, 1)
+
+[node name="ComboVal" type="Label" parent="HUD/Root/Rows/Top/Center/PillAnchor/ComboPill/H"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"DisplayLabel"
+theme_override_font_sizes/font_size = 28
+text = "x2"
+
+[node name="Sep2" type="ColorRect" parent="HUD/Root/Rows/Top/Center/PillAnchor/ComboPill/H"]
+custom_minimum_size = Vector2(1, 24)
+layout_mode = 2
+size_flags_vertical = 4
+color = Color(0.204, 0.227, 0.333, 1)
+
+[node name="ComboRate" type="Label" parent="HUD/Root/Rows/Top/Center/PillAnchor/ComboPill/H"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"CapsLabel"
+theme_override_colors/font_color = Color(1, 0.847, 0.302, 1)
+theme_override_font_sizes/font_size = 16
+text = "+1 PER HIT"
+
+[node name="Right" type="VBoxContainer" parent="HUD/Root/Rows/Top"]
+layout_mode = 2
+size_flags_horizontal = 8
+theme_override_constants/separation = 12
+
+[node name="PauseBtn" type="Button" parent="HUD/Root/Rows/Top/Right"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_horizontal = 8
+theme_type_variation = &"IconButton"
+icon = ExtResource("icon_pause")
+icon_alignment = 1
+expand_icon = true
+
+[node name="Lives" type="HBoxContainer" parent="HUD/Root/Rows/Top/Right"]
+layout_mode = 2
+size_flags_horizontal = 8
+theme_override_constants/separation = 6
+
+[node name="LivesCaps" type="Label" parent="HUD/Root/Rows/Top/Right/Lives"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"CapsLabel"
+theme_override_font_sizes/font_size = 15
+text = "LIVES"
+
+[node name="Gap" type="Control" parent="HUD/Root/Rows/Top/Right/Lives"]
+custom_minimum_size = Vector2(4, 0)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Life1" type="TextureRect" parent="HUD/Root/Rows/Top/Right/Lives"]
+unique_name_in_owner = true
+modulate = Color(1, 0.847, 0.302, 1)
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("icon_star")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Life2" type="TextureRect" parent="HUD/Root/Rows/Top/Right/Lives"]
+unique_name_in_owner = true
+modulate = Color(1, 0.847, 0.302, 1)
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("icon_star")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Life3" type="TextureRect" parent="HUD/Root/Rows/Top/Right/Lives"]
+unique_name_in_owner = true
+modulate = Color(1, 0.847, 0.302, 1)
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("icon_star")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="ToastBox" type="CenterContainer" parent="HUD"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Toast" type="Label" parent="HUD/ToastBox"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_type_variation = &"DisplayLabel"
+theme_override_styles/normal = SubResource("toast")
+theme_override_colors/font_color = Color(1, 0.541, 0.239, 1)
+theme_override_colors/font_outline_color = Color(0.027, 0.031, 0.051, 0.9)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 30
+text = "HIT THE TARGETS"
+horizontal_alignment = 1
+
+[node name="FlashLayer" type="CanvasLayer" parent="."]
+layer = 15
+
+[node name="Flash" type="ColorRect" parent="FlashLayer"]
+unique_name_in_owner = true
+material = SubResource("vignette_mat")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 1)
+
+[node name="Pause" parent="." instance=ExtResource("3_pause")]
