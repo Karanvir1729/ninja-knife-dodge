@@ -1,14 +1,18 @@
 extends Node
-## Local-only persistence: profile, settings, tutorial flags, stats and the two
-## leaderboards. Everything lives in user://save.json and never leaves the device.
+## Local-only persistence: profile, settings, tutorial flags, per-game stats and
+## leaderboards, booster inventory and guide state. Everything lives in
+## user://save.json and never leaves the device.
 
 signal settings_changed
 signal data_reset
+signal boosters_changed
 
 const SAVE_PATH := "user://save.json"
 const BOARD_SIZE := 10
 const MAX_NAME_LENGTH := 10
 const DEFAULT_NAME := "NINJA"
+## Starter booster gift so players can try every power-up once before any ad.
+const DEFAULT_BOOSTERS := {"moves": 1, "shuffle": 1, "hammer": 1, "hint": 3, "skip": 0, "revive": 1, "life": 1}
 
 var data: Dictionary = {}
 ## When true (debug tour), nothing is written to disk.
@@ -19,13 +23,19 @@ func _ready() -> void:
 
 func _defaults() -> Dictionary:
 	return {
-		"version": 2,
+		"version": 3,
 		"profile": {"name": DEFAULT_NAME},
 		"settings": {"music": true, "music_volume": 0.8, "sfx": true, "sfx_volume": 1.0, "haptics": true},
-		"tutorials": {"knife": false, "match": false},
+		"tutorials": {},
+		"guides": {"intro_seen": false, "launches": 0},
+		"boosters": DEFAULT_BOOSTERS.duplicate(),
 		"knife": {"best": 0, "runs": 0, "total_dodged": 0, "near_misses": 0, "time_played": 0.0, "best_wave": 0, "board": []},
-		"match": {"next_level": 1, "games": 0, "total_stars": 0, "levels": {}, "board": []},
+		"match": {"next_level": 1, "games": 0, "total_stars": 0, "levels": {}, "board": [], "attempts": {}},
+		"games": {},
 	}
+
+func _game_defaults() -> Dictionary:
+	return {"best": 0, "plays": 0, "total": 0, "time": 0.0, "board": []}
 
 func load_data() -> void:
 	data = _defaults()
@@ -61,7 +71,7 @@ func _migrate_legacy() -> void:
 				data.knife.total_dodged = best
 				data.knife.board.append(_entry(DEFAULT_NAME, best, {"wave": 0, "time": 0.0}))
 	if FileAccess.file_exists("user://tutorial_done"):
-		data.tutorials.knife = true
+		data.tutorials["knife"] = true
 
 func save() -> void:
 	if read_only:
@@ -99,8 +109,43 @@ func set_tutorial_done(game: String, done: bool = true) -> void:
 	save()
 
 func reset_tutorials() -> void:
-	data.tutorials = {"knife": false, "match": false}
+	data.tutorials = {}
 	save()
+
+# ---------------------------------------------------------------- guides
+
+func intro_seen() -> bool:
+	return bool(data.guides.get("intro_seen", false))
+
+func set_intro_seen(seen: bool = true) -> void:
+	data.guides.intro_seen = seen
+	save()
+
+func launches() -> int:
+	return int(data.guides.get("launches", 0))
+
+func mark_launch() -> void:
+	data.guides.launches = launches() + 1
+	save()
+
+# ---------------------------------------------------------------- boosters
+
+func booster_count(kind: String) -> int:
+	return int(data.boosters.get(kind, 0))
+
+func add_booster(kind: String, n: int = 1) -> void:
+	data.boosters[kind] = booster_count(kind) + n
+	save()
+	boosters_changed.emit()
+
+## Spend one booster. Returns false if none are left.
+func use_booster(kind: String) -> bool:
+	if booster_count(kind) <= 0:
+		return false
+	data.boosters[kind] = booster_count(kind) - 1
+	save()
+	boosters_changed.emit()
+	return true
 
 # ---------------------------------------------------------------- leaderboards
 
@@ -131,6 +176,47 @@ func knife_board() -> Array:
 func match_board() -> Array:
 	return data.match.board
 
+## Leaderboard for any game id.
+func game_board(id: String) -> Array:
+	match id:
+		"knife": return data.knife.board
+		"match": return data.match.board
+		_: return game_stats(id).board
+
+## Generic per-game stats block (created on demand).
+func game_stats(id: String) -> Dictionary:
+	if not data.games.has(id):
+		data.games[id] = _game_defaults()
+	return data.games[id]
+
+## Record a score for a generic game. `extra` is stored on the board entry
+## (use "detail" for the leaderboard's right-hand text). Returns {rank, new_record}.
+func record_game_score(id: String, score: int, extra: Dictionary = {}, time_sec: float = 0.0) -> Dictionary:
+	var g := game_stats(id)
+	var new_record := score > int(g.best)
+	g.best = maxi(int(g.best), score)
+	g.plays = int(g.plays) + 1
+	g.total = int(g.total) + score
+	g.time = float(g.time) + time_sec
+	var rank := 0
+	if score > 0:
+		rank = _insert(g.board, _entry(player_name(), score, extra))
+	save()
+	return {"rank": rank, "new_record": new_record}
+
+## The headline number for a game on the menu (see Globals.GAMES stat_label).
+func best_for(id: String) -> int:
+	match id:
+		"knife": return int(data.knife.best)
+		"match": return maxi(1, int(data.match.next_level))
+		_: return int(game_stats(id).best)
+
+func plays_for(id: String) -> int:
+	match id:
+		"knife": return int(data.knife.runs)
+		"match": return int(data.match.games)
+		_: return int(game_stats(id).plays)
+
 ## Record a Knife Dodge run. Returns {rank, new_record}.
 func record_knife_run(score: int, wave: int, time_sec: float, near_misses: int) -> Dictionary:
 	var k: Dictionary = data.knife
@@ -160,6 +246,10 @@ func record_match_result(level: int, score: int, stars: int, cleared: bool) -> D
 	if cleared and level >= int(m.next_level):
 		m.next_level = level + 1
 		unlocked = true
+	if cleared:
+		m.attempts.erase(key)
+	else:
+		m.attempts[key] = int(m.attempts.get(key, 0)) + 1
 	var total := 0
 	for lk in m.levels.keys():
 		total += int(m.levels[lk].stars)
@@ -169,6 +259,25 @@ func record_match_result(level: int, score: int, stars: int, cleared: bool) -> D
 		rank = _insert(m.board, _entry(player_name(), score, {"level": level, "stars": stars}))
 	save()
 	return {"rank": rank, "new_best": new_best, "unlocked_next": unlocked}
+
+## Consecutive failed attempts on a level (reset when it is cleared).
+func match_attempts(level: int) -> int:
+	return int(data.match.attempts.get(str(level), 0))
+
+## Skip a level (booster or ad): marks it cleared with one star and unlocks the next.
+func skip_match_level(level: int) -> void:
+	var m: Dictionary = data.match
+	var key := str(level)
+	var prev: Dictionary = m.levels.get(key, {"stars": 0, "best": 0})
+	m.levels[key] = {"stars": maxi(int(prev.stars), 1), "best": int(prev.best), "skipped": true}
+	if level >= int(m.next_level):
+		m.next_level = level + 1
+	m.attempts.erase(key)
+	var total := 0
+	for lk in m.levels.keys():
+		total += int(m.levels[lk].stars)
+	m.total_stars = total
+	save()
 
 func match_level_info(level: int) -> Dictionary:
 	return data.match.levels.get(str(level), {"stars": 0, "best": 0})
@@ -193,3 +302,4 @@ func reset_all() -> void:
 	data.settings = settings_keep
 	save()
 	data_reset.emit()
+	boosters_changed.emit()

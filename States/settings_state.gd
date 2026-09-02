@@ -89,7 +89,7 @@ func _on_name_changed(t: String) -> void:
 func _replay_tutorials() -> void:
 	AudioManager.click()
 	SaveData.reset_tutorials()
-	_toast("TUTORIALS WILL PLAY AGAIN NEXT TIME YOU START EACH GAME")
+	_toast("ALL TUTORIALS WILL PLAY AGAIN NEXT TIME YOU START EACH GAME")
 
 func _reset() -> void:
 	AudioManager.play_sfx("level_fail")

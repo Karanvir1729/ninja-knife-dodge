@@ -91,6 +91,32 @@ def build():
     write("wave_start", mix(tone(110, 0.5, 0.5, attack=0.08, curve=2, harmonics=((1, 1), (2, 0.5), (3, 0.25))), tone(165, 0.5, 0.35, attack=0.1, curve=2), offset(tone(1320, 0.25, 0.35, curve=4), 0.05)))
     write("record", mix(*[offset(tone(NOTE(n), 0.5, 0.5, curve=3), k * 0.1) for k, n in enumerate((79, 84, 88, 91))]))
     write("dodge_tick", tone(sweep(1800, 1200), 0.035, 0.5, curve=8))
+    # Guide voices: Animal-Crossing-style blips. Sensei is low and woody, Pip is high and bright.
+    for i in range(5):
+        base = 150 + i * 22
+        write(f"voice_sensei_{i+1}", mix(tone(lambda t, b=base: b * (1 + 0.08 * math.sin(t * 18)), 0.075, 0.9, attack=0.004, curve=5, harmonics=((1, 1), (2, 0.5), (3, 0.25))), noise(0.02, 0.15, lp=0.4)))
+        hi = 620 + i * 90
+        write(f"voice_pip_{i+1}", tone(lambda t, b=hi: b * (1 + 0.15 * t), 0.055, 0.8, attack=0.003, curve=6, harmonics=((1, 1), (2, 0.3))))
+    write("guide_pop", mix(noise(0.12, 0.6, lp=0.5, curve=4), tone(sweep(300, 900), 0.16, 0.6, curve=4)))
+    write("guide_hop", tone(sweep(400, 800), 0.12, 0.6, curve=4))
+    # Sensei Says pads: nine soft pentatonic tones (A3 up)
+    penta9 = [57, 60, 62, 64, 67, 69, 72, 74, 76]
+    for i, n in enumerate(penta9):
+        write(f"pad_{i+1}", tone(NOTE(n), 0.32, 0.7, attack=0.01, curve=3, harmonics=((1, 1), (2, 0.35), (3, 0.12))))
+    write("simon_round", mix(*[offset(tone(NOTE(n), 0.3, 0.5, curve=3), k * 0.07) for k, n in enumerate((72, 76, 79))]))
+    write("simon_fail", mix(tone(sweep(220, 110), 0.5, 0.8, curve=2, harmonics=((1, 1), (2, 0.5), (3, 0.3))), noise(0.2, 0.3, lp=0.3)))
+    write("simon_watch", tone(sweep(660, 880), 0.18, 0.5, curve=3))
+    # Quick Draw
+    write("target_spawn", tone(sweep(900, 1400), 0.06, 0.5, curve=6))
+    write("target_hit", mix(tone(sweep(1200, 600), 0.09, 0.8, curve=5), noise(0.04, 0.5, lp=0.8)))
+    write("target_miss", mix(noise(0.18, 0.7, lp=0.15, curve=4), tone(sweep(160, 60), 0.2, 0.6, curve=3)))
+    write("decoy_hit", mix(tone(110, 0.3, 0.7, curve=2, harmonics=((1, 1), (2, 0.6), (3, 0.4), (4, 0.2))), tone(117, 0.3, 0.5, curve=2)))
+    write("combo_up", mix(*[offset(tone(NOTE(n), 0.14, 0.5, curve=5), k * 0.04) for k, n in enumerate((79, 84, 88))]))
+    # Boosters and rewards
+    write("booster", mix(*[offset(tone(NOTE(n), 0.25, 0.45, curve=4), k * 0.05) for k, n in enumerate((72, 79, 84, 91))], noise(0.08, 0.3, lp=0.9)))
+    write("ad_reward", mix(*[offset(tone(NOTE(n), 0.5, 0.45, curve=3, harmonics=((1, 1), (2, 0.3))), k * 0.09) for k, n in enumerate((67, 72, 76, 79, 84))]))
+    write("hammer", mix(noise(0.2, 1.0, lp=0.3, curve=4), tone(sweep(300, 80), 0.25, 0.8, curve=3)))
+    write("unlock", mix(*[offset(tone(NOTE(n), 0.4, 0.5, curve=3), k * 0.08) for k, n in enumerate((64, 71, 76, 83))]))
     # Ambient loop for Shuriken Match (seamless: all LFO periods divide the length)
     L = 24.0; n = int(SR * L); out = [0.0] * n
     def add_sine(freq, amp, lfo_period, lfo_depth, phase=0.0):

@@ -29,6 +29,54 @@ const VIOLET := Color("9b6bff")
 const ORANGE := Color("ff8a3d")
 const RED := Color("ff3b5c")
 
+## Game categories shown on the main menu.
+const CATEGORIES := {
+	"mind": {"title": "MIND GAMES", "blurb": "Think ahead. Plan every move.", "accent": Color("ff4fd8")},
+	"skill": {"title": "SKILL GAMES", "blurb": "React fast. Trust your fingers.", "accent": Color("56f0ff")},
+}
+
+## Registry of every game in the arcade. Screens (menu, leaderboards, results,
+## debug tour) are driven from this list, so adding a game is mostly additive.
+##  id             save key and leaderboard tab
+##  play_state     state to enter from the menu (tutorial gating is per game)
+##  tutorial_state state used by "How to play"
+##  stat_label     what best_for(id) means on the menu card
+##  tour           extra screens for the debug tour: [{state, params, wait, name}]
+##  milestones     [[threshold, TITLE], ...] against best_for(id)
+const GAMES := [
+	{"id": "match", "title": "SHURIKEN MATCH", "category": "mind", "tagline": "Line up three. Beat the target.",
+	 "accent": Color("ff4fd8"), "play_state": "match_levels", "tutorial_state": "match_tutorial", "stat_label": "LEVEL",
+	 "tour": [], "milestones": [[10, "APPRENTICE"], [30, "ADEPT"], [60, "MASTER"], [100, "GRANDMASTER"], [150, "LEGEND"]],
+	 "milestone_text": "Collect %d stars to earn the %s title.", "milestone_stat": "stars"},
+	{"id": "simon", "title": "SENSEI SAYS", "category": "mind", "tagline": "Watch the pattern. Play it back.",
+	 "accent": Color("9b6bff"), "play_state": "simon_play", "tutorial_state": "simon_tutorial", "stat_label": "BEST ROUND",
+	 "tour": [{"state": "simon_play", "params": {}, "wait": 2.2, "name": "simon_play"}],
+	 "milestones": [[5, "ATTENTIVE"], [10, "FOCUSED"], [15, "SHARP MIND"], [20, "PHOTOGRAPHIC"], [30, "ENLIGHTENED"]],
+	 "milestone_text": "Reach round %d to earn the %s title.", "milestone_stat": "best"},
+	{"id": "knife", "title": "KNIFE DODGE", "category": "skill", "tagline": "Tap to bounce. Dodge the daggers.",
+	 "accent": Color("56f0ff"), "play_state": "play", "tutorial_state": "tutorial", "stat_label": "BEST",
+	 "tour": [], "milestones": [[25, "BLADE APPRENTICE"], [50, "VOID WALKER"], [100, "UNTOUCHABLE"], [150, "BLADE DANCER"], [250, "SHADOW MASTER"], [400, "LIVING LEGEND"]],
+	 "milestone_text": "Dodge %d daggers in one run to earn the %s title.", "milestone_stat": "best"},
+	{"id": "draw", "title": "QUICK DRAW", "category": "skill", "tagline": "Hit the targets. Skip the decoys.",
+	 "accent": Color("ff8a3d"), "play_state": "draw_play", "tutorial_state": "draw_tutorial", "stat_label": "BEST",
+	 "tour": [{"state": "draw_play", "params": {}, "wait": 2.0, "name": "draw_play"}],
+	 "milestones": [[20, "QUICK HANDS"], [50, "SHARPSHOOTER"], [100, "DEADEYE"], [200, "LIGHTNING"], [400, "UNTOUCHABLE"]],
+	 "milestone_text": "Score %d in one round to earn the %s title.", "milestone_stat": "best"},
+]
+
+static func game(id: String) -> Dictionary:
+	for g in GAMES:
+		if g.id == id:
+			return g
+	return {}
+
+static func games_in(category: String) -> Array:
+	var out := []
+	for g in GAMES:
+		if g.category == category:
+			out.append(g)
+	return out
+
 ## Tile colours for Shuriken Match, in index order.
 const GEM_COLORS: Array[Color] = [
 	Color("56f0ff"), Color("ff4fd8"), Color("ffd84d"),
@@ -79,6 +127,17 @@ func apply_safe_margins(mc: MarginContainer, base: int = 32) -> void:
 ## Change the active screen through the state machine.
 func go(state: String, params: Dictionary = {}) -> void:
 	get_tree().call_group("currentState", "change", state, params)
+
+## Start a game from the menu: first time runs its tutorial (Shuriken Match
+## gates inside its level map instead).
+func start_game(id: String) -> void:
+	var g := game(id)
+	if g.is_empty():
+		return
+	if id != "match" and not SaveData.tutorial_done(id):
+		go(g.tutorial_state, {})
+	else:
+		go(g.play_state, {})
 
 static func format_number(n: int) -> String:
 	var s := str(absi(n))

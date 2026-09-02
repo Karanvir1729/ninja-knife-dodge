@@ -33,6 +33,11 @@ func _ready() -> void:
 
 func _seed_sample_data() -> void:
 	SaveData.set_player_name("KARANVIR")
+	SaveData.set_intro_seen(true)
+	SaveData.record_game_score("draw", 64, {"detail": "COMBO x9"}, 71.0)
+	SaveData.record_game_score("draw", 41, {"detail": "COMBO x5"}, 50.0)
+	SaveData.record_game_score("simon", 12, {"detail": "0:58"}, 58.0)
+	SaveData.record_game_score("simon", 9, {"detail": "0:41"}, 41.0)
 	for row in [[142, 9, 171.0, 30], [118, 8, 140.0, 22], [87, 6, 102.0, 12], [64, 5, 70.0, 9], [41, 4, 55.0, 6], [23, 3, 31.0, 2]]:
 		SaveData.record_knife_run(row[0], row[1], row[2], row[3])
 	for lv in range(1, 7):
@@ -144,6 +149,18 @@ func _run() -> void:
 		await _go("match_result", {"level": 7, "score": 3100, "cleared": false, "moves_left": 0, "bonus": 0, "stars": 0, "target": 5000})
 		await _wait(1.2)
 		await _shot("%s_17_match_failed" % tag)
+		var n := 18
+		for g in Globals.GAMES:
+			for entry in g.get("tour", []):
+				if not _sm().STATES.has(entry.state) or not ResourceLoader.exists(_sm().STATES[entry.state]):
+					continue
+				await _go(entry.state, entry.get("params", {}))
+				await _wait(float(entry.get("wait", 0.6)))
+				await _shot("%s_%02d_%s" % [tag, n, entry.name])
+				n += 1
+		await _go("arcade_result", {"game": "draw", "score": 64, "time": 71.0, "title": "SHARP SHOOTING", "detail": "COMBO x9", "stats": [["58", "HITS", Globals.TEXT], ["6", "MISSES", Globals.RED], ["x9", "BEST COMBO", Globals.GOLD], ["1:11", "TIME", Globals.TEXT]], "quip": "Pip: \"Those decoys never saw you coming!\""})
+		await _wait(1.3)
+		await _shot("%s_%02d_arcade_result" % [tag, n])
 	await _smoke()
 	print("TOUR  done: %d checks, %d failures" % [_checks, _fails])
 	await _frames(2)
@@ -248,6 +265,16 @@ func _smoke() -> void:
 		_check(kt.step == expected, "knife tutorial: helper tap advances to step %d (step=%d)" % [expected + 1, kt.step])
 	await _wait_until(func(): return _sm().current_name == "play", 4.0)
 	_check(_sm().current_name == "play", "knife tutorial: finishes into a real run (state=%s)" % _sm().current_name)
+	# --- Per-game smoke scripts (tests/smoke_<id>.gd with `func run(tour)`).
+	for g in Globals.GAMES:
+		var path := "res://tests/smoke_%s.gd" % g.id
+		if ResourceLoader.exists(path):
+			var script = load(path)
+			if script:
+				var runner = script.new()
+				if runner.has_method("run"):
+					print("TOUR  smoke ", g.id)
+					await runner.run(self)
 	# --- Save round-trip (in memory) and settings.
 	SaveData.set_setting("music_volume", 0.5)
 	_check(absf(AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Music")) - linear_to_db(0.5)) < 0.01, "audio: music volume setting applied to bus")

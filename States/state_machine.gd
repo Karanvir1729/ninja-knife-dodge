@@ -16,6 +16,11 @@ const STATES := {
 	"match_tutorial": "res://States/match_tutorial_state.tscn",
 	"match_play": "res://States/match_play_state.tscn",
 	"match_result": "res://States/match_result_state.tscn",
+	"arcade_result": "res://States/arcade_result_state.tscn",
+	"simon_tutorial": "res://States/simon_tutorial_state.tscn",
+	"simon_play": "res://States/simon_play_state.tscn",
+	"draw_tutorial": "res://States/draw_tutorial_state.tscn",
+	"draw_play": "res://States/draw_play_state.tscn",
 }
 
 signal state_changed(state_name: String)

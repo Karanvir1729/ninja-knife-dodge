@@ -1,0 +1,142 @@
+[gd_scene load_steps=4 format=3 uid="uid://c1mockad000000"]
+
+[ext_resource type="Script" path="res://UI/mock_ad.gd" id="1_ad"]
+[ext_resource type="Texture2D" path="res://graphics/gen/icon_close.png" id="2_close"]
+
+[sub_resource type="StyleBoxFlat" id="ad_card"]
+content_margin_left = 36.0
+content_margin_top = 28.0
+content_margin_right = 36.0
+content_margin_bottom = 32.0
+bg_color = Color(0.0863, 0.0941, 0.149, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.847, 0.302, 0.5)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(1, 0.847, 0.302, 0.12)
+shadow_size = 40
+
+[node name="MockAd" type="CanvasLayer"]
+process_mode = 3
+layer = 90
+script = ExtResource("1_ad")
+
+[node name="Dim" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0117647, 0.0117647, 0.0313726, 0.86)
+
+[node name="Center" type="CenterContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Card" type="PanelContainer" parent="Center"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(640, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("ad_card")
+
+[node name="V" type="VBoxContainer" parent="Center/Card"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Top" type="HBoxContainer" parent="Center/Card/V"]
+layout_mode = 2
+
+[node name="Tag" type="Label" parent="Center/Card/V/Top"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_type_variation = &"CapsLabel"
+theme_override_colors/font_color = Color(1, 0.847, 0.302, 1)
+text = "SPONSORED  ·  TEST AD"
+
+[node name="Close" type="Button" parent="Center/Card/V/Top"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(44, 44)
+layout_mode = 2
+theme_type_variation = &"IconButton"
+icon = ExtResource("2_close")
+icon_alignment = 1
+expand_icon = true
+
+[node name="Body" type="HBoxContainer" parent="Center/Card/V"]
+layout_mode = 2
+theme_override_constants/separation = 26
+
+[node name="RingBox" type="Control" parent="Center/Card/V/Body"]
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+
+[node name="Ring" type="ProgressBar" parent="Center/Card/V/Body/RingBox"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 54.0
+offset_bottom = -54.0
+grow_horizontal = 2
+grow_vertical = 2
+value = 0.0
+show_percentage = false
+
+[node name="Countdown" type="Label" parent="Center/Card/V/Body/RingBox"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"DisplayLabel"
+theme_override_font_sizes/font_size = 56
+text = "5"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="T" type="VBoxContainer" parent="Center/Card/V/Body"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Center/Card/V/Body/T"]
+layout_mode = 2
+theme_type_variation = &"DisplayLabel"
+theme_override_font_sizes/font_size = 40
+text = "YOUR AD HERE"
+
+[node name="Blurb" type="Label" parent="Center/Card/V/Body/T"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 19
+text = "This is a stand-in ad."
+autowrap_mode = 3
+
+[node name="Reward" type="Label" parent="Center/Card/V/Body/T"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_colors/font_color = Color(0.302, 1, 0.651, 1)
+text = "REWARD: +3 HINTS"
+
+[node name="Claim" type="Button" parent="Center/Card/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"PrimaryButton"
+disabled = true
+text = "CLAIM REWARD"

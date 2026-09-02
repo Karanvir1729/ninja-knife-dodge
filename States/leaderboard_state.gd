@@ -1,10 +1,8 @@
 extends CanvasLayer
 ## Local top-10 boards for both games, with lifetime stats and the next milestone.
 
-const KNIFE_MILESTONES := [[25, "BLADE APPRENTICE"], [50, "VOID WALKER"], [100, "UNTOUCHABLE"], [150, "BLADE DANCER"], [250, "SHADOW MASTER"], [400, "LIVING LEGEND"]]
-const MATCH_MILESTONES := [[10, "APPRENTICE"], [30, "ADEPT"], [60, "MASTER"], [100, "GRANDMASTER"], [150, "LEGEND"]]
-
 var tab := "knife"
+var _tabs := {}
 
 func init(params: Dictionary) -> void:
 	tab = str(params.get("tab", "knife"))
@@ -15,19 +13,30 @@ func _ready() -> void:
 	AudioManager.play_music("menu")
 	Globals.apply_safe_margins(%Root, 34)
 	%Back.pressed.connect(func(): AudioManager.back(); Globals.go("start"))
-	%KnifeTab.pressed.connect(func(): _select("knife"))
-	%MatchTab.pressed.connect(func(): _select("match"))
+	for c in %TabsBox.get_children():
+		c.queue_free()
+	for g in Globals.GAMES:
+		var b := Button.new()
+		b.theme_type_variation = &"TabButton"
+		b.toggle_mode = true
+		b.text = str(g.title)
+		b.add_theme_font_size_override("font_size", 18)
+		b.pressed.connect(_select.bind(str(g.id), false))
+		%TabsBox.add_child(b)
+		_tabs[str(g.id)] = b
+	if not _tabs.has(tab):
+		tab = "knife"
 	_select(tab, true)
 
 func _select(which: String, silent: bool = false) -> void:
 	if not silent:
 		AudioManager.click()
 	tab = which
-	%KnifeTab.set_pressed_no_signal(which == "knife")
-	%MatchTab.set_pressed_no_signal(which == "match")
-	var accent := Globals.CYAN if which == "knife" else Globals.MAGENTA
-	%KnifeTab.add_theme_color_override("font_pressed_color", accent)
-	%MatchTab.add_theme_color_override("font_pressed_color", accent)
+	var g := Globals.game(which)
+	var accent: Color = g.get("accent", Globals.CYAN)
+	for id in _tabs.keys():
+		_tabs[id].set_pressed_no_signal(id == which)
+		_tabs[id].add_theme_color_override("font_pressed_color", accent)
 	_build_rows(accent)
 	_build_stats(accent)
 
@@ -38,7 +47,7 @@ func _clear(node: Node) -> void:
 
 func _build_rows(accent: Color) -> void:
 	_clear(%Rows)
-	var board: Array = SaveData.knife_board() if tab == "knife" else SaveData.match_board()
+	var board: Array = SaveData.game_board(tab)
 	%Rows.add_child(_header())
 	var rank_colors := [Globals.GOLD, Color("c8d0e6"), Globals.ORANGE]
 	for i in board.size():
@@ -46,8 +55,10 @@ func _build_rows(accent: Color) -> void:
 		var detail := ""
 		if tab == "knife":
 			detail = "WAVE %d  ·  %s" % [int(e.get("wave", 0)), Globals.format_time(float(e.get("time", 0.0)))]
-		else:
+		elif tab == "match":
 			detail = "LEVEL %d  ·  %d STAR%s" % [int(e.get("level", 0)), int(e.get("stars", 0)), "" if int(e.get("stars", 0)) == 1 else "S"]
+		else:
+			detail = str(e.get("detail", ""))
 		var top := i < 3
 		%Rows.add_child(_row(i + 1, str(e.get("name", "NINJA")), int(e.get("score", 0)), detail, rank_colors[i] if top else Globals.MUTED, top, accent))
 	var note := Label.new()
@@ -56,10 +67,10 @@ func _build_rows(accent: Color) -> void:
 	note.add_theme_font_size_override("font_size", 16)
 	note.add_theme_color_override("font_color", Globals.DIM)
 	if board.is_empty():
-		note.text = "NO RUNS YET. PLAY TO CLAIM THE TOP SPOT." if tab == "knife" else "NO LEVELS PLAYED YET. THE BOARD IS YOURS."
+		note.text = "NO LEVELS PLAYED YET. THE BOARD IS YOURS." if tab == "match" else "NO ROUNDS YET. PLAY TO CLAIM THE TOP SPOT."
 	elif board.size() < SaveData.BOARD_SIZE:
 		var left := SaveData.BOARD_SIZE - board.size()
-		note.text = "%d MORE %s TO FILL THE BOARD" % [left, ("RUN" if tab == "knife" else "GAME") + ("" if left == 1 else "S")]
+		note.text = "%d MORE %s TO FILL THE BOARD" % [left, ("RUN" if tab == "knife" else ("GAME" if tab == "match" else "ROUND")) + ("" if left == 1 else "S")]
 	else:
 		note.text = "TOP %d  ·  BEAT %d TO GET ON THE BOARD" % [SaveData.BOARD_SIZE, int(board[board.size() - 1].score)]
 	var pad := MarginContainer.new()
@@ -74,7 +85,7 @@ func _header() -> Control:
 	m.add_theme_constant_override("margin_left", 22)
 	m.add_theme_constant_override("margin_right", 22)
 	m.add_child(h)
-	for spec in [["RANK", 90, 0], ["NINJA", 0, 3], ["SCORE", 170, 2], [("RUN" if tab == "knife" else "LEVEL"), 250, 2]]:
+	for spec in [["RANK", 90, 0], ["NINJA", 0, 3], ["SCORE", 170, 2], [("RUN" if tab == "knife" else ("LEVEL" if tab == "match" else "ROUND")), 250, 2]]:
 		var l := Label.new()
 		l.theme_type_variation = &"CapsLabel"
 		l.add_theme_font_size_override("font_size", 15)
@@ -145,7 +156,26 @@ func _build_stats(accent: Color) -> void:
 	var next_title := ""
 	var progress := 0.0
 	var current := 0
-	if tab == "knife":
+	var g := Globals.game(tab)
+	var milestones: Array = g.get("milestones", [])
+	if tab != "knife" and tab != "match":
+		var st: Dictionary = SaveData.game_stats(tab)
+		var plays := int(st.plays)
+		var avg := int(round(float(st.total) / plays)) if plays > 0 else 0
+		var board: Array = st.board
+		var top_detail := str(board[0].get("detail", "")) if not board.is_empty() else "—"
+		tiles = [
+			[Globals.format_number(int(st.best)), "BEST", accent], [str(plays), "ROUNDS", Globals.TEXT],
+			[Globals.format_number(int(st.total)), "TOTAL SCORE", Globals.TEXT], [str(avg), "AVERAGE", Globals.TEXT],
+			[top_detail, "TOP ROUND", Globals.GOLD], [_duration(float(st.time)), "PLAYED", Globals.TEXT],
+		]
+		current = int(st.best)
+		for m in milestones:
+			if current < int(m[0]):
+				next_val = int(m[0]); next_title = m[1]; break
+		var fmt := str(g.get("milestone_text", "Reach %d to earn the %s title."))
+		%MilestoneText.text = (fmt % [next_val, next_title.capitalize()]).replace(str(next_val), "[color=#%s]%d[/color]" % [accent.to_html(false), next_val]) if next_val > 0 else "Every title is yours."
+	elif tab == "knife":
 		var k: Dictionary = SaveData.knife_stats()
 		var runs := int(k.runs)
 		var avg := int(round(float(k.total_dodged) / runs)) if runs > 0 else 0
@@ -155,7 +185,7 @@ func _build_stats(accent: Color) -> void:
 			[Globals.format_number(int(k.near_misses)), "NEAR MISSES", Globals.GREEN], [_duration(float(k.time_played)), "IN THE VOID", Globals.TEXT],
 		]
 		current = int(k.best)
-		for m in KNIFE_MILESTONES:
+		for m in milestones:
 			if current < int(m[0]):
 				next_val = int(m[0]); next_title = m[1]; break
 		%MilestoneText.text = "Dodge [color=#56f0ff]%d[/color] daggers in one run to earn the %s title." % [next_val, next_title.capitalize()] if next_val > 0 else "Every title is yours. The void bows."
@@ -173,7 +203,7 @@ func _build_stats(accent: Color) -> void:
 			[str(three), "PERFECT LEVELS", Globals.TEXT], [str(levels.size()), "LEVELS PLAYED", Globals.TEXT],
 		]
 		current = int(m.total_stars)
-		for ms in MATCH_MILESTONES:
+		for ms in milestones:
 			if current < int(ms[0]):
 				next_val = int(ms[0]); next_title = ms[1]; break
 		%MilestoneText.text = "Collect [color=#ff4fd8]%d[/color] stars to earn the %s title." % [next_val, next_title.capitalize()] if next_val > 0 else "Every title is yours. The grid bows."
