@@ -275,6 +275,19 @@ func _smoke() -> void:
 				if runner.has_method("run"):
 					print("TOUR  smoke ", g.id)
 					await runner.run(self)
+	# --- Boosters, skips and generic scores (in memory).
+	var h0 := SaveData.booster_count("hint")
+	SaveData.add_booster("hint", 2)
+	_check(SaveData.booster_count("hint") == h0 + 2, "save: add_booster adds to the inventory")
+	_check(SaveData.use_booster("hint") and SaveData.booster_count("hint") == h0 + 1, "save: use_booster spends one")
+	SaveData.data.boosters.skip = 0
+	_check(not SaveData.use_booster("skip"), "save: use_booster refuses when empty")
+	var nl := SaveData.match_next_level()
+	SaveData.skip_match_level(nl)
+	_check(SaveData.match_next_level() == nl + 1 and int(SaveData.match_level_info(nl).stars) >= 1, "save: skip_match_level unlocks the next level with one star")
+	var r1: Dictionary = SaveData.record_game_score("draw", 9999, {"detail": "TEST"}, 1.0)
+	_check(int(r1.rank) == 1 and bool(r1.new_record), "save: generic score lands at rank 1 as a record")
+	_check(SaveData.game_board("draw")[0].detail == "TEST", "save: board entry keeps its detail text")
 	# --- Save round-trip (in memory) and settings.
 	SaveData.set_setting("music_volume", 0.5)
 	_check(absf(AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Music")) - linear_to_db(0.5)) < 0.01, "audio: music volume setting applied to bus")
