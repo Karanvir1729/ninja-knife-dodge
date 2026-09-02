@@ -229,8 +229,14 @@ func _smoke() -> void:
 	_check(not play.dead, "knife: simulated taps kept the star alive for 3s")
 	_check(play.elapsed > 2.5, "knife: run timer advanced (%.1fs)" % play.elapsed)
 	play.game_over()
+	# A revive is offered on death (booster or ad); decline it here.
+	await _wait_until(func(): return _find_offer() != null, 3.0)
+	var offer := _find_offer()
+	_check(offer != null, "knife: death offers a revive")
+	if offer:
+		offer.choose("no")
 	await _wait(2.0)
-	_check(_sm().current_name == "lose", "knife: death leads to results (state=%s)" % _sm().current_name)
+	_check(_sm().current_name == "lose", "knife: declining the revive leads to results (state=%s)" % _sm().current_name)
 	_check(int(SaveData.knife_stats().runs) == runs_before + 1, "knife: run recorded in stats")
 	# --- Shuriken Match tutorial: walk every scripted step to the level.
 	await _go("match_tutorial", {"level": 1})
@@ -265,16 +271,25 @@ func _smoke() -> void:
 		_check(kt.step == expected, "knife tutorial: helper tap advances to step %d (step=%d)" % [expected + 1, kt.step])
 	await _wait_until(func(): return _sm().current_name == "play", 4.0)
 	_check(_sm().current_name == "play", "knife tutorial: finishes into a real run (state=%s)" % _sm().current_name)
-	# --- Per-game smoke scripts (tests/smoke_<id>.gd with `func run(tour)`).
-	for g in Globals.GAMES:
-		var path := "res://tests/smoke_%s.gd" % g.id
-		if ResourceLoader.exists(path):
-			var script = load(path)
-			if script:
-				var runner = script.new()
-				if runner.has_method("run"):
-					print("TOUR  smoke ", g.id)
-					await runner.run(self)
+	# --- Smoke scripts: every tests/smoke_*.gd with `func run(tour)`.
+	var names := []
+	var dir := DirAccess.open("res://tests")
+	if dir:
+		dir.list_dir_begin()
+		var n := dir.get_next()
+		while n != "":
+			if n.begins_with("smoke_") and n.ends_with(".gd"):
+				names.append(n)
+			n = dir.get_next()
+		dir.list_dir_end()
+	names.sort()
+	for n in names:
+		var script = load("res://tests/" + n)
+		if script:
+			var runner = script.new()
+			if runner.has_method("run"):
+				print("TOUR  smoke ", n)
+				await runner.run(self)
 	# --- Boosters, skips and generic scores (in memory).
 	var h0 := SaveData.booster_count("hint")
 	SaveData.add_booster("hint", 2)
@@ -363,3 +378,9 @@ func _wait_until(pred: Callable, timeout_sec: float) -> void:
 	var t0 := Time.get_ticks_msec()
 	while not pred.call() and Time.get_ticks_msec() - t0 < timeout_sec * 1000.0:
 		await _frames(1)
+
+func _find_offer() -> OfferOverlay:
+	for c in get_tree().root.get_children():
+		if c is OfferOverlay:
+			return c
+	return null
