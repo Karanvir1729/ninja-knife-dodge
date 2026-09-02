@@ -171,6 +171,10 @@ func _offer_extra_moves() -> void:
 	await get_tree().create_timer(0.8).timeout
 	if ended or not is_inside_tree():
 		return
+	if moves_left > 0:
+		# A booster from the bar already rescued this board.
+		%Board.interactive = true
+		return
 	_offer_open = true
 	_dialog = OfferOverlay.open(get_tree(), "moves")
 	var ok: bool = await _dialog.finished
@@ -182,8 +186,10 @@ func _offer_extra_moves() -> void:
 	if ok:
 		%Board.interactive = true
 		_apply_booster("moves")
-	else:
+	elif moves_left <= 0:
 		_finish(false)
+	else:
+		%Board.interactive = true
 
 # ---------------------------------------------------------------- boosters
 
@@ -226,18 +232,27 @@ func _on_booster(kind: String) -> void:
 	if ended or paused or _offer_open:
 		return
 	if kind == "hammer" and %Board.hammer_mode:
+		# Disarming refunds the hammer that was spent when arming.
 		%Board.hammer_mode = false
 		_set_hammer_armed(false)
+		SaveData.add_booster("hammer", 1)
 		AudioManager.back()
 		return
+	if not %Board.interactive:
+		return
 	if kind != "moves" and %Board.busy:
+		return
+	if kind == "hint" and %Board.has_hint():
+		_toast("HINT ALREADY SHOWING", 1.2)
 		return
 	AudioManager.click()
 	if SaveData.booster_count(kind) > 0:
 		if SaveData.use_booster(kind):
 			_apply_booster(kind)
-	else:
+	elif Ads.available(kind):
 		_offer(kind)
+	else:
+		_toast("NO %s LEFT" % {"hint": "HINTS", "moves": "EXTRA MOVES", "shuffle": "SHUFFLES", "hammer": "HAMMERS"}.get(kind, kind.to_upper()), 1.3)
 
 func _offer(kind: String) -> void:
 	_offer_open = true
@@ -271,7 +286,12 @@ func _apply_booster(kind: String) -> void:
 			_toast("TAP A SHURIKEN TO SMASH IT", 2.4)
 
 func _set_hammer_armed(on: bool) -> void:
-	%HammerBtn.modulate = Globals.GOLD if on else Color.WHITE
+	var icon := %HammerBtn.get_node_or_null("HammerIcon")
+	if icon:
+		icon.set("color", Globals.GOLD if on else Globals.TEXT)
+		icon.queue_redraw()
+	else:
+		%HammerBtn.modulate = Globals.GOLD if on else Color.WHITE
 
 func _on_smashed(result: Dictionary) -> void:
 	_set_hammer_armed(false)

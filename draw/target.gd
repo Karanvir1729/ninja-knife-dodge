@@ -13,7 +13,7 @@ const RING_IMAGE_PX := 240.0       # ring diameter inside the 256 px texture
 const RING_START := 2.2            # ring size relative to the shuriken at spawn
 const RING_END := 1.0              # ... and when the target expires
 const RADIUS := SHURIKEN_PX * 0.5
-const TAP_FACTOR := 1.25
+const TAP_FACTOR := 1.6
 
 var is_decoy := false
 var lifetime := 1.6

@@ -347,14 +347,18 @@ func smash(cell: Vector2i) -> void:
 	_deselect()
 	var tile: MatchTile = _tiles[cell]
 	_hammer_fx(tile.position, tile.color_index)
-	model.clear_cells({cell: true})
-	var clear_step := {"type": "clear", "cells": [cell], "created": [], "triggered": [], "combo": "", "score": BoardModel.BASE_TILE_SCORE, "chain": 0, "sfx": "hammer"}
+	# Smashing a special fires it, like matching it would.
+	var exp: Dictionary = model.expand_specials({cell: true})
+	var cells: Dictionary = exp.cells
+	model.clear_cells(cells)
+	var base_score: int = cells.size() * BoardModel.BASE_TILE_SCORE
+	var clear_step := {"type": "clear", "cells": cells.keys(), "created": [], "triggered": exp.triggered, "combo": "", "score": base_score, "chain": 0, "sfx": "hammer"}
 	await _play_steps([clear_step])
 	var cascade: Dictionary = model.resolve_cascades()
 	await _play_steps(cascade.steps)
 	busy = false
 	_idle = 0.0
-	smashed.emit({"cell": cell, "score": BoardModel.BASE_TILE_SCORE + int(cascade.score), "max_chain": int(cascade.max_chain)})
+	smashed.emit({"cell": cell, "score": base_score + int(cascade.score), "max_chain": int(cascade.max_chain)})
 	if not model.has_valid_move():
 		await _reshuffle()
 	board_settled.emit()

@@ -31,6 +31,7 @@ var paused := false
 var _progress := 0        # next index in `sequence` the player must tap
 var _idle := 0.0
 var _life_offered := false
+var _life_used := false
 var _offering := false
 var _gen := 0             # bumps whenever a new flow starts; stale coroutines bail
 var _best := 0
@@ -63,8 +64,8 @@ func _ready() -> void:
 	%PauseBtn.pressed.connect(toggle_pause)
 	$Pause.set_title("PAUSED", "Sensei waits.", Globals.VIOLET)
 	$Pause.resume.connect(toggle_pause)
-	$Pause.restart.connect(func(): Globals.go("simon_play"))
-	$Pause.menu.connect(func(): Globals.go("start"))
+	$Pause.restart.connect(func(): _new_flow(); Globals.go("simon_play"))
+	$Pause.menu.connect(func(): _new_flow(); Globals.go("start"))
 	SaveData.boosters_changed.connect(_update_lives)
 	_best = int(SaveData.game_stats("simon").best)
 	_update_lives()
@@ -220,10 +221,11 @@ func _fail(index: int) -> void:
 	if not _life_offered and (SaveData.booster_count("life") > 0 or Ads.available("life")):
 		_life_offered = true
 		_offering = true
-		_update_lives()
 		var o := OfferOverlay.open(get_tree(), "life")
 		var ok: bool = await o.finished
 		_offering = false
+		_life_used = ok
+		_update_lives()
 		if gen != _gen or not is_inside_tree():
 			return
 		if ok:
@@ -248,12 +250,9 @@ func _game_over() -> void:
 		return
 	var accuracy := 100 if taps == 0 else int(100.0 * float(correct_taps) / float(taps) + 0.5)
 	var title := "THE SENSEI NODS"
-	if rounds_completed >= 15:
-		title = "PHOTOGRAPHIC"
-	elif rounds_completed >= 10:
-		title = "SHARP MIND"
-	elif rounds_completed >= 5:
-		title = "GOOD MEMORY"
+	for m in Globals.game("simon").get("milestones", []):
+		if rounds_completed >= int(m[0]):
+			title = str(m[1])
 	Globals.go("arcade_result", {
 		"game": "simon", "score": rounds_completed, "time": elapsed, "title": title,
 		"detail": "%d PADS  ·  %s" % [longest_sequence, Globals.format_time(elapsed)],
@@ -309,7 +308,7 @@ func _update_lives() -> void:
 	var n := SaveData.booster_count("life")
 	%LifeVal.text = str(n)
 	%LifeIcon.modulate = Globals.VIOLET if n > 0 else Globals.LINE2
-	%LifeNote.text = "RETRY USED" if _life_offered else "ONE RETRY PER GAME"
+	%LifeNote.text = "RETRY USED" if _life_used else ("RETRY DECLINED" if _life_offered and not _offering else "ONE RETRY PER GAME")
 
 # ------------------------------------------------------------------ pause
 

@@ -15,7 +15,8 @@ func _ready() -> void:
 func set_title(title: String, subtitle: String, accent: Color = Globals.CYAN) -> void:
 	%Title.text = title
 	%Subtitle.text = subtitle
-	%ResumeBtn.theme_type_variation = &"MagentaButton" if accent == Globals.MAGENTA else &"PrimaryButton"
+	var mind := accent == Globals.MAGENTA or accent == Globals.VIOLET
+	%ResumeBtn.theme_type_variation = &"MagentaButton" if mind else &"PrimaryButton"
 
 func set_open(open: bool) -> void:
 	visible = open

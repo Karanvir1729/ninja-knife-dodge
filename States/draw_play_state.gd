@@ -23,7 +23,8 @@ var paused := false
 
 var _offering := false
 var _offer_used := false
-var _spawn_in := 0.9
+var _spawn_in := 2.0             # first target only after the opening toast fades
+var _miss_grace := 0.0           # one lapse costs one life, not three
 var _area := Rect2(0, 0, Globals.BASE_WIDTH, Globals.BASE_HEIGHT)
 var _shake := 0.0
 var _last_color := -1
@@ -75,6 +76,7 @@ func _process(delta: float) -> void:
 		return
 	elapsed += delta
 	%TimeVal.text = Globals.format_time(elapsed)
+	_miss_grace = maxf(0.0, _miss_grace - delta)
 	for t in alive_targets():
 		t.tick(delta)
 	_spawn_in -= delta
@@ -118,11 +120,12 @@ func _spawn() -> float:
 			decoys += 1
 		else:
 			real += 1
+	if real >= max_alive():
+		return 0.12
+	# Roll the decoy once per real spawn opportunity, never on retry ticks.
 	if hits >= 8 and decoys == 0 and randf() < 0.2:
 		_spawn_decoy()
 		return minf(spawn_interval(), 0.5)
-	if real >= max_alive():
-		return 0.12
 	_spawn_target()
 	return spawn_interval()
 
@@ -178,6 +181,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		tap_at(event.position)
+	elif event is InputEventScreenTouch and event.pressed and event.index > 0:
+		# Second finger: only the first touch is mouse-emulated.
+		tap_at(event.position)
 
 ## A tap at a canvas position: hits the nearest target within its tap radius.
 func tap_at(global_pos: Vector2) -> void:
@@ -191,6 +197,7 @@ func tap_at(global_pos: Vector2) -> void:
 			best = t
 			best_d = d
 	if best == null:
+		$FX.ring($FX.to_local(global_pos), Globals.DIM, 0.45)
 		return
 	if best.is_decoy:
 		_on_decoy_tapped(best)
@@ -222,6 +229,10 @@ func _on_hit(t: DrawTarget) -> void:
 func _on_expired(t: DrawTarget) -> void:
 	if ended or _offering:
 		return
+	if _miss_grace > 0.0:
+		t.fade_out()
+		return
+	_miss_grace = 0.5
 	misses += 1
 	var at: Vector2 = $FX.to_local(t.global_position)
 	$FX.popup("MISS", at, Globals.RED, 22)
@@ -287,7 +298,7 @@ func _out_of_lives() -> void:
 		if ok:
 			lives = 1
 			_update_lives()
-			_spawn_in = 0.9
+			_spawn_in = 1.6
 			_toast("ONE MORE LIFE", 1.3)
 			return
 	_end()
@@ -313,11 +324,13 @@ func _end() -> void:
 		"quip": _quip(),
 	})
 
+## Headline from the same milestone table the leaderboard uses.
 func _title() -> String:
-	if score >= 100: return "LIGHTNING"
-	if score >= 50: return "SHARPSHOOTER"
-	if score >= 20: return "QUICK HANDS"
-	return "WARMING UP"
+	var title := "WARMING UP"
+	for m in Globals.game("draw").get("milestones", []):
+		if score >= int(m[0]):
+			title = str(m[1])
+	return title
 
 func _quip() -> String:
 	var lines := []

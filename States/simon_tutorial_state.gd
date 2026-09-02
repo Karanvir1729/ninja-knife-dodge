@@ -5,7 +5,7 @@ extends Node2D
 const STEPS := [
 	"WATCH THE PADS LIGHT UP. SENSEI SHOWS A PATTERN.",
 	"NOW TAP THEM BACK IN THE SAME ORDER.",
-	"EACH ROUND ADDS ONE PAD. MISS ONE AND THE ROUND ENDS.",
+	"EACH ROUND ADDS ONE PAD. MISS ONE AND THE GAME ENDS.",
 ]
 ## Fixed demo pattern: the centre pad, then the top-left one.
 const DEMO: Array[int] = [4, 0]

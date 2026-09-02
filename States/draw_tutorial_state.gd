@@ -59,13 +59,16 @@ func _set_step(i: int) -> void:
 		0:
 			_spawn_demo_target()
 		1:
+			await get_tree().create_timer(0.7).timeout
+			if step != 1 or _done:
+				return
 			_spawn_demo_decoy()
-			await get_tree().create_timer(1.6).timeout
+			await get_tree().create_timer(3.2).timeout
 			if step == 1 and not _done:
 				_set_step(2)
 		2:
 			$Helper.visible = false
-			await get_tree().create_timer(1.4).timeout
+			await get_tree().create_timer(2.5).timeout
 			if not _done:
 				_finish()
 
@@ -87,8 +90,8 @@ func _spawn_demo_target() -> void:
 func _spawn_demo_decoy() -> void:
 	var t: DrawTarget = TARGET_SCENE.instantiate()
 	t.is_decoy = true
-	t.lifetime = 1.6
-	t.drift = Vector2(70.0, -12.0)
+	t.lifetime = 2.4
+	t.drift = Vector2(50.0, -8.0)
 	t.position = _stage_center() - t.drift * 0.8
 	%Targets.add_child(t)
 	_target = t
