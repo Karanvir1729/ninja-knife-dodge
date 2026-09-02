@@ -37,6 +37,14 @@ func _ready() -> void:
 	_layout_daggers()
 	get_viewport().size_changed.connect(_layout_daggers)
 	_animate(result)
+	var quips := []
+	if bool(result.new_record) and score > 0:
+		quips = ["NEW RECORD! Did you see that? I saw that!", "You dodged like a comet! New best!"]
+	elif score >= 50:
+		quips = ["So close to legend status. One more run!", "The void blinked first. Again!"]
+	else:
+		quips = ["That dagger had your name on it!", "Tap under the star to launch it up. You've got this!", "Near misses score extra. Live a little!"]
+	GuideCameo.create(self, "pip", quips, "right")
 
 func _title_for(s: int) -> String:
 	if s >= 150: return "BLADE DANCER"

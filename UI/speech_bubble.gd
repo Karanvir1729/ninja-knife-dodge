@@ -8,6 +8,7 @@ signal advanced
 
 const SPEED := 46.0   # characters per second
 const MAX_WIDTH := 440.0
+var max_width := MAX_WIDTH
 
 var anchor := Vector2.ZERO   # global point the tail points at
 var accent: Color = Globals.CYAN
@@ -33,8 +34,8 @@ func show_line(who: String, text: String, p_accent: Color, anchor_global: Vector
 	sb.border_color = Color(accent, 0.65)
 	sb.shadow_color = Color(accent, 0.16)
 	%Panel.add_theme_stylebox_override("panel", sb)
-	custom_minimum_size.x = MAX_WIDTH
-	size = Vector2(MAX_WIDTH, 0)
+	custom_minimum_size.x = max_width
+	size = Vector2(max_width, 0)
 	_chars = 0.0
 	_typing = true
 	visible = true

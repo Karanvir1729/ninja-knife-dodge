@@ -53,8 +53,14 @@ func _ready() -> void:
 	for st in stats:
 		%Stats.add_child(_stat_tile(str(st[0]), str(st[1]), st[2] if st.size() > 2 else Globals.TEXT))
 	%Stats.visible = not stats.is_empty()
-	%Quip.text = quip
-	%Quip.visible = quip != ""
+	%Quip.visible = false
+	if quip != "":
+		var who := "sensei" if quip.begins_with("Sensei") or g.get("category", "skill") == "mind" else "pip"
+		var text := quip
+		var colon := quip.find(":")
+		if colon > 0 and colon < 16:
+			text = quip.substr(colon + 1).strip_edges().trim_prefix("\"").trim_suffix("\"")
+		GuideCameo.create(self, who, [text], "left" if who == "sensei" else "right")
 	%PlayAgain.pressed.connect(func(): AudioManager.click(); Globals.go(str(g.get("play_state", "start"))))
 	%PlayAgain.theme_type_variation = &"MagentaButton" if g.get("category", "skill") == "mind" else &"PrimaryButton"
 	%Board.pressed.connect(func(): AudioManager.click(); Globals.go("leaderboard", {"tab": game_id}))
