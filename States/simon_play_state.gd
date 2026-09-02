@@ -36,6 +36,17 @@ var _gen := 0             # bumps whenever a new flow starts; stale coroutines b
 var _best := 0
 var _rng := RandomNumberGenerator.new()
 var _status_tween: Tween
+var _sensei: Mascot
+var _bubble: SpeechBubble
+const SENSEI_LINES := {
+	"watch": ["Watch closely.", "Eyes on the pads.", "Observe. Do not blink.", "The pattern begins."],
+	"input": ["Your turn.", "Now, play it back.", "Show me.", "In the same order."],
+	"perfect": ["Well done.", "Good. One more.", "Your memory sharpens.", "Exactly so."],
+	"wrong": ["Hmm. That was not it.", "The mind wandered.", "Not that one, young one."],
+	"slow": ["Too slow. The pattern faded.", "Hesitation is a choice too."],
+	"second": ["Once more. Watch.", "A second chance. Use it well."],
+	"over": ["We will try again.", "Rest. Then return."],
+}
 
 func init(_params: Dictionary) -> void:
 	pass
@@ -58,10 +69,63 @@ func _ready() -> void:
 	_best = int(SaveData.game_stats("simon").best)
 	_update_lives()
 	_update_hud()
+	_setup_sensei()
 	_start_round()
+
+## Sensei sits at the bottom of the side panel and comments on each phase.
+func _setup_sensei() -> void:
+	if has_node("%Tip"):
+		%Tip.visible = false
+	_sensei = Mascot.new()
+	_sensei.character = "sensei"
+	_sensei.base_scale = 0.42
+	$UI.add_child(_sensei)
+	var layer := Control.new()
+	layer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	$UI.add_child(layer)
+	_bubble = load("res://UI/speech_bubble.tscn").instantiate()
+	_bubble.max_width = 330.0
+	layer.add_child(_bubble)
+	_bubble.get_node("%Hint").visible = false
+	_bubble.typed_char.connect(func(): if _sensei: _sensei.blip())
+	_bubble.finished_typing.connect(func(): if _sensei: _sensei.set_talking(false))
+	_sensei.tapped.connect(func(): _sensei_say("perfect" if phase == "between" else ("input" if phase == "input" else "watch")))
+	await get_tree().process_frame
+	_place_sensei(true)
+
+func _place_sensei(animate: bool) -> void:
+	if _sensei == null or not has_node("%Root"):
+		return
+	var side: Control = %Root.get_node("H/Side")
+	var r := side.get_global_rect()
+	var home := Vector2(r.position.x + 70.0, r.end.y - 118.0 * _sensei.base_scale - 4.0)
+	if animate:
+		_sensei.enter(home + Vector2(0, 220), home, 0.2)
+	else:
+		_sensei.position = home
+
+func _sensei_say(kind: String, mood: String = "neutral") -> void:
+	if _sensei == null or _bubble == null or not SENSEI_LINES.has(kind):
+		return
+	var lines: Array = SENSEI_LINES[kind]
+	var text := str(lines[_rng.randi_range(0, lines.size() - 1)])
+	_sensei.set_mood(mood)
+	_sensei.set_talking(true)
+	_bubble.show_line(_sensei.display_name, text, _sensei.accent, _sensei.head_global())
+	await get_tree().process_frame
+	var head := _sensei.head_global()
+	var pos := head + Vector2(30.0, -_bubble.size.y * 0.5 - 10.0)
+	var r := Globals.view_rect()
+	pos.x = clampf(pos.x, r.position.x + 8.0, r.end.x - _bubble.size.x - 8.0)
+	pos.y = clampf(pos.y, r.position.y + 8.0, r.end.y - _bubble.size.y - 8.0)
+	_bubble.global_position = pos
+	_bubble.anchor = head
+	_bubble.queue_redraw()
 
 func _layout() -> void:
 	Globals.apply_safe_margins(%Root, MARGIN)
+	call_deferred("_place_sensei", false)
 	var r := Globals.view_rect()
 	var ins := Globals.safe_insets()
 	var avail_h: float = r.size.y - 2 * MARGIN - float(ins.top) - float(ins.bottom)
@@ -85,6 +149,7 @@ func _playback(lead_in: float) -> void:
 	%Grid.input_enabled = false
 	_set_status("WATCH", WATCH_SUBS[_rng.randi_range(0, WATCH_SUBS.size() - 1)], Globals.VIOLET)
 	AudioManager.play_sfx("simon_watch")
+	_sensei_say("watch", "think")
 	await _sleep(lead_in)
 	if gen != _gen:
 		return
@@ -99,6 +164,7 @@ func _playback(lead_in: float) -> void:
 	_idle = 0.0
 	%Grid.input_enabled = true
 	_set_status("YOUR TURN", "Tap the pads in the same order", Globals.GREEN)
+	_sensei_say("input", "neutral")
 
 ## The same path a real tap takes (pads route their gui_input here).
 func press_pad(index: int) -> void:
@@ -125,6 +191,7 @@ func _round_complete() -> void:
 	AudioManager.play_sfx("simon_round")
 	AudioManager.vibrate(20)
 	_set_status("PERFECT", "ROUND %d CLEARED" % round, Globals.GOLD)
+	_sensei_say("perfect", "happy")
 	_update_hud()
 	await _sleep(0.8)
 	if gen != _gen:
@@ -142,8 +209,10 @@ func _fail(index: int) -> void:
 	%Grid.flash_wrong(index if index >= 0 else sequence[_progress])
 	if index >= 0:
 		_set_status("WRONG PAD", "That was not the pattern", Globals.RED)
+		_sensei_say("wrong", "think")
 	else:
 		_set_status("TOO SLOW", "The pattern faded", Globals.RED)
+		_sensei_say("slow", "think")
 	await _sleep(0.9)
 	if gen != _gen:
 		return
@@ -159,6 +228,7 @@ func _fail(index: int) -> void:
 		if ok:
 			_update_lives()
 			_set_status("SECOND CHANCE", "Watch the pattern once more", Globals.VIOLET)
+			_sensei_say("second", "happy")
 			await _sleep(0.6)
 			if gen != _gen:
 				return
@@ -171,6 +241,7 @@ func _game_over() -> void:
 	phase = "over"
 	%Grid.input_enabled = false
 	_set_status("GAME OVER", "Sensei bows", Globals.MUTED)
+	_sensei_say("over", "neutral")
 	await _sleep(1.0)
 	if gen != _gen:
 		return

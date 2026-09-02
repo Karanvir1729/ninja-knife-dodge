@@ -333,14 +333,20 @@ func _walk(dir: String, out: Array) -> void:
 		n = d.get_next()
 	d.list_dir_end()
 
-## Simulate taps just below the star every 0.55s so it keeps bouncing.
+## Simulate taps just below the star every 0.55s so it keeps bouncing. Daggers
+## that stray within reach of the star are removed so the check is deterministic
+## (this exercises input, physics bounds and spawning, not dodging skill).
 func _keep_alive(play: Node, seconds: float) -> void:
 	var t := 0.0
 	while t < seconds and is_instance_valid(play) and not play.dead:
-		var p: Vector2 = play.get_node("%Player").position + Vector2(randf_range(-30, 30), 70)
+		var player: Node2D = play.get_node("%Player")
+		for k in play.get_node("%Knives").get_children():
+			if k.global_position.distance_to(player.global_position) < 170.0:
+				k.queue_free()
+		var p: Vector2 = player.position + Vector2(randf_range(-30, 30), 70)
 		_click(p)
-		await _wait(0.55)
-		t += 0.55
+		await _wait(0.11)
+		t += 0.11
 
 func _click(pos: Vector2) -> void:
 	var down := InputEventMouseButton.new()
