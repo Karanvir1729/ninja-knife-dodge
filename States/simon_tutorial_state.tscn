@@ -1,0 +1,142 @@
+[gd_scene load_steps=6 format=3 uid="uid://c1simontut0000"]
+
+[ext_resource type="Script" path="res://States/simon_tutorial_state.gd" id="1_st"]
+[ext_resource type="Script" path="res://simon/pad_grid.gd" id="2_grid"]
+[ext_resource type="Texture2D" path="res://graphics/gen/glow.png" id="3_glow"]
+
+[sub_resource type="StyleBoxFlat" id="board_panel"]
+content_margin_left = 16.0
+content_margin_top = 16.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+bg_color = Color(0.0549, 0.0588, 0.0863, 0.86)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.608, 0.42, 1, 0.3)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="CanvasItemMaterial" id="add"]
+blend_mode = 1
+
+[node name="SimonTutorialState" type="Node2D"]
+script = ExtResource("1_st")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Root" type="MarginContainer" parent="UI"]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="V" type="VBoxContainer" parent="UI/Root"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 16
+
+[node name="Top" type="HBoxContainer" parent="UI/Root/V"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 20
+
+[node name="Pad" type="Control" parent="UI/Root/V/Top"]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="L1" type="Label" parent="UI/Root/V/Top"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"DisplayLabel"
+theme_override_colors/font_outline_color = Color(0.608, 0.42, 1, 0.3)
+theme_override_constants/outline_size = 8
+theme_override_constants/line_spacing = 10
+theme_override_font_sizes/font_size = 36
+text = "WATCH THE PADS LIGHT UP. SENSEI SHOWS A PATTERN."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Skip" type="Button" parent="UI/Root/V/Top"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 52)
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 20
+text = "SKIP"
+
+[node name="Mid" type="CenterContainer" parent="UI/Root/V"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="BoardPanel" type="PanelContainer" parent="UI/Root/V/Mid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(540, 540)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("board_panel")
+
+[node name="Grid" type="GridContainer" parent="UI/Root/V/Mid/BoardPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+columns = 3
+script = ExtResource("2_grid")
+
+[node name="Bottom" type="HBoxContainer" parent="UI/Root/V"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="Dots" type="HBoxContainer" parent="UI/Root/V/Bottom"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="D1" type="ColorRect" parent="UI/Root/V/Bottom/Dots"]
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.608, 0.42, 1, 1)
+
+[node name="D2" type="ColorRect" parent="UI/Root/V/Bottom/Dots"]
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.204, 0.227, 0.333, 1)
+
+[node name="D3" type="ColorRect" parent="UI/Root/V/Bottom/Dots"]
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.204, 0.227, 0.333, 1)
+
+[node name="Step" type="Label" parent="UI/Root/V/Bottom"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_colors/font_color = Color(0.353, 0.38, 0.502, 1)
+theme_override_font_sizes/font_size = 16
+text = "STEP 1 OF 3"
+
+[node name="Helper" type="Node2D" parent="UI"]
+visible = false
+z_index = 5
+
+[node name="Glow" type="Sprite2D" parent="UI/Helper"]
+material = SubResource("add")
+modulate = Color(0.85, 0.75, 1, 0.8)
+scale = Vector2(0.55, 0.55)
+texture = ExtResource("3_glow")

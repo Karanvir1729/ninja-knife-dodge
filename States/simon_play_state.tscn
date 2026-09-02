@@ -1,0 +1,289 @@
+[gd_scene load_steps=10 format=3 uid="uid://c1simonplay000"]
+
+[ext_resource type="Script" path="res://States/simon_play_state.gd" id="1_sp"]
+[ext_resource type="Script" path="res://simon/pad_grid.gd" id="2_grid"]
+[ext_resource type="PackedScene" path="res://UI/pause_overlay.tscn" id="3_pause"]
+[ext_resource type="Texture2D" path="res://graphics/gen/icon_pause.png" id="icon_pause"]
+[ext_resource type="Texture2D" path="res://graphics/gen/icon_star.png" id="icon_star"]
+
+[sub_resource type="StyleBoxFlat" id="board_panel"]
+content_margin_left = 22.0
+content_margin_top = 22.0
+content_margin_right = 22.0
+content_margin_bottom = 22.0
+bg_color = Color(0.0549, 0.0588, 0.0863, 0.86)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.608, 0.42, 1, 0.35)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0.608, 0.42, 1, 0.1)
+shadow_size = 40
+
+[sub_resource type="StyleBoxFlat" id="status"]
+content_margin_left = 24.0
+content_margin_top = 16.0
+content_margin_right = 24.0
+content_margin_bottom = 16.0
+bg_color = Color(0.608, 0.42, 1, 0.08)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.608, 0.42, 1, 0.45)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="bar_bg"]
+bg_color = Color(0.149, 0.165, 0.239, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="bar_fill"]
+bg_color = Color(0.302, 1, 0.651, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0.302, 1, 0.651, 0.4)
+shadow_size = 4
+
+[node name="SimonPlayState" type="Node2D"]
+script = ExtResource("1_sp")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Root" type="MarginContainer" parent="UI"]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="H" type="HBoxContainer" parent="UI/Root"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 40
+
+[node name="BoardCenter" type="CenterContainer" parent="UI/Root/H"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="BoardPanel" type="PanelContainer" parent="UI/Root/H/BoardCenter"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(704, 704)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("board_panel")
+
+[node name="Grid" type="GridContainer" parent="UI/Root/H/BoardCenter/BoardPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+columns = 3
+script = ExtResource("2_grid")
+
+[node name="Side" type="VBoxContainer" parent="UI/Root/H"]
+custom_minimum_size = Vector2(540, 0)
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 16
+
+[node name="Header" type="HBoxContainer" parent="UI/Root/H/Side"]
+layout_mode = 2
+
+[node name="T" type="VBoxContainer" parent="UI/Root/H/Side/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="C" type="Label" parent="UI/Root/H/Side/Header/T"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_colors/font_color = Color(0.608, 0.42, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "SENSEI SAYS"
+
+[node name="RoundLabel" type="Label" parent="UI/Root/H/Side/Header/T"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"DisplayLabel"
+theme_override_colors/font_outline_color = Color(0.608, 0.42, 1, 0.35)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 54
+text = "ROUND 1"
+
+[node name="PauseBtn" type="Button" parent="UI/Root/H/Side/Header"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_vertical = 0
+theme_type_variation = &"IconButton"
+icon = ExtResource("icon_pause")
+icon_alignment = 1
+expand_icon = true
+
+[node name="Tiles" type="HBoxContainer" parent="UI/Root/H/Side"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="BestPanel" type="PanelContainer" parent="UI/Root/H/Side/Tiles"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"RaisedPanel"
+
+[node name="V" type="VBoxContainer" parent="UI/Root/H/Side/Tiles/BestPanel"]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="BestCaps" type="Label" parent="UI/Root/H/Side/Tiles/BestPanel/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_font_sizes/font_size = 16
+text = "BEST"
+horizontal_alignment = 1
+
+[node name="BestVal" type="Label" parent="UI/Root/H/Side/Tiles/BestPanel/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"DisplayLabel"
+theme_override_colors/font_outline_color = Color(1, 0.847, 0.302, 0.25)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 62
+text = "0"
+horizontal_alignment = 1
+
+[node name="SeqPanel" type="PanelContainer" parent="UI/Root/H/Side/Tiles"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"RaisedPanel"
+
+[node name="V" type="VBoxContainer" parent="UI/Root/H/Side/Tiles/SeqPanel"]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="C" type="Label" parent="UI/Root/H/Side/Tiles/SeqPanel/V"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_font_sizes/font_size = 16
+text = "SEQUENCE"
+horizontal_alignment = 1
+
+[node name="SeqVal" type="Label" parent="UI/Root/H/Side/Tiles/SeqPanel/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"DisplayLabel"
+theme_override_colors/font_outline_color = Color(0.608, 0.42, 1, 0.35)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 62
+text = "1"
+horizontal_alignment = 1
+
+[node name="StatusPanel" type="PanelContainer" parent="UI/Root/H/Side"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/panel = SubResource("status")
+
+[node name="V" type="VBoxContainer" parent="UI/Root/H/Side/StatusPanel"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="StatusLabel" type="Label" parent="UI/Root/H/Side/StatusPanel/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"DisplayLabel"
+theme_override_colors/font_color = Color(0.608, 0.42, 1, 1)
+theme_override_colors/font_outline_color = Color(0.027, 0.031, 0.051, 0.9)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 42
+text = "WATCH"
+horizontal_alignment = 1
+
+[node name="StatusSub" type="Label" parent="UI/Root/H/Side/StatusPanel/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 19
+text = "Sensei shows the pattern"
+horizontal_alignment = 1
+
+[node name="IdleBar" type="ProgressBar" parent="UI/Root/H/Side/StatusPanel/V"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+theme_override_styles/background = SubResource("bar_bg")
+theme_override_styles/fill = SubResource("bar_fill")
+value = 100.0
+show_percentage = false
+
+[node name="LifePanel" type="PanelContainer" parent="UI/Root/H/Side"]
+layout_mode = 2
+theme_type_variation = &"RaisedPanel"
+
+[node name="H" type="HBoxContainer" parent="UI/Root/H/Side/LifePanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="LifeIcon" type="TextureRect" parent="UI/Root/H/Side/LifePanel/H"]
+unique_name_in_owner = true
+modulate = Color(0.608, 0.42, 1, 1)
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("icon_star")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LifeVal" type="Label" parent="UI/Root/H/Side/LifePanel/H"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"NumberLabel"
+theme_override_font_sizes/font_size = 30
+text = "1"
+
+[node name="LifeCaps" type="Label" parent="UI/Root/H/Side/LifePanel/H"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_type_variation = &"CapsLabel"
+theme_override_font_sizes/font_size = 16
+text = "EXTRA LIVES"
+
+[node name="LifeNote" type="Label" parent="UI/Root/H/Side/LifePanel/H"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"CapsLabel"
+theme_override_colors/font_color = Color(0.353, 0.38, 0.502, 1)
+theme_override_font_sizes/font_size = 15
+text = "ONE RETRY PER GAME"
+
+[node name="Spacer" type="Control" parent="UI/Root/H/Side"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="Tip" type="Label" parent="UI/Root/H/Side"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 18
+text = "Watch the pads light up, then tap them back in the same order. Every round adds one more pad."
+autowrap_mode = 3
+
+[node name="Pause" parent="." instance=ExtResource("3_pause")]
