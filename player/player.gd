@@ -6,8 +6,11 @@ signal jumped
 const GRAVITY := 240.0      # px/s^2 (matches the original 4 px/frame at 60 fps)
 const MOVE := 550.0
 const MAX_FALL := 1400.0
+const REVIVE_GRACE := 2.0   # seconds of blinking invulnerability after a revive
 
 var can_move := true
+var invulnerable := false
+var _blink: Tween
 
 func _process(delta: float) -> void:
 	if not can_move:
@@ -49,3 +52,22 @@ func die() -> void:
 	$Trail.emitting = false
 	$Star.visible = false
 	$Glow.visible = false
+
+## Second wind: back to the middle of the void, blinking and untouchable for a
+## moment so the player can get their bearings.
+func revive() -> void:
+	if _blink and _blink.is_valid():
+		_blink.kill()
+	$Star.visible = true
+	$Glow.visible = true
+	$Star.modulate.a = 1.0
+	$Trail.emitting = true
+	can_move = true
+	velocity = Vector2.ZERO
+	position = Globals.view_center() + Vector2(0, -100)
+	invulnerable = true
+	_blink = create_tween()
+	_blink.set_loops(int(REVIVE_GRACE / 0.25))
+	_blink.tween_property($Star, "modulate:a", 0.2, 0.125)
+	_blink.tween_property($Star, "modulate:a", 1.0, 0.125)
+	_blink.finished.connect(func(): invulnerable = false)

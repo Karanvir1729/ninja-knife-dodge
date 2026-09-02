@@ -34,7 +34,9 @@ var streak := 0
 var streak_timer := 0.0
 var dead := false
 var paused := false
+var revived_this_run := false
 var _shake := 0.0
+var _offer: OfferOverlay
 
 func init(_params: Dictionary) -> void:
 	pass
@@ -74,7 +76,11 @@ func _process(delta: float) -> void:
 func _bounds() -> void:
 	var r := Globals.view_rect()
 	var p: CharacterBody2D = %Player
-	if p.position.y >= r.end.y + 24:
+	if p.invulnerable and p.position.y >= r.end.y - 20:
+		# Second-wind grace: a soft floor instead of falling out of the void.
+		p.position.y = r.end.y - 20
+		p.velocity.y = -absf(p.velocity.y) * 0.5
+	elif p.position.y >= r.end.y + 24:
 		game_over()
 		return
 	if p.position.y <= r.position.y:
@@ -135,7 +141,7 @@ func _add_score(n: int) -> void:
 	$HUD.set_score(score)
 
 func game_over() -> void:
-	if dead:
+	if dead or %Player.invulnerable:
 		return
 	dead = true
 	%Player.die()
@@ -150,7 +156,43 @@ func game_over() -> void:
 		k.can_move = false
 	$Spawn.stop()
 	await get_tree().create_timer(1.2).timeout
+	if not is_inside_tree():
+		return
+	# One second wind per run: spend a revive booster or watch an ad.
+	if not revived_this_run and (SaveData.booster_count("revive") > 0 or Ads.available("revive")):
+		get_tree().paused = true
+		_offer = OfferOverlay.open(get_tree(), "revive")
+		var ok: bool = await _offer.finished
+		_offer = null
+		if not is_inside_tree():
+			return
+		if ok:
+			_revive()
+			return
+		get_tree().paused = false
 	Globals.go("lose", {"score": score, "wave": waves_started, "time": elapsed, "near": near_misses, "dodged": dodged})
+
+func _revive() -> void:
+	revived_this_run = true
+	dead = false
+	for k in %Knives.get_children():
+		%Knives.remove_child(k)
+		k.queue_free()
+	get_tree().paused = false
+	%Player.revive()
+	streak = 0
+	$HUD.set_streak(0)
+	$Spawn.wait_time = 2.0
+	$Spawn.start(2.0)
+	$HUD.show_wave(waves_started, "SECOND WIND", Globals.GOLD)
+	AudioManager.play_sfx("wave_start", 1.25, -6.0)
+
+## Leaving the screen while the revive dialog is up (menu, restart, debug
+## tour) must not leave that dialog floating over the next screen.
+func _exit_tree() -> void:
+	if is_instance_valid(_offer):
+		_offer.queue_free()
+		_offer = null
 
 func toggle_pause() -> void:
 	if dead:

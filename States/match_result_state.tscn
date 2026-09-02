@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://c1matchresult0"]
+[gd_scene load_steps=6 format=3 uid="uid://c1matchresult0"]
 
 [ext_resource type="Script" path="res://States/match_result_state.gd" id="1_mr"]
 [ext_resource type="Texture2D" path="res://graphics/gen/icon_star.png" id="icon_star"]
+[ext_resource type="Texture2D" path="res://graphics/gen/icon_skip.png" id="icon_skip"]
 
 [sub_resource type="StyleBoxFlat" id="card"]
 content_margin_left = 48.0
@@ -242,6 +243,18 @@ text = "NEXT LEVEL"
 unique_name_in_owner = true
 layout_mode = 2
 text = "RETRY"
+
+[node name="SkipBtn" type="Button" parent="Root/Center/Card/V/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.847, 0.302, 1)
+theme_override_colors/font_hover_color = Color(1, 0.847, 0.302, 1)
+theme_override_colors/icon_normal_color = Color(1, 0.847, 0.302, 1)
+theme_override_colors/icon_hover_color = Color(1, 0.847, 0.302, 1)
+theme_override_constants/icon_max_width = 22
+icon = ExtResource("icon_skip")
+expand_icon = true
+text = "SKIP LEVEL"
 
 [node name="LevelsBtn" type="Button" parent="Root/Center/Card/V/Buttons"]
 unique_name_in_owner = true
