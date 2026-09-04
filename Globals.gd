@@ -10,7 +10,7 @@ const BASE_HEIGHT := 792
 const WINDOW_WIDTH := 1408
 const WINDOW_HEIGHT := 792
 
-const VERSION := "2.0"
+const VERSION := "2.1"
 
 # Palette (matches the design canvas)
 const BG0 := Color("07080d")

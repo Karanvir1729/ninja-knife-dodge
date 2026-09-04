@@ -33,7 +33,10 @@ var _cache := {}
 var _pending: Array = []
 
 func _ready() -> void:
-	_swap("start", {})
+	var first := "start"
+	if not SaveData.story_flag("prologue_seen") and not DebugTour.check_only and DebugTour.out_dir.is_empty():
+		first = "cinematic"
+	_swap(first, {"return": "start"})
 	$Transition.snap_clear()
 
 func _scene(state_name: String) -> PackedScene:

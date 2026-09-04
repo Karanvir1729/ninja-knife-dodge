@@ -16,6 +16,7 @@ var target_rect: Callable        # (name: String) -> Rect2 (global)
 var highlighter: Callable        # (name: String, on: bool)
 var bubble_bounds: Callable      # () -> Rect2 (global area the bubble may occupy)
 
+var beside := false             # place the bubble to the speaker's right instead of above
 var running := false
 var _lines: Array = []
 var _index := -1
@@ -78,9 +79,15 @@ func _place_bubble() -> void:
 		return
 	var head := _speaker.head_global()
 	var bounds: Rect2 = bubble_bounds.call() if bubble_bounds.is_valid() else Globals.view_rect()
-	var pos := head + Vector2(-bubble.size.x * 0.35, -bubble.size.y - 34)
-	pos.x = clampf(pos.x, bounds.position.x, bounds.end.x - bubble.size.x)
-	pos.y = maxf(pos.y, bounds.position.y)
+	var pos: Vector2
+	if beside:
+		pos = head + Vector2(70.0, -bubble.size.y * 0.35)
+		pos.x = clampf(pos.x, bounds.position.x, bounds.end.x - bubble.size.x)
+		pos.y = clampf(pos.y, bounds.position.y, bounds.end.y - bubble.size.y)
+	else:
+		pos = head + Vector2(-bubble.size.x * 0.35, -bubble.size.y - 34)
+		pos.x = clampf(pos.x, bounds.position.x, bounds.end.x - bubble.size.x)
+		pos.y = maxf(pos.y, bounds.position.y)
 	bubble.global_position = pos
 	bubble.anchor = head
 	bubble.queue_redraw()
@@ -113,6 +120,15 @@ func _end() -> void:
 # ---------------------------------------------------------------- scripts
 
 static func intro(pname: String) -> Array:
+	return [
+		{"who": "pip", "mood": "excited", "gesture": "hop", "text": "Whoa, a new ninja! Welcome to the Star Dojo, %s!" % pname},
+		{"who": "sensei", "mood": "neutral", "text": "I am Sensei Kuro. Four trials await you, one seal each."},
+		{"who": "sensei", "mood": "think", "gesture": "point", "target": "skill", "text": "The Blade and the Eye test your reflexes: dodge the daggers, strike the targets."},
+		{"who": "sensei", "mood": "think", "gesture": "point", "target": "mind", "text": "The Mind and Memory test your patience: align the shurikens, keep the pattern."},
+		{"who": "pip", "mood": "excited", "gesture": "hop", "text": "Earn all four seals and I'll shine unbroken! Tap us any time for a tip."},
+	]
+
+static func intro_legacy(pname: String) -> Array:
 	return [
 		{"who": "pip", "mood": "excited", "gesture": "hop", "text": "Whoa, a new ninja! Welcome to the void, %s!" % pname},
 		{"who": "sensei", "mood": "neutral", "text": "Calm yourself, Pip. Welcome, young one. I am Sensei Kuro, and this is Pip."},

@@ -106,6 +106,15 @@ func _draw() -> void:
 	if not visible:
 		return
 	var local := anchor - global_position
+	if local.x < -8.0:
+		# Speaker is to the left: tail from the left edge.
+		var by: float = clampf(local.y, 28.0, size.y - 28.0)
+		var tip := Vector2(maxf(local.x, -44.0), by)
+		var pts := PackedVector2Array([Vector2(2, by - 14), tip, Vector2(2, by + 14)])
+		draw_colored_polygon(pts, Color(Globals.BG1, 0.96))
+		draw_line(pts[0], pts[1], Color(accent, 0.65), 1.5, true)
+		draw_line(pts[1], pts[2], Color(accent, 0.65), 1.5, true)
+		return
 	var bottom := size.y - 2.0
 	var bx: float = clampf(local.x, 40.0, size.x - 40.0)
 	var tip := Vector2(local.x, minf(local.y, bottom + 40.0))

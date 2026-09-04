@@ -23,6 +23,7 @@ var _young: Mascot
 var _old: Mascot
 var _pip: Mascot
 var _tex := {}
+var _caption_tween: Tween
 
 func init(p: Dictionary) -> void:
 	return_to = str(p.get("return", "start"))
@@ -118,6 +119,8 @@ func _unhandled_input(event: InputEvent) -> void:
 # ---------------------------------------------------------------- helpers
 
 func _caption(text: String) -> void:
+	if _caption_tween and _caption_tween.is_valid():
+		_caption_tween.kill()
 	_caption_full = text
 	%Caption.text = text
 	%Caption.visible_characters = 0
@@ -127,7 +130,10 @@ func _caption(text: String) -> void:
 
 func _clear_caption() -> void:
 	_typing = false
-	create_tween().tween_property(%Caption, "modulate:a", 0.0, 0.3)
+	if _caption_tween and _caption_tween.is_valid():
+		_caption_tween.kill()
+	_caption_tween = create_tween()
+	_caption_tween.tween_property(%Caption, "modulate:a", 0.0, 0.3)
 
 ## Wait, but return early when the player taps or skips.
 func _wait(sec: float) -> void:
@@ -168,6 +174,13 @@ func _burst(at: Vector2, color: Color, amount: int = 40, speed: float = 320.0) -
 	p.emitting = true
 	get_tree().create_timer(1.2).timeout.connect(p.queue_free)
 
+## Zoom the stage around its centre (a slow push-in reads as a camera move).
+func _cam(k: float, offset: Vector2, dur: float) -> void:
+	var t := create_tween()
+	t.set_parallel(true)
+	t.tween_property($Stage, "scale", Vector2(k, k), dur).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+	t.tween_property($Stage, "position", _c * (1.0 - k) + offset, dur).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
+
 func _tween_alpha(node: CanvasItem, a: float, dur: float) -> Tween:
 	var t := create_tween()
 	t.tween_property(node, "modulate:a", a, dur)
@@ -191,6 +204,8 @@ func _finish() -> void:
 	Globals.go(return_to)
 
 func _shot_void() -> void:
+	_cam(1.06, Vector2.ZERO, 0.0)
+	_cam(1.0, Vector2.ZERO, 9.0)
 	await _fade(0.0, 1.2)
 	var mist: Sprite2D = $Stage/Far/Mist
 	_tween_alpha(mist, 0.35, 2.0)
@@ -213,6 +228,7 @@ func _shot_training() -> void:
 		_tween_alpha($Stage/Mid.get_node("Lantern%d" % i), 1.0, 0.8)
 		_tween_alpha($Stage/Mid.get_node("LanternGlow%d" % i), 0.55, 1.2)
 	_tween_alpha($Stage/Far/Torii, 1.0, 0.8)
+	_cam(1.16, Vector2(0, 30), 9.0)
 	_young = MASCOT.new()
 	_young.character = "young"
 	_young.base_scale = 0.72
@@ -261,6 +277,7 @@ func _shot_starfall() -> void:
 	_young.set_facing(true)
 	_young.set_mood("think")
 	_caption("Then a star fell from the dark.")
+	_cam(1.08, Vector2(0, 40), 1.6)
 	AudioManager.play_sfx("star_fall", 1.0, -4.0)
 	var star := _sprite($Stage/FX, "res://graphics/gen/player_star.png", _c + Vector2(760, -520), 0.5, Globals.GOLD)
 	_sprite(star, "res://graphics/gen/glow.png", Vector2.ZERO, 0.9, Color(Globals.GOLD, 0.7), true)
@@ -309,6 +326,7 @@ func _shot_starfall() -> void:
 func _shot_daggers() -> void:
 	_advance = false
 	_caption("The daggers of light came hunting. Kuro stood between.")
+	_cam(1.22, Vector2(0, 60), 2.6)
 	var pip_pos: Vector2 = _pip.position
 	var between := pip_pos + Vector2(-120, -10)
 	var kt := create_tween()
@@ -361,6 +379,7 @@ func _shot_daggers() -> void:
 func _shot_years() -> void:
 	_advance = false
 	_caption("Years passed. The master grew old, and the star grew bright. But the daggers never stopped.")
+	_cam(1.1, Vector2(0, 30), 6.0)
 	_swirl.position = _c + Vector2(0, -40)
 	for i in 28:
 		var a := i * TAU / 28.0
@@ -401,12 +420,16 @@ func _shot_trials() -> void:
 	_caption("Four trials remain. Master them, and the star will shine unbroken.")
 	var glyphs := ["blade", "eye", "mind", "memory"]
 	var accents := [Globals.CYAN, Globals.ORANGE, Globals.MAGENTA, Globals.VIOLET]
+	_cam(1.0, Vector2.ZERO, 1.2)
+	_tween_alpha($Stage/Mid/Lantern1, 0.0, 0.5)
+	_tween_alpha($Stage/Mid/LanternGlow1, 0.0, 0.5)
+	create_tween().tween_property($Stage/Mid/Platform, "scale", Vector2(1.3, 1.0), 0.8).set_ease(Tween.EASE_OUT)
 	var om := create_tween()
-	om.tween_property(_old, "position", _c + Vector2(-300, 62), 0.6).set_ease(Tween.EASE_OUT)
+	om.tween_property(_old, "position", _c + Vector2(-330, 62), 0.6).set_ease(Tween.EASE_OUT)
 	var pm := create_tween()
-	pm.tween_property(_pip, "position", _c + Vector2(-170, 90), 0.6).set_ease(Tween.EASE_OUT)
+	pm.tween_property(_pip, "position", _c + Vector2(-195, 92), 0.6).set_ease(Tween.EASE_OUT)
 	for i in 4:
-		var x: float = -60.0 + i * 130.0
+		var x: float = -40.0 + i * 126.0
 		var pillar := _sprite($Stage/Mid, "pillar", _c + Vector2(x, 420), 0.62, Color(1, 1, 1, 1))
 		pillar.name = "Pillar%d" % i
 		var slot := pillar.position + Vector2(0, -44 * 0.62 - 0)

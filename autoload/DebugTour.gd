@@ -8,6 +8,7 @@ extends Node
 var out_dir := ""
 var quick := false
 var check_only := false
+var film_dir := ""
 var _fails := 0
 var _checks := 0
 var _scale := 1.0
@@ -20,8 +21,17 @@ func _ready() -> void:
 			quick = true
 		if arg == "--check":
 			check_only = true
+		if arg.begins_with("--film="):
+			film_dir = arg.trim_prefix("--film=")
 	if check_only:
 		call_deferred("_check_all")
+		return
+	if not film_dir.is_empty():
+		out_dir = film_dir
+		DirAccess.make_dir_recursive_absolute(out_dir)
+		SaveData.read_only = true
+		_seed_sample_data()
+		call_deferred("_film")
 		return
 	if out_dir.is_empty():
 		return
@@ -407,3 +417,24 @@ func _find_offer() -> OfferOverlay:
 		if c is OfferOverlay:
 			return c
 	return null
+
+## `-- --film=<dir>`: play only the prologue, screenshot every 0.8 s with debug
+## state in the log, then quit. Fast iteration on the cinematic.
+func _film() -> void:
+	await _frames(3)
+	DisplayServer.window_set_size(Vector2i(int(1408 * _scale), int(792 * _scale)))
+	await _frames(3)
+	SaveData.set_story_flag("prologue_seen", false)
+	await _go("cinematic", {"return": "start"})
+	var n := 0
+	var t0 := Time.get_ticks_msec()
+	while _sm().current_name == "cinematic" and Time.get_ticks_msec() - t0 < 80000:
+		var cin = _sm().get_node("CurrentState").get_child(0)
+		var fade: float = cin.get_node("%Fade").color.a
+		var cap: Label = cin.get_node("%Caption")
+		print("FILM t=%.1f fade=%.2f cap_a=%.2f vis=%d pos=%s size=%s text=%s" % [(Time.get_ticks_msec() - t0) / 1000.0, fade, cap.modulate.a, cap.visible_characters, cap.global_position, cap.size, cap.text.substr(0, 36)])
+		await _shot("film_%02d" % n)
+		n += 1
+		await _wait(0.8)
+	print("FILM done frames=%d state=%s" % [n, _sm().current_name])
+	get_tree().quit()
