@@ -2,6 +2,16 @@
 
 Last updated: September 1, 2026
 
+
+## Story edition (branch `story-edition`, version 2.1)
+
+A separate edition, kept off `main` on purpose: the four games are presented as
+the **Four Trials** of one storyline, with an animated prologue about Sensei
+Kuro. See `docs/STORY.md` for the premise, the trial/seal table and the tools.
+Shipped to TestFlight as 2.1 build 5 from the worktree
+`/Users/karanvirkhanna/game-ninja/ninja-story`, building into
+`ninja-ios-story/` via `NINJA_OUT` so `main`'s artifacts are untouched.
+
 ## Current status
 
 The v2 rebuild is implemented and verified. The original single-game Godot project is now a polished offline arcade hub containing the rebuilt **Knife Dodge** reflex game and a new **Shuriken Match** puzzle game. This handoff captures the work completed in Claude's local session so another agent can continue without needing that chat history.
