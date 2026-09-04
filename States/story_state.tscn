@@ -1,0 +1,109 @@
+[gd_scene load_steps=3 format=3 uid="uid://c1trialsjourn0"]
+
+[ext_resource type="Script" path="res://States/story_state.gd" id="1_story"]
+[ext_resource type="Texture2D" path="res://graphics/gen/icon_back.png" id="2_back"]
+
+[node name="StoryState" type="CanvasLayer"]
+script = ExtResource("1_story")
+
+[node name="Root" type="MarginContainer" parent="."]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="V" type="VBoxContainer" parent="Root"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Top" type="HBoxContainer" parent="Root/V"]
+layout_mode = 2
+theme_override_constants/separation = 22
+
+[node name="Back" type="Button" parent="Root/V/Top"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"IconButton"
+icon = ExtResource("2_back")
+icon_alignment = 1
+expand_icon = true
+
+[node name="TitleBlock" type="VBoxContainer" parent="Root/V/Top"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 0
+
+[node name="Title" type="Label" parent="Root/V/Top/TitleBlock"]
+layout_mode = 2
+theme_type_variation = &"DisplayLabel"
+theme_override_colors/font_outline_color = Color(1, 0.847, 0.302, 0.3)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 50
+text = "THE FOUR TRIALS"
+
+[node name="SealsLine" type="Label" parent="Root/V/Top/TitleBlock"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_colors/font_color = Color(1, 0.847, 0.302, 1)
+theme_override_font_sizes/font_size = 15
+text = "STORY JOURNAL  ·  0 / 4 SEALS"
+
+[node name="Spacer" type="Control" parent="Root/V/Top"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PrologueBtn" type="Button" parent="Root/V/Top"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"PrimaryButton"
+theme_override_font_sizes/font_size = 22
+text = "WATCH THE PROLOGUE"
+
+[node name="Body" type="HBoxContainer" parent="Root/V"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 24
+
+[node name="Scroll" type="ScrollContainer" parent="Root/V/Body"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_scroll_mode = 0
+
+[node name="Journal" type="VBoxContainer" parent="Root/V/Body/Scroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="Right" type="VBoxContainer" parent="Root/V/Body"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(380, 0)
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Wheel" type="Control" parent="Root/V/Body/Right"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 272)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="NextLine" type="Label" parent="Root/V/Body/Right"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_font_sizes/font_size = 14
+text = "NEXT: TRIAL OF THE BLADE - DODGE 25 DAGGERS IN ONE RUN"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="CameoSpace" type="Control" parent="Root/V/Body/Right"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
