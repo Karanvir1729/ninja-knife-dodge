@@ -4,7 +4,9 @@ extends Node2D
 ## SKIP ends it. Plays on first launch and from the Story journal.
 
 const MASCOT := preload("res://UI/mascot.gd")
-const CAPTION_CPS := 42.0
+## Overall pacing. 1.0 is the original cut; higher plays the whole film slower.
+const PACE := 1.3
+const CAPTION_CPS := 32.0
 const BAR := 72.0
 
 var return_to := "start"
@@ -138,6 +140,7 @@ func _clear_caption() -> void:
 ## Wait, but return early when the player taps or skips.
 func _wait(sec: float) -> void:
 	var t := 0.0
+	sec *= PACE
 	while t < sec and not _advance:
 		await get_tree().process_frame
 		t += get_process_delta_time()
@@ -176,6 +179,7 @@ func _burst(at: Vector2, color: Color, amount: int = 40, speed: float = 320.0) -
 
 ## Zoom the stage around its centre (a slow push-in reads as a camera move).
 func _cam(k: float, offset: Vector2, dur: float) -> void:
+	dur *= PACE
 	var t := create_tween()
 	t.set_parallel(true)
 	t.tween_property($Stage, "scale", Vector2(k, k), dur).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
@@ -241,7 +245,7 @@ func _shot_training() -> void:
 	var cols := [Globals.CYAN, Globals.MAGENTA, Globals.GOLD, Globals.GREEN]
 	for i in 4:
 		var s := _sprite(_orbit, "res://graphics/gen/shuriken.png", Vector2.from_angle(i * TAU / 4) * 130.0, 0.0, cols[i])
-		create_tween().tween_property(s, "scale", Vector2(0.3, 0.3), 0.3).set_delay(i * 0.12).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+		create_tween().tween_property(s, "scale", Vector2(0.3, 0.3), 0.3 * PACE).set_delay(i * 0.12 * PACE).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 		_sprite(s, "res://graphics/gen/glow.png", Vector2.ZERO, 0.5, Color(cols[i], 0.5), true)
 	AudioManager.play_sfx("whoosh", 1.1, -6.0)
 	_orbit_on = true
@@ -255,7 +259,7 @@ func _shot_training() -> void:
 		var g := _sprite($Stage/FX, "glyph_" + glyphs[i], _c + Vector2(-270 + i * 180, -250), 0.0, Globals.CYAN, true)
 		g.name = "TrainGlyph%d" % i
 		_sprite(g, "res://graphics/gen/glow.png", Vector2.ZERO, 0.9, Color(Globals.CYAN, 0.5), true)
-		create_tween().tween_property(g, "scale", Vector2(0.55, 0.55), 0.35).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+		create_tween().tween_property(g, "scale", Vector2(0.55, 0.55), 0.35 * PACE).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 		AudioManager.play_sfx("pad_%d" % [i * 2 + 1], 1.0, -6.0)
 		%Caption.text = " ".join(words.slice(0, i + 1))
 		%Caption.visible_characters = -1
@@ -298,9 +302,9 @@ func _shot_starfall() -> void:
 	var land := _c + Vector2(170, 70)
 	var t := create_tween()
 	t.set_parallel(true)
-	t.tween_property(star, "position:x", land.x, 1.5)
-	t.tween_property(star, "position:y", land.y, 1.5).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
-	t.tween_property(star, "rotation", TAU * 1.5, 1.5)
+	t.tween_property(star, "position:x", land.x, 1.5 * PACE)
+	t.tween_property(star, "position:y", land.y, 1.5 * PACE).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
+	t.tween_property(star, "rotation", TAU * 1.5, 1.5 * PACE)
 	await _wait(1.5)
 	star.visible = false
 	_flash(0.75)
@@ -316,7 +320,7 @@ func _shot_starfall() -> void:
 	_pip.position = land + Vector2(0, -20)
 	_pip.set_mood("neutral")
 	var pt := create_tween()
-	pt.tween_method(func(v: float): _pip.base_scale = v; _pip.scale = Vector2(v, v), 0.0, 0.62, 0.5).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	pt.tween_method(func(v: float): _pip.base_scale = v; _pip.scale = Vector2(v, v), 0.0, 0.62, 0.5 * PACE).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 	await _wait(0.8)
 	_young.set_facing(true)
 	_hint(true)
@@ -355,7 +359,7 @@ func _shot_daggers() -> void:
 		var target := between + Vector2(randf_range(-40, 40), randf_range(-60, 40))
 		d.look_at(target)
 		var dt := create_tween()
-		dt.tween_property(d, "position", target, 0.9).set_delay(i * 0.22).set_ease(Tween.EASE_IN)
+		dt.tween_property(d, "position", target, 0.9 * PACE).set_delay(i * 0.22 * PACE).set_ease(Tween.EASE_IN)
 		dt.tween_callback(func():
 			_burst(d.position, Globals.RED if i % 2 == 0 else Globals.CYAN, 26, 260.0)
 			AudioManager.play_sfx("shatter", randf_range(0.9, 1.2), -8.0)
@@ -363,11 +367,11 @@ func _shot_daggers() -> void:
 			_young.hop(0.9))
 	# Kuro spins as the daggers arrive
 	var spin := create_tween()
-	spin.tween_interval(0.8)
-	spin.tween_property(_young, "rotation", TAU, 0.7).set_ease(Tween.EASE_IN_OUT)
+	spin.tween_interval(0.8 * PACE)
+	spin.tween_property(_young, "rotation", TAU, 0.7 * PACE).set_ease(Tween.EASE_IN_OUT)
 	spin.tween_property(_young, "rotation", 0.0, 0.0)
-	spin.tween_interval(0.5)
-	spin.tween_property(_young, "rotation", -TAU, 0.7).set_ease(Tween.EASE_IN_OUT)
+	spin.tween_interval(0.5 * PACE)
+	spin.tween_property(_young, "rotation", -TAU, 0.7 * PACE).set_ease(Tween.EASE_IN_OUT)
 	spin.tween_property(_young, "rotation", 0.0, 0.0)
 	await _wait(3.2)
 	_pip.set_mood("happy")
@@ -385,7 +389,7 @@ func _shot_years() -> void:
 		var a := i * TAU / 28.0
 		var r := 380.0 + (i % 3) * 60.0
 		var dot := _sprite(_swirl, "res://graphics/gen/dot.png", Vector2.from_angle(a) * r, 0.0, Color(0.9, 0.93, 1.0, 0.8), true)
-		create_tween().tween_property(dot, "scale", Vector2(1.6, 1.6), 0.5).set_delay(i * 0.03)
+		create_tween().tween_property(dot, "scale", Vector2(1.6, 1.6), 0.5 * PACE).set_delay(i * 0.03 * PACE)
 	_swirl_on = true
 	AudioManager.play_sfx("whoosh", 0.7, -8.0)
 	await _wait(1.6)
@@ -399,10 +403,10 @@ func _shot_years() -> void:
 	_old.set_mood("happy")
 	var xf := create_tween()
 	xf.set_parallel(true)
-	xf.tween_property(_old, "modulate:a", 1.0, 1.4)
-	xf.tween_property(_young, "modulate:a", 0.0, 1.4)
+	xf.tween_property(_old, "modulate:a", 1.0, 1.4 * PACE)
+	xf.tween_property(_young, "modulate:a", 0.0, 1.4 * PACE)
 	var grow := create_tween()
-	grow.tween_method(func(v: float): _pip.base_scale = v; _pip.scale = Vector2(v, v), 0.62, 0.74, 1.4)
+	grow.tween_method(func(v: float): _pip.base_scale = v; _pip.scale = Vector2(v, v), 0.62, 0.74, 1.4 * PACE)
 	_pip.set_mood("excited")
 	await _wait(1.8)
 	var st := create_tween()
@@ -437,9 +441,9 @@ func _shot_trials() -> void:
 		g.name = "TrialGlyph%d" % i
 		_sprite(g, "res://graphics/gen/glow.png", Vector2.ZERO, 0.8, Color(accents[i], 0.55), true)
 		var rise := create_tween()
-		rise.tween_property(pillar, "position:y", _c.y + 70, 0.7).set_delay(i * 0.18).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-		rise.parallel().tween_property(g, "position:y", _c.y + 70 - 44 * 0.62, 0.7).set_delay(i * 0.18).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-		rise.tween_property(g, "scale", Vector2(0.4, 0.4), 0.3).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+		rise.tween_property(pillar, "position:y", _c.y + 70, 0.7 * PACE).set_delay(i * 0.18 * PACE).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+		rise.parallel().tween_property(g, "position:y", _c.y + 70 - 44 * 0.62, 0.7 * PACE).set_delay(i * 0.18 * PACE).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+		rise.tween_property(g, "scale", Vector2(0.4, 0.4), 0.3 * PACE).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 		rise.tween_callback(func(): AudioManager.play_sfx("pad_%d" % [i * 2 + 2], 1.0, -6.0))
 	AudioManager.play_sfx("rise", 0.8, -10.0)
 	await _wait(1.2)
@@ -456,7 +460,7 @@ func _shot_title() -> void:
 	%TitleCard.visible = true
 	%TitleCard.modulate.a = 0.0
 	AudioManager.play_sfx("seal", 1.0, -4.0)
-	create_tween().tween_property(%TitleCard, "modulate:a", 1.0, 0.9)
+	create_tween().tween_property(%TitleCard, "modulate:a", 1.0, 0.9 * PACE)
 	await _wait(1.2)
 	_hint(true)
 	await _wait(3.4)
