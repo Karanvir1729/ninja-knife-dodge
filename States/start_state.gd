@@ -279,8 +279,15 @@ func _tex(path: String, color: Color, px: int) -> TextureRect:
 	t.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return t
 
+## Art grows with its panel (tall iPad cards) up to 1.8x.
+func _art_k(box: Control) -> float:
+	return clampf(box.size.y / 118.0, 1.0, 1.8)
+
 func _center(node: Control, box: Control, offset: Vector2 = Vector2.ZERO) -> void:
-	node.position = box.size * 0.5 - node.size * 0.5 + offset
+	var k := _art_k(box)
+	node.pivot_offset = node.size * 0.5
+	node.scale = Vector2(k, k)
+	node.position = box.size * 0.5 - node.size * 0.5 + offset * k
 
 func _layout_art(box: Control, id: String) -> void:
 	if not is_instance_valid(box):
@@ -355,7 +362,7 @@ func _setup_guides() -> void:
 	director.highlighter = _highlight
 	director.bubble_bounds = func():
 		var r: Rect2 = %Stage.get_global_rect()
-		return Rect2(r.position + Vector2(330, -6), Vector2(r.size.x - 330 + 380, r.size.y + 12))
+		return Rect2(r.position + Vector2(330, -6), Vector2(maxf(r.size.x - 330, 300), r.size.y + 12))
 	director.finished.connect(_on_script_finished)
 	SaveData.mark_launch()
 	await get_tree().process_frame

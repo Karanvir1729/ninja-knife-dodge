@@ -2,6 +2,8 @@
 
 A four-game offline arcade for iPhone and iPad, built with [Godot 4](https://godotengine.org), with two animated guides who talk you through it.
 
+**Story edition (branch `story-edition`, version 2.1).** The four games are the **Four Trials** of one story: Sensei Kuro, last master of the Star Dojo, trains a fallen star (Pip) so it can shine unbroken. An animated in-engine prologue plays on first launch (seven scripted shots, skippable, replayable from the Story journal), the hub shows one large trial card per game (Trial I Blade = Knife Dodge, II Eye = Quick Draw, III Mind = Shuriken Match, IV Memory = Sensei Says) with a seal you earn by reaching a milestone in that game, the guides celebrate each seal, and earning all four unlocks the epilogue. Story data is in `story/story.gd`; the cinematic is `story/cinematic.gd` (film it quickly with `godot --path . -- --film=/tmp/film`).
+
 **Mind games** (think ahead)
 - **Shuriken Match** — a match-3 campaign of 50 formula-driven levels on a winding level map. Line up three shurikens to clear them and hit the target before your moves run out. Four in a row forges a **Line**, an L or T a **Burst**, five a **Prism**; swapping two specials makes crossfires, mega bursts and total eclipses. Hints, extra moves, shuffles and a hammer are available as power-ups, and stuck players can skip a level.
 - **Sensei Says** — a memory game. Sensei lights a growing pattern of nine shuriken pads; play it back. One slip ends the round unless you have a spare life.
