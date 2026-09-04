@@ -1,0 +1,186 @@
+[gd_scene load_steps=6 format=3 uid="uid://c1cinematic000"]
+
+[ext_resource type="Script" path="res://story/cinematic.gd" id="1_cin"]
+[ext_resource type="Texture2D" path="res://graphics/gen/story/glyph_blade.png" id="g_blade"]
+[ext_resource type="Texture2D" path="res://graphics/gen/story/glyph_eye.png" id="g_eye"]
+[ext_resource type="Texture2D" path="res://graphics/gen/story/glyph_mind.png" id="g_mind"]
+[ext_resource type="Texture2D" path="res://graphics/gen/story/glyph_memory.png" id="g_memory"]
+
+[node name="Cinematic" type="Node2D"]
+script = ExtResource("1_cin")
+
+[node name="Stage" type="Node2D" parent="."]
+
+[node name="Far" type="Node2D" parent="Stage"]
+
+[node name="Mid" type="Node2D" parent="Stage"]
+
+[node name="Actors" type="Node2D" parent="Stage"]
+
+[node name="FX" type="Node2D" parent="Stage"]
+
+[node name="UI" type="CanvasLayer" parent="."]
+layer = 12
+
+[node name="TopBar" type="ColorRect" parent="UI"]
+unique_name_in_owner = true
+mouse_filter = 2
+color = Color(0.0117647, 0.0117647, 0.0235294, 1)
+
+[node name="BottomBar" type="ColorRect" parent="UI"]
+unique_name_in_owner = true
+mouse_filter = 2
+color = Color(0.0117647, 0.0117647, 0.0235294, 1)
+
+[node name="CaptionBox" type="MarginContainer" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 120
+theme_override_constants/margin_right = 120
+theme_override_constants/margin_bottom = 92
+
+[node name="Caption" type="Label" parent="UI/CaptionBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 8
+mouse_filter = 2
+theme_type_variation = &"DisplayLabel"
+theme_override_colors/font_outline_color = Color(0.027, 0.031, 0.051, 0.9)
+theme_override_constants/outline_size = 8
+theme_override_constants/line_spacing = 8
+theme_override_font_sizes/font_size = 34
+text = ""
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="TapHint" type="Label" parent="UI"]
+unique_name_in_owner = true
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -260.0
+offset_top = -50.0
+offset_right = -34.0
+offset_bottom = -22.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+theme_type_variation = &"CapsLabel"
+theme_override_font_sizes/font_size = 15
+text = "TAP TO CONTINUE"
+horizontal_alignment = 2
+
+[node name="Skip" type="Button" parent="UI"]
+unique_name_in_owner = true
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -150.0
+offset_top = 16.0
+offset_right = -34.0
+offset_bottom = 60.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 17
+text = "SKIP"
+
+[node name="Fade" type="ColorRect" parent="UI"]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.027, 0.031, 0.051, 1)
+
+[node name="Flash" type="ColorRect" parent="UI"]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 0)
+
+[node name="TitleCard" type="CenterContainer" parent="UI"]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="V" type="VBoxContainer" parent="UI/TitleCard"]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="Title" type="Label" parent="UI/TitleCard/V"]
+layout_mode = 2
+theme_type_variation = &"DisplayLabel"
+theme_override_colors/font_outline_color = Color(0.337, 0.941, 1, 0.35)
+theme_override_constants/outline_size = 14
+theme_override_font_sizes/font_size = 84
+text = "NINJA KNIFE DODGE"
+horizontal_alignment = 1
+
+[node name="Sub" type="Label" parent="UI/TitleCard/V"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_colors/font_color = Color(1, 0.31, 0.847, 1)
+theme_override_font_sizes/font_size = 26
+text = "THE FOUR TRIALS"
+horizontal_alignment = 1
+
+[node name="Glyphs" type="HBoxContainer" parent="UI/TitleCard/V"]
+layout_mode = 2
+theme_override_constants/separation = 34
+alignment = 1
+
+[node name="G1" type="TextureRect" parent="UI/TitleCard/V/Glyphs"]
+modulate = Color(0.337, 0.941, 1, 1)
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+texture = ExtResource("g_blade")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="G2" type="TextureRect" parent="UI/TitleCard/V/Glyphs"]
+modulate = Color(1, 0.541, 0.239, 1)
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+texture = ExtResource("g_eye")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="G3" type="TextureRect" parent="UI/TitleCard/V/Glyphs"]
+modulate = Color(1, 0.31, 0.847, 1)
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+texture = ExtResource("g_mind")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="G4" type="TextureRect" parent="UI/TitleCard/V/Glyphs"]
+modulate = Color(0.608, 0.42, 1, 1)
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+texture = ExtResource("g_memory")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Line" type="Label" parent="UI/TitleCard/V"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 24
+text = "Your training begins."
+horizontal_alignment = 1
