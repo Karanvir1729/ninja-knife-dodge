@@ -250,7 +250,7 @@ func _medallion(id: String, earned: bool) -> Control:
 	box.custom_minimum_size = Vector2(56, 56)
 	box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var tint: Color = Globals.GOLD if earned else Globals.LINE2
+	var tint: Color = Globals.GOLD if earned else Globals.DIM
 	if earned:
 		var glow := _tex("res://graphics/gen/glow.png", Color(Globals.GOLD, 0.45), 88)
 		glow.position = Vector2(-16, -16)
@@ -346,7 +346,7 @@ func _build_wheel() -> void:
 			var glow := _tex("res://graphics/gen/glow.png", Color(_accent(sid), 0.55), 104)
 			%Wheel.add_child(glow)
 			_wheel_glows[sid] = glow
-		var glyph := _tex("glyph_" + str(Story.trial(sid).glyph), _accent(sid) if earned else Globals.LINE2, GLYPH_PX)
+		var glyph := _tex("glyph_" + str(Story.trial(sid).glyph), _accent(sid) if earned else Color(Globals.DIM, 0.9), GLYPH_PX)
 		%Wheel.add_child(glyph)
 		_wheel_glyphs[sid] = glyph
 	_layout_wheel()

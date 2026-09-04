@@ -3,6 +3,7 @@
 #
 #   tools/ship_ios.sh            # uses application/version from export_presets.cfg
 #   tools/ship_ios.sh 7          # bumps the build number to 7 first
+#   NINJA_OUT=/path/out tools/ship_ios.sh 7   # build somewhere else (parallel editions)
 #
 # Needs: Godot on PATH with matching export templates, Xcode, the App Store
 # provisioning profile installed, the distribution identity in the dedicated
@@ -15,7 +16,7 @@ cd "$(dirname "$0")/.."
 KEY_ID="${ASC_KEY_ID:-9S2ALUPNQR}"
 ISSUER_ID="${ASC_ISSUER_ID:-$(cat ~/.appstoreconnect/issuer_id)}"
 SIGNING=~/.appstoreconnect/ninja-signing
-OUT="$(cd .. && pwd)/ninja-ios"
+OUT="${NINJA_OUT:-$(cd .. && pwd)/ninja-ios}"
 SCHEME="ninja"
 
 if [[ -n "${1:-}" ]]; then
