@@ -117,6 +117,53 @@ def build():
     write("ad_reward", mix(*[offset(tone(NOTE(n), 0.5, 0.45, curve=3, harmonics=((1, 1), (2, 0.3))), k * 0.09) for k, n in enumerate((67, 72, 76, 79, 84))]))
     write("hammer", mix(noise(0.2, 1.0, lp=0.3, curve=4), tone(sweep(300, 80), 0.25, 0.8, curve=3)))
     write("unlock", mix(*[offset(tone(NOTE(n), 0.4, 0.5, curve=3), k * 0.08) for k, n in enumerate((64, 71, 76, 83))]))
+    # Story sounds
+    write("narrator_blip", tone(lambda t: 240 * (1 + 0.05 * math.sin(t * 20)), 0.05, 0.6, attack=0.004, curve=6, harmonics=((1, 1), (2, 0.4))))
+    write("whoosh", noise(0.45, 1.0, lp=0.35, curve=2.2, attack=0.12))
+    write("impact", mix(tone(sweep(90, 30), 0.7, 1.0, curve=2.2, harmonics=((1, 1), (2, 0.5), (3, 0.25))), noise(0.35, 0.9, lp=0.2, curve=4)))
+    write("shatter", mix(noise(0.5, 1.0, lp=0.9, curve=3.5), *[offset(tone(f, 0.25, 0.25, curve=5), k * 0.02) for k, f in enumerate((2400, 3100, 2700, 3600))]))
+    write("seal", mix(tone(NOTE(76), 1.4, 0.5, curve=1.6, harmonics=((1, 1), (2, 0.3), (3, 0.12))), tone(NOTE(83), 1.4, 0.35, curve=1.8), tone(NOTE(88), 1.2, 0.25, curve=2), offset(noise(0.5, 0.2, lp=0.9, curve=2), 0.05)))
+    write("rise", tone(sweep(110, 440, 1.4), 2.2, 0.6, attack=0.4, curve=1.2, harmonics=((1, 1), (2, 0.4), (3, 0.2))))
+    write("star_fall", mix(tone(sweep(1800, 300, 0.7), 1.6, 0.5, attack=0.05, curve=1.8), noise(1.4, 0.35, lp=0.6, curve=2, attack=0.1)))
+    # Cinematic score: drone, taiko, koto melody with echo (~48 s, not looped)
+    L = 48.0; n = int(SR * L); out = [0.0] * n
+    def add(samples, start, gain=1.0):
+        s0 = int(start * SR)
+        for i, v in enumerate(samples):
+            if s0 + i < n: out[s0 + i] += v * gain
+    ph1 = ph2 = 0.0
+    for i in range(n):
+        t = i / SR
+        ph1 += 2 * math.pi * 55.0 / SR; ph2 += 2 * math.pi * 82.4 / SR
+        env_in = min(1.0, t / 3.0); env_out = min(1.0, (L - t) / 4.0)
+        swell = 1.0 + 0.6 * math.exp(-((t - 34.0) ** 2) / 18.0)
+        out[i] += (0.16 * math.sin(ph1) + 0.09 * math.sin(ph2)) * env_in * env_out * swell
+    taiko = mix(tone(sweep(95, 42), 0.5, 1.0, curve=2.6, harmonics=((1, 1), (2, 0.4))), noise(0.12, 0.6, lp=0.25, curve=6))
+    taiko_soft = [v * 0.55 for v in taiko]
+    beat = 0.0
+    pattern = [1, 0, 0.5, 0, 1, 0, 0.5, 0.5]
+    k = 0
+    while beat < L - 3:
+        acc = pattern[k % len(pattern)]
+        if acc > 0 and beat > 2.0:
+            add(taiko if acc >= 1 else taiko_soft, beat, 1.0 if beat < 34 else 1.25)
+        beat += 0.6 if beat < 30 else 0.45
+        k += 1
+    melody = [(69, 3.0, 1.0), (72, 4.2, 0.6), (74, 5.4, 0.8), (76, 6.6, 1.4), (74, 9.0, 0.8), (72, 10.2, 0.8), (69, 11.4, 1.6),
+              (67, 15.0, 0.9), (69, 16.2, 0.9), (72, 17.4, 1.2), (76, 19.0, 1.4), (79, 21.0, 1.8),
+              (76, 24.0, 0.8), (74, 25.2, 0.8), (72, 26.4, 1.2), (69, 28.0, 2.0),
+              (69, 33.0, 0.6), (72, 33.6, 0.6), (76, 34.2, 0.6), (81, 34.8, 2.4), (79, 37.6, 1.0), (76, 38.8, 1.6), (72, 41.0, 1.0), (69, 42.4, 3.0)]
+    for note, start, dur in melody:
+        pl = tone(NOTE(note), dur, 0.32, attack=0.008, curve=2.6, harmonics=((1, 1), (2, 0.35), (3, 0.15), (5, 0.05)))
+        add(pl, start)
+        add(pl, start + 0.36, 0.42)
+        add(pl, start + 0.72, 0.18)
+    y = 0.0
+    for i in range(n):
+        t = i / SR
+        x = random.uniform(-1, 1); y += 0.015 * (x - y)
+        out[i] += 0.07 * y * min(1.0, t / 6.0) * min(1.0, (L - t) / 4.0)
+    write("story_theme", out, peak=0.6)
     # Ambient loop for Shuriken Match (seamless: all LFO periods divide the length)
     L = 24.0; n = int(SR * L); out = [0.0] * n
     def add_sine(freq, amp, lfo_period, lfo_depth, phase=0.0):

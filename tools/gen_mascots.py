@@ -55,6 +55,38 @@ SZ = 320
 NAVY = (27, 31, 51, 255); NAVY2 = (42, 48, 80, 255); SKIN = (244, 201, 163, 255); RED = (226, 60, 90, 255)
 WHITE = (250, 250, 255, 255); PINK = (255, 150, 150, 140)
 
+BLUE = (59, 108, 255, 255)
+
+def young_body():
+    img = canvas(SZ); d = ImageDraw.Draw(img)
+    outlined_ellipse(d, (118, 272, 158, 296), NAVY); outlined_ellipse(d, (162, 272, 202, 296), NAVY)
+    rounded_poly(d, [(112, 200), (208, 200), (226, 286), (94, 286)], NAVY)
+    d.polygon([(S(160), S(206)), (S(132), S(262)), (S(160), S(250))], fill=NAVY2)
+    d.polygon([(S(160), S(206)), (S(188), S(262)), (S(160), S(250))], fill=NAVY2)
+    d.rounded_rectangle([S(102), S(246), S(218), S(262)], radius=S(6), fill=BLUE, outline=INK, width=S(4))
+    d.rectangle([S(150), S(246), S(170), S(262)], fill=(40, 70, 190, 255))
+    outlined_ellipse(d, (62, 36, 258, 236), NAVY)
+    d.polygon([(S(150), S(48)), (S(160), S(14)), (S(178), S(50))], fill=NAVY, outline=INK)
+    stroke(d, [(150, 48), (160, 14), (178, 50)], 6)
+    outlined_ellipse(d, (84, 70, 236, 222), SKIN)
+    d.rounded_rectangle([S(86), S(92), S(234), S(112)], radius=S(8), fill=BLUE, outline=INK, width=S(4))
+    d.ellipse([S(104), S(158), S(128), S(176)], fill=PINK); d.ellipse([S(192), S(158), S(216), S(176)], fill=PINK)
+    outlined_ellipse(d, (152, 162, 168, 176), SKIN, width=3)
+    save(img, SZ, "young_body")
+
+def young_brows():
+    img = canvas(SZ); d = ImageDraw.Draw(img)
+    for cx, tilt in ((132, 6), (188, -6)):
+        stroke(d, [(cx - 15, 116 + tilt * 0.4), (cx + 15, 116 - tilt * 0.4)], 8, INK)
+    save(img, SZ, "young_brows")
+
+def young_tails():
+    img = canvas(SZ); d = ImageDraw.Draw(img)
+    for dy, amp in ((0, 10), (10, -8)):
+        pts = [(90 + i * -9, 102 + dy + amp * math.sin(i * 0.9)) for i in range(9)]
+        stroke(d, pts, 16); stroke(d, pts, 9, BLUE)
+    save(img, SZ, "young_tails")
+
 def sensei_body():
     img = canvas(SZ); d = ImageDraw.Draw(img)
     # feet
@@ -186,6 +218,7 @@ def shadow():
 
 if __name__ == "__main__":
     sensei_body(); sensei_brows(); sensei_tails(); sensei_arm()
+    young_body(); young_brows(); young_tails()
     for st in ("open", "closed", "happy"): sensei_eyes(st); pip_eyes(st)
     for st in ("closed", "open", "wide"): sensei_mouth(st); pip_mouth(st)
     pip_body(); pip_sparkle(); shadow()

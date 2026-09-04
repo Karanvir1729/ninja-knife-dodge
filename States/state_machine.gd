@@ -21,6 +21,8 @@ const STATES := {
 	"simon_play": "res://States/simon_play_state.tscn",
 	"draw_tutorial": "res://States/draw_tutorial_state.tscn",
 	"draw_play": "res://States/draw_play_state.tscn",
+	"cinematic": "res://story/cinematic.tscn",
+	"story": "res://States/story_state.tscn",
 }
 
 signal state_changed(state_name: String)

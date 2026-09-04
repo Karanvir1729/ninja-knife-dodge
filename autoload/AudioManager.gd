@@ -5,6 +5,7 @@ const MUSIC := {
 	"menu": "res://sounds/Music Box Game Over 2.mp3",
 	"knife": "res://sounds/Mysterious.mp3",
 	"match": "res://sounds/gen/match_loop.wav",
+	"story": "res://sounds/gen/story_theme.wav",
 }
 const SFX_DIR := "res://sounds/gen/"
 const LEGACY_SFX := {"jump": "res://sounds/160756__cosmicembers__fast-swing-air-woosh.wav"}

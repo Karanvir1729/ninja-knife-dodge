@@ -39,21 +39,25 @@ func _ready() -> void:
 	if character == "pip":
 		display_name = "PIP"
 		accent = Globals.GOLD
+	elif character == "young":
+		display_name = "KURO"
+		accent = Globals.CYAN
 	var shadow := Sprite2D.new()
 	shadow.texture = _load("mascot_shadow")
-	shadow.position = Vector2(0, 118 if character == "sensei" else 88)
+	shadow.position = Vector2(0, 118 if character != "pip" else 88)
 	shadow.modulate.a = 0.6
 	add_child(shadow)
 	_body = Node2D.new()
 	add_child(_body)
-	if character == "sensei":
+	if character in ["sensei", "young"]:
+		var young := character == "young"
 		_tail_pivot = Node2D.new()
 		_tail_pivot.position = Vector2(-60, -58)
-		var tails := _sprite("sensei_tails")
+		var tails := _sprite("young_tails" if young else "sensei_tails")
 		tails.position = Vector2(60, 58)
 		_tail_pivot.add_child(tails)
 		_body.add_child(_tail_pivot)
-		_body.add_child(_sprite("sensei_body"))
+		_body.add_child(_sprite("young_body" if young else "sensei_body"))
 		_arm_pivot = Node2D.new()
 		_arm_pivot.position = Vector2(54, 64)
 		_arm = _sprite("sensei_arm")
@@ -61,7 +65,7 @@ func _ready() -> void:
 		_arm_pivot.add_child(_arm)
 		_arm_pivot.visible = false
 		_body.add_child(_arm_pivot)
-		_brows = _sprite("sensei_brows")
+		_brows = _sprite("young_brows" if young else "sensei_brows")
 		_body.add_child(_brows)
 		_eyes = _sprite("sensei_eyes_open")
 		_body.add_child(_eyes)
@@ -81,7 +85,7 @@ func _ready() -> void:
 	area.collision_mask = 0
 	var shape := CollisionShape2D.new()
 	var circle := CircleShape2D.new()
-	circle.radius = 118.0 if character == "sensei" else 100.0
+	circle.radius = 118.0 if character != "pip" else 100.0
 	shape.shape = circle
 	area.add_child(shape)
 	area.input_event.connect(_on_area_input)
@@ -103,7 +107,7 @@ func _on_area_input(_vp: Node, event: InputEvent, _idx: int) -> void:
 
 ## Global position of the head, for anchoring speech bubbles.
 func head_global() -> Vector2:
-	return to_global(Vector2(0, -168 if character == "sensei" else -118))
+	return to_global(Vector2(0, -168 if character != "pip" else -118))
 
 func set_facing(right: bool) -> void:
 	_face_right = right
@@ -121,28 +125,31 @@ func set_mood(m: String) -> void:
 	if m == "excited":
 		hop()
 
+func _face() -> String:
+	return "sensei" if character == "young" else character
+
 func _apply_eyes() -> void:
 	if _blink_left > 0:
-		_eyes.texture = _load(character + "_eyes_closed")
+		_eyes.texture = _load(_face() + "_eyes_closed")
 	elif mood in ["happy", "excited"]:
-		_eyes.texture = _load(character + "_eyes_happy")
+		_eyes.texture = _load(_face() + "_eyes_happy")
 	else:
-		_eyes.texture = _load(character + "_eyes_open")
+		_eyes.texture = _load(_face() + "_eyes_open")
 
 func set_talking(on: bool) -> void:
 	talking = on
 	if not on:
-		_mouth.texture = _load(character + "_mouth_closed")
+		_mouth.texture = _load(_face() + "_mouth_closed")
 
 ## Play one voice blip (called by the speech bubble as characters appear).
 func blip() -> void:
 	var idx := randi_range(1, 5)
-	AudioManager.play_sfx("voice_%s_%d" % [character, idx], randf_range(0.94, 1.06), -9.0)
+	AudioManager.play_sfx("voice_%s_%d" % [_face(), idx], randf_range(0.94, 1.06) * (1.25 if character == "young" else 1.0), -9.0)
 
 func _process(delta: float) -> void:
 	_t += delta
 	# idle bob and lean
-	var bob := sin(_t * (2.1 if character == "sensei" else 2.8)) * (4.0 if character == "sensei" else 6.0)
+	var bob := sin(_t * (2.1 if character != "pip" else 2.8)) * (4.0 if character != "pip" else 6.0)
 	_body.position.y = bob
 	if character == "pip":
 		_body.rotation = sin(_t * 1.6) * 0.05 + _lean
@@ -167,7 +174,7 @@ func _process(delta: float) -> void:
 		if _mouth_timer <= 0:
 			_mouth_timer = randf_range(0.06, 0.12)
 			var frames := ["open", "wide", "closed", "open"]
-			_mouth.texture = _load("%s_mouth_%s" % [character, frames[randi() % frames.size()]])
+			_mouth.texture = _load("%s_mouth_%s" % [_face(), frames[randi() % frames.size()]])
 	if _sparkle and _sparkle.visible:
 		_sparkle.rotation += delta * 2.0
 		_sparkle.scale = Vector2.ONE * (0.9 + 0.15 * sin(_t * 6.0))
