@@ -20,6 +20,10 @@ Everything shares one menu with Mind and Skill categories, one tutorial format, 
 - Optional **rewarded ads** for power-ups, hints, level skips and revives. The repo ships a mock ad provider so every flow works without an SDK; see `docs/RELEASE.md` to plug in AdMob
 - Ships on the iOS App Store as **Ninja Knife Dodge**
 
+## Rewarded ads
+
+On iOS the game serves real rewarded video through the Poing Studios AdMob plugin (`addons/admob`, Google Mobile Ads SDK via Swift Package Manager). Every "Watch ad" offer is optional and every reward can also be earned without one. The ad ids live in Project Settings — `admob/general/ios/app_id` and `ninja/ads/rewarded_unit_id` — and default to Google's official test ids; put the ids from your AdMob console there for the store release. No tracking prompt is shown and the IDFA is never requested, so ads are non-personalised. On macOS, in the editor and in the debug tour a local offline "test ad" overlay stands in, keeping tests deterministic. See `docs/RELEASE.md` for the App Privacy answers.
+
 ## Project layout
 
 - `States/` — every screen is a state scene swapped by `state_machine.gd` with a fade: `start` (menu), `tutorial`/`play`/`lose` (Knife Dodge), `match_levels`/`match_tutorial`/`match_play`/`match_result` (Shuriken Match), `simon_tutorial`/`simon_play` (Sensei Says), `draw_tutorial`/`draw_play` (Quick Draw), `arcade_result` (generic results), `leaderboard`, `settings`
