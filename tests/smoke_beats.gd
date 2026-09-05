@@ -39,15 +39,26 @@ func run(tour) -> void:
 	hub._launch(id)
 	await tour._wait_until(func(): return tour._sm().current_name != "start", 5.0)
 	tour._check(tour._sm().current_name != "start", "beats: a second launch skips the opening (state=%s)" % tour._sm().current_name)
-	# --- the midpoint turn fires once, at MIDPOINT_AT seals
+	# --- the midpoint turn fires once, at exactly MIDPOINT_AT seals.
+	# Drop the last two trials below their seal so the sample profile sits on two.
+	var keep_level: int = SaveData.data.match.next_level
+	var keep_simon: int = int(SaveData.game_stats("simon").best)
+	SaveData.data.match.next_level = 1
+	SaveData.game_stats("simon").best = 0
 	SaveData.set_story_flag("midpoint_seen", false)
 	var seals := Story.seals_count()
-	tour._check(seals >= Story.MIDPOINT_AT, "beats: sample data has enough seals for the turn (%d)" % seals)
-	tour._check(Story.midpoint_due() == (seals >= Story.MIDPOINT_AT and seals < Story.ORDER.size()), "beats: the turn is due only between %d seals and the ending" % Story.MIDPOINT_AT)
-	if Story.midpoint_due():
-		await tour._go("start")
-		await tour._wait_until(func(): return SaveData.story_flag("midpoint_seen"), 6.0)
-		tour._check(SaveData.story_flag("midpoint_seen"), "beats: the midpoint turn plays on the hub")
-		await tour._shot("smoke_beats_midpoint")
-		tour._check(not Story.midpoint_due(), "beats: the turn does not repeat")
+	tour._check(seals == Story.MIDPOINT_AT, "beats: profile trimmed to exactly %d seals (got %d)" % [Story.MIDPOINT_AT, seals])
+	tour._check(Story.midpoint_due(), "beats: the turn is due at %d seals" % Story.MIDPOINT_AT)
+	await tour._go("start")
+	await tour._wait_until(func(): return SaveData.story_flag("midpoint_seen"), 8.0)
+	tour._check(SaveData.story_flag("midpoint_seen"), "beats: the midpoint turn plays on the hub")
+	await tour._wait(2.6)
+	await tour._shot("smoke_beats_midpoint")
+	tour._check(not Story.midpoint_due(), "beats: the turn does not repeat")
+	# All four seals: the turn must never collide with the ending.
+	SaveData.data.match.next_level = keep_level
+	SaveData.game_stats("simon").best = keep_simon
+	SaveData.set_story_flag("midpoint_seen", false)
+	tour._check(Story.all_sealed() and not Story.midpoint_due(), "beats: the turn is suppressed once every seal is earned")
+	SaveData.set_story_flag("midpoint_seen", true)
 	await tour._go("start")

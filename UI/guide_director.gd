@@ -124,7 +124,7 @@ static func intro(pname: String) -> Array:
 		{"who": "pip", "mood": "excited", "gesture": "hop", "text": "Whoa, a new ninja! Welcome to the Star Dojo, %s!" % pname},
 		{"who": "sensei", "mood": "neutral", "text": "I am Sensei Kuro. Four trials await you, one seal each."},
 		{"who": "sensei", "mood": "think", "gesture": "point", "target": "skill", "text": "The Blade and the Eye test your reflexes: dodge the daggers, strike the targets."},
-		{"who": "sensei", "mood": "think", "gesture": "point", "target": "mind", "text": "The Mind and Memory test your patience: align the shurikens, keep the pattern."},
+		{"who": "sensei", "mood": "think", "gesture": "point", "target": "mind", "text": "The Mind and the Name test your patience: align the shurikens, keep the pattern."},
 		{"who": "pip", "mood": "excited", "gesture": "hop", "text": "Earn all four seals and I'll shine unbroken! Tap us any time for a tip."},
 	]
 
@@ -153,7 +153,7 @@ static func tip(who: String) -> Array:
 	var sensei_tips := [
 		"Four in a row forges a Line shuriken. Swap it again to fire it along its row or column.",
 		"A Prism clears every shuriken of one colour. Save it for the colour you see the most.",
-		"In Sensei Says, say the colours in your head as they light. The voice remembers.",
+		"Say the colours in your head as they light. Nine pads, nine masters. Say them in order.",
 		"Out of moves? A hint or a few extra moves can be earned with a short ad. Use them wisely.",
 		"Clearing three stars early ends the level and turns your leftover moves into bonus points.",
 		"Patience. The board always offers a move. When it does not, it reshuffles itself.",

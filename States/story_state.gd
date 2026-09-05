@@ -202,7 +202,9 @@ func _chapter_card(id: String) -> Control:
 		row.add_child(star)
 		row.add_child(_caps("SEAL EARNED", 13, Globals.GOLD))
 		col.add_child(row)
-		var seal_text := _caps(str(t.seal_text), 14, Globals.GOLD)
+		var lines: Array = t.get("seal_lines", [])
+		var said: String = str(lines[0].text).replace("{name}", SaveData.player_name()) if not lines.is_empty() else ""
+		var seal_text := _caps(said, 14, Globals.GOLD)
 		seal_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		col.add_child(seal_text)
 	else:

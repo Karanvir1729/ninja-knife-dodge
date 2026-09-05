@@ -1,38 +1,107 @@
 class_name Story
 extends RefCounted
-## The Four Trials: the storyline that ties the four games together.
-## Each game is a trial with a numeral, a glyph, a seal condition and story text
-## revealed when the seal is earned. Progress is derived from existing stats.
+## "The Last Lantern": the storyline that ties the four games together.
+##
+## The void the dojo calls the Quiet does not kill things, it unmakes them, and
+## a name is the last part to go. Each game is a trial with a seal; the seal
+## conditions are read from stats the games already keep, so nothing new is
+## stored except which scenes have played.
+##
+## Every scene below is a queue of lines for GuideDirector: {who, mood, gesture,
+## target, text}. "{name}" is replaced with the player's ninja name.
 
 const ORDER := ["knife", "draw", "match", "simon"]
 
-const TRIALS := {
-	"knife": {"numeral": "I", "trial": "TRIAL OF THE BLADE", "glyph": "blade", "hook": "Outlast the daggers of light.",
-		"seal_rule": "Dodge 25 daggers in one run", "seal_target": 25,
-		"lore": "The blade trial is not about striking. It is about the space a blade cannot reach. Kuro's first lesson: move before you are moved.",
-		"seal_text": "The daggers found only empty air. The Seal of the Blade is yours."},
-	"draw": {"numeral": "II", "trial": "TRIAL OF THE EYE", "glyph": "eye", "hook": "Strike the targets. Spare the decoys.",
-		"seal_rule": "Score 20 in one round", "seal_target": 20,
-		"lore": "In the void, light lies. The eye trial teaches you to see the true target before the ring closes, and to leave the red daggers be.",
-		"seal_text": "Your eye is quicker than the void's tricks. The Seal of the Eye is yours."},
-	"match": {"numeral": "III", "trial": "TRIAL OF THE MIND", "glyph": "mind", "hook": "Align the shurikens. Beat the target.",
-		"seal_rule": "Clear level 3", "seal_target": 3,
-		"lore": "Kuro's shurikens were once scattered across the void. The mind trial is the patience to line them up, three at a time, until the pattern reveals itself.",
-		"seal_text": "Order from chaos, three shurikens at a time. The Seal of the Mind is yours."},
-	"simon": {"numeral": "IV", "trial": "TRIAL OF MEMORY", "glyph": "memory", "hook": "Watch the pattern. Play it back.",
-		"seal_rule": "Reach round 5", "seal_target": 5,
-		"lore": "The last trial is Kuro's own art: the nine pads of the Star Dojo. A pattern watched is a pattern kept. Say the colours in your mind.",
-		"seal_text": "The pattern lives in you now. The Seal of Memory is yours."},
-}
-
-## The turn, played once at MIDPOINT_AT seals. Copy is filled in by the story pass.
-const MIDPOINT: Array = []
-
-const PROLOGUE_SUMMARY := "Before the first ninja there was only the void. In the Star Dojo, Kuro trained for a hundred years. Then a star fell, and the daggers of light came hunting. The old master stood between them, and took the star as his student. Four trials remain."
-const EPILOGUE_SUMMARY := "With four seals the star shines unbroken. The daggers still come, as they always will, but now the void has a ninja who is ready for them."
-
 ## Seals earned before the midpoint scene plays.
 const MIDPOINT_AT := 2
+
+const TRIALS := {
+	"knife": {
+		"numeral": "I", "trial": "TRIAL OF THE BLADE", "glyph": "blade",
+		"hook": "Be elsewhere when they arrive.",
+		"seal_name": "Seal of Empty Air", "seal_rule": "Dodge 25 daggers in one run", "seal_target": 25,
+		"lore": "The daggers of light hunt whatever is still burning, and out here that is a short list. Kuro's first lesson is the only one the dojo ever proved against them: a blade owns the thin line it travels on, and every other place in the void belongs to you. Move before you are moved.",
+		"opening": [
+			{"who": "sensei", "mood": "neutral", "gesture": "point", "target": "knife", "text": "The daggers hunt whatever is still burning. Tonight that is you. Be elsewhere when they arrive."},
+			{"who": "pip", "mood": "excited", "gesture": "hop", "text": "Twenty-five dodged in one run and the seal is yours. My record is eleven. Once."},
+			{"who": "sensei", "mood": "think", "text": "Move before you are moved, {name}. It is the one lesson this dojo ever proved."},
+		],
+		"seal_lines": [
+			{"who": "sensei", "mood": "happy", "gesture": "point", "target": "knife", "text": "Twenty-five daggers, and every one of them found empty air. The Seal of Empty Air is yours."},
+			{"who": "pip", "mood": "excited", "gesture": "hop", "text": "They went through where you used to be, {name}. Twenty-five times. I checked."},
+			{"who": "sensei", "mood": "think", "text": "My best was thirty-one. It was a long time ago, and I was not old."},
+		],
+	},
+	"draw": {
+		"numeral": "II", "trial": "TRIAL OF THE EYE", "glyph": "eye",
+		"hook": "The red ones are copies. Leave them.",
+		"seal_name": "Seal of the True Light", "seal_rule": "Score 20 in one round", "seal_target": 20,
+		"lore": "The Quiet makes nothing of its own. It copies what it has already taken and paints the copy red, because a hand that answers a lie is a hand out of position. Kuro answered one once, a long way from here. He will not say what it cost him, only that he now counts to one before he strikes.",
+		"opening": [
+			{"who": "sensei", "mood": "think", "gesture": "point", "target": "draw", "text": "The Quiet cannot make light. It can only copy what it took, and the copies come out red."},
+			{"who": "pip", "mood": "excited", "gesture": "hop", "text": "Score twenty and the seal is yours. Sensei's best is forty. It used to be more."},
+			{"who": "sensei", "mood": "neutral", "text": "Do not answer a lie, {name}. Answering costs more than missing."},
+		],
+		"seal_lines": [
+			{"who": "sensei", "mood": "happy", "gesture": "point", "target": "draw", "text": "Twenty true lights, struck before the Quiet could finish a copy. The Seal of the True Light is yours."},
+			{"who": "pip", "mood": "excited", "gesture": "hop", "text": "I flinched at three of the red ones. From back here. Sitting down."},
+			{"who": "sensei", "mood": "happy", "text": "Progress, Pip. Last year you flinched at four."},
+		],
+	},
+	"match": {
+		"numeral": "III", "trial": "TRIAL OF THE MIND", "glyph": "mind",
+		"hook": "Three of a colour. Nine hundred to go.",
+		"seal_name": "Seal of the Gathered", "seal_rule": "Clear level 3", "seal_target": 3,
+		"lore": "The Star Dojo kept nine hundred shurikens on nine hundred hooks. The Quiet scattered them in a single night, and Kuro has spent eighty years bringing them back three of a colour at a time. He says the gathering is the point. He also knows he will not finish, and he goes out for them anyway.",
+		"opening": [
+			{"who": "sensei", "mood": "neutral", "gesture": "point", "target": "match", "text": "The dojo kept nine hundred shurikens on nine hundred hooks. The Quiet scattered them in one night."},
+			{"who": "pip", "mood": "think", "text": "How many has he got back? He will not tell me. I have asked for years."},
+			{"who": "sensei", "mood": "neutral", "text": "Three of a colour at a time, {name}. That is the whole method. Begin."},
+		],
+		"seal_lines": [
+			{"who": "sensei", "mood": "happy", "gesture": "point", "target": "match", "text": "Three levels. Order out of scatter, three at a time. The Seal of the Gathered is yours."},
+			{"who": "pip", "mood": "excited", "gesture": "hop", "text": "That is a piece of eighty years of Sensei's work, done before dinner."},
+			{"who": "sensei", "mood": "think", "text": "Eighty years. I am not bitter, {name}. I am tired. It is a different thing."},
+		],
+	},
+	"simon": {
+		"numeral": "IV", "trial": "TRIAL OF THE NAME", "glyph": "memory",
+		"hook": "Nine pads. Nine masters. Hold the roll.",
+		"seal_name": "Seal of the Kept Name", "seal_rule": "Reach round 5", "seal_target": 5,
+		"lore": "Nine pads, one for each master of the Star Dojo, in the order they stood at dawn. Kuro is the ninth and can still play the whole roll without thinking. The eighth was his own master; he lost her name somewhere in the second fifty years and kept her drill instead. The Quiet does not kill things. It makes them forgotten, and forgotten is the worse half.",
+		"opening": [
+			{"who": "sensei", "mood": "neutral", "gesture": "point", "target": "simon", "text": "Nine pads. Nine masters of the Star Dojo, in the order they stood. I am the ninth."},
+			{"who": "sensei", "mood": "think", "text": "The Quiet takes a name last. I can play all nine patterns. I can name eight."},
+			{"who": "pip", "mood": "excited", "gesture": "hop", "text": "Reach round five, {name}. Hold the pattern. I am going to hold my breath."},
+		],
+		"seal_lines": [
+			{"who": "sensei", "mood": "happy", "gesture": "point", "target": "simon", "text": "Round five, held whole when it got long. The Seal of the Kept Name is yours."},
+			{"who": "pip", "mood": "excited", "gesture": "hop", "text": "Say your own name out loud after, {name}. It helps. Sensei taught me that."},
+			{"who": "sensei", "mood": "think", "text": "The eighth pad was my master. I kept her drill. I lost her name. Keep yours."},
+		],
+	},
+}
+
+## The turn: the truth about the daggers, once the player has two seals.
+const MIDPOINT := [
+	{"who": "sensei", "mood": "neutral", "text": "{name}. Two seals. You have earned the truth about what you have been dodging."},
+	{"who": "sensei", "mood": "think", "text": "Every dagger of light was a star. The Quiet unmade them and kept the edges."},
+	{"who": "pip", "mood": "neutral", "text": "...I have been calling them light. This whole time. Out loud."},
+	{"who": "sensei", "mood": "think", "text": "You came through them whole, Pip. Nothing else ever has. That is why they keep coming."},
+	{"who": "pip", "mood": "happy", "gesture": "hop", "text": "Right. Then we do not lose. Two more, {name}. I am counting them now too."},
+]
+
+const EPILOGUE := [
+	{"who": "sensei", "mood": "happy", "text": "Four seals. The star holds. I did not think I would be standing here for this."},
+	{"who": "sensei", "mood": "think", "text": "For ninety years I have been the only thing standing here. Tonight I was not."},
+	{"who": "pip", "mood": "neutral", "text": "Sensei. Sit down. You have been standing since before I fell."},
+	{"who": "sensei", "mood": "happy", "gesture": "point", "target": "knife", "text": "The dojo is yours now, {name}. Two lanterns. Light them both. Keep the count."},
+	{"who": "pip", "mood": "happy", "text": "His name is Kuro. I am saying it out loud so it stays. Kuro."},
+	{"who": "pip", "mood": "excited", "gesture": "hop", "text": "Every trial stays open, {name}. Come back. We will keep the light on."},
+]
+
+const PROLOGUE_SUMMARY := "The void came first, and the dojo named it the Quiet: it does not kill things, it unmakes them, and a name is the last part to go. Kuro was the ninth master of the Star Dojo. He trained a hundred years, and then a star fell into the dojo still burning, and the daggers came for it, and he stood between. Now his hands are old and one lantern is already out. Four trials remain."
+const EPILOGUE_SUMMARY := "Four seals, and the star holds. Kuro sat down for the first time in a hundred years and gave the dojo away. Pip says his name out loud most days, so that it stays. The daggers still come. They are no longer the only thing that does."
 
 static func trial(id: String) -> Dictionary:
 	return TRIALS.get(id, {})
@@ -70,10 +139,8 @@ static func pending_celebrations() -> Array:
 			out.append(id)
 	return out
 
-## Lines played on the hub the first time the player opens a trial.
-static func opening_scene(id: String, pname: String) -> Array:
-	var t := trial(id)
-	var lines: Array = t.get("opening", [])
+## One substitution rule for every scene in the edition.
+static func _scene(lines: Array, pname: String) -> Array:
 	var out := []
 	for l in lines:
 		var d: Dictionary = l.duplicate()
@@ -81,45 +148,27 @@ static func opening_scene(id: String, pname: String) -> Array:
 		out.append(d)
 	return out
 
+## Lines played on the hub the first time the player opens a trial.
+static func opening_scene(id: String, pname: String) -> Array:
+	return _scene(trial(id).get("opening", []), pname)
+
 static func has_opening(id: String) -> bool:
 	return not trial(id).get("opening", []).is_empty()
 
-## The turn: played once, on the hub, when the player reaches MIDPOINT_AT seals.
+## Lines played on the hub when a seal is earned.
+static func seal_scene(id: String, pname: String) -> Array:
+	return _scene(trial(id).get("seal_lines", []), pname)
+
+## The name of the seal a trial awards, for the journal and the seal wheel.
+static func seal_name(id: String) -> String:
+	return str(trial(id).get("seal_name", ""))
+
+## The turn: played once, on the hub, at MIDPOINT_AT seals.
 static func midpoint_due() -> bool:
-	return seals_count() >= MIDPOINT_AT and not seals_count() >= ORDER.size() and not SaveData.story_flag("midpoint_seen")
+	return seals_count() >= MIDPOINT_AT and not all_sealed() and not SaveData.story_flag("midpoint_seen")
 
 static func midpoint_scene(pname: String) -> Array:
-	var out := []
-	for l in MIDPOINT:
-		var d: Dictionary = l.duplicate()
-		d.text = str(d.text).replace("{name}", pname)
-		out.append(d)
-	return out
-
-## Guide lines played on the hub when a seal is earned.
-static func seal_scene(id: String, pname: String) -> Array:
-	var t := trial(id)
-	var lines := [
-		{"who": "sensei", "mood": "happy", "gesture": "point", "target": id, "text": str(t.seal_text)},
-	]
-	match id:
-		"knife":
-			lines.append({"who": "pip", "mood": "excited", "gesture": "hop", "text": "You dodged like a comet, %s! I knew it!" % pname})
-		"draw":
-			lines.append({"who": "pip", "mood": "excited", "gesture": "hop", "text": "Not a single decoy fooled you. My eyes are watering!"})
-		"match":
-			lines.append({"who": "pip", "mood": "happy", "text": "Three in a row, again and again. Even Sensei looked impressed."})
-		"simon":
-			lines.append({"who": "sensei", "mood": "think", "text": "Nine pads. You held them all. Few students ever do."})
-	var left := ORDER.size() - seals_count()
-	if left > 0:
-		lines.append({"who": "sensei", "mood": "neutral", "text": "%d seal%s remain%s. The void is patient, but the star grows brighter." % [left, "" if left == 1 else "s", "s" if left == 1 else ""]})
-	return lines
+	return _scene(MIDPOINT, pname)
 
 static func epilogue_scene(pname: String) -> Array:
-	return [
-		{"who": "sensei", "mood": "happy", "text": "Four seals. Blade, Eye, Mind, Memory. %s, you have finished what a hundred years began." % pname},
-		{"who": "pip", "mood": "excited", "gesture": "hop", "text": "I'm shining! Look at me, I'm actually shining!"},
-		{"who": "sensei", "mood": "think", "text": "The daggers will still come. That is the void. But now it has a ninja who is ready."},
-		{"who": "pip", "mood": "happy", "text": "Every trial stays open, so... race you to a new high score?"},
-	]
+	return _scene(EPILOGUE, pname)

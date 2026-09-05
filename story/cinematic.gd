@@ -214,7 +214,7 @@ func _shot_void() -> void:
 	var mist: Sprite2D = $Stage/Far/Mist
 	_tween_alpha(mist, 0.35, 2.0)
 	create_tween().tween_property(mist, "position:x", mist.position.x + 60, 6.0)
-	_caption("Before the first ninja, there was only the void.")
+	_caption("The void came first. The dojo named it the Quiet. It unmakes things.")
 	await _wait(3.6)
 	_tween_alpha($Stage/Far/Torii, 0.55, 1.6)
 	await _wait(1.6)
@@ -239,7 +239,7 @@ func _shot_training() -> void:
 	$Stage/Actors.add_child(_young)
 	var home := _c + Vector2(-40, 62)
 	_young.enter(home + Vector2(-520, 0), home, 0.2)
-	_caption("In the Star Dojo, Kuro trained for a hundred years.")
+	_caption("The Star Dojo trained four arts against it. Kuro was the ninth master.")
 	await _wait(1.4)
 	_orbit.position = home + Vector2(0, -40)
 	var cols := [Globals.CYAN, Globals.MAGENTA, Globals.GOLD, Globals.GREEN]
@@ -252,7 +252,7 @@ func _shot_training() -> void:
 	_young.hop(1.2)
 	await _wait(2.4)
 	var glyphs := ["blade", "eye", "mind", "memory"]
-	var words := ["Blade.", "Eye.", "Mind.", "Memory."]
+	var words := ["Blade.", "Eye.", "Mind.", "Name."]
 	_caption("")
 	%Caption.modulate.a = 1.0
 	for i in 4:
@@ -280,7 +280,7 @@ func _shot_starfall() -> void:
 	_orbit_on = false
 	_young.set_facing(true)
 	_young.set_mood("think")
-	_caption("Then a star fell from the dark.")
+	_caption("Then a star fell into the dojo, still burning. That had never happened.")
 	_cam(1.08, Vector2(0, 40), 1.6)
 	AudioManager.play_sfx("star_fall", 1.0, -4.0)
 	var star := _sprite($Stage/FX, "res://graphics/gen/player_star.png", _c + Vector2(760, -520), 0.5, Globals.GOLD)
@@ -324,12 +324,12 @@ func _shot_starfall() -> void:
 	await _wait(0.8)
 	_young.set_facing(true)
 	_hint(true)
-	await _wait(2.2)
+	await _wait(2.8)
 	_clear_caption()
 
 func _shot_daggers() -> void:
 	_advance = false
-	_caption("The daggers of light came hunting. Kuro stood between.")
+	_caption("The daggers came for it. Kuro stood between. That night they lost.")
 	_cam(1.22, Vector2(0, 60), 2.6)
 	var pip_pos: Vector2 = _pip.position
 	var between := pip_pos + Vector2(-120, -10)
@@ -382,7 +382,7 @@ func _shot_daggers() -> void:
 
 func _shot_years() -> void:
 	_advance = false
-	_caption("Years passed. The master grew old, and the star grew bright. But the daggers never stopped.")
+	_caption("A hundred years. The dojo shrank. One lantern began to go out.")
 	_cam(1.1, Vector2(0, 30), 6.0)
 	_swirl.position = _c + Vector2(0, -40)
 	for i in 28:
@@ -401,6 +401,9 @@ func _shot_years() -> void:
 	_old.set_facing(_young.scale.x > 0)
 	_old.modulate.a = 0.0
 	_old.set_mood("happy")
+	# One lantern begins to go out: the line in the caption, made visible.
+	_tween_alpha($Stage/Mid/Lantern0, 0.75, 1.4 * PACE)
+	_tween_alpha($Stage/Mid/LanternGlow0, 0.36, 1.4 * PACE)
 	var xf := create_tween()
 	xf.set_parallel(true)
 	xf.tween_property(_old, "modulate:a", 1.0, 1.4 * PACE)
@@ -421,7 +424,7 @@ func _shot_years() -> void:
 
 func _shot_trials() -> void:
 	_advance = false
-	_caption("Four trials remain. Master them, and the star will shine unbroken.")
+	_caption("Four trials left. His hands are old. The second lantern goes tonight.")
 	var glyphs := ["blade", "eye", "mind", "memory"]
 	var accents := [Globals.CYAN, Globals.ORANGE, Globals.MAGENTA, Globals.VIOLET]
 	_cam(1.0, Vector2.ZERO, 1.2)

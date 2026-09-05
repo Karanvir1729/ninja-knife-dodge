@@ -5,10 +5,17 @@ four games are framed as one story. `main` is untouched by this work.
 
 ## The premise
 
-Sensei Kuro is the last master of the Star Dojo, adrift in the void. He trained
-for a hundred years; then a star fell, the daggers of light came hunting, and the
-old master stood between them and took the star (Pip) as his student. Four trials
-remain. Master them and the star shines unbroken.
+The void came first, and the dojo named it **the Quiet**. It does not kill things,
+it unmakes them, and a name is the last part to go. Sensei Kuro is the ninth and
+last master of the Star Dojo. He trained a hundred years; then a star fell into
+the dojo still burning — the first thing that ever survived — and the daggers came
+for it, and he stood between. The daggers are what the Quiet leaves of a star it
+has taken. Kuro can still play his own master's drill; he can no longer say her
+name. Four trials remain, and his hands are old.
+
+The player earns four seals. Along the way the guides open each trial, the truth
+about the daggers lands at the midpoint, and the epilogue hands the dojo over —
+Kuro sits down, and Pip says his name out loud so that it stays.
 
 ## Structure
 
@@ -17,7 +24,7 @@ remain. Master them and the star shines unbroken.
 | I — Blade | Knife Dodge | dagger | cyan | dodge 25 daggers in one run |
 | II — Eye | Quick Draw | eye | orange | score 20 in one round |
 | III — Mind | Shuriken Match | shuriken | magenta | clear level 3 |
-| IV — Memory | Sensei Says | nine pads | violet | reach round 5 |
+| IV — Name | Sensei Says | nine pads | violet | reach round 5 |
 
 Seals are **derived from existing stats**, so past play counts and nothing new is
 stored except which seals have been celebrated. Earning all four unlocks the
