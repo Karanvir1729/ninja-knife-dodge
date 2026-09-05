@@ -125,6 +125,15 @@ func click() -> void:
 func back() -> void:
 	play_sfx("ui_back")
 
+## Lower the music while something else (a rewarded video) has the speakers.
+func duck(on: bool) -> void:
+	var mi := AudioServer.get_bus_index("Music")
+	var vol := float(SaveData.setting("music_volume"))
+	var target := linear_to_db(clampf(vol * (0.15 if on else 1.0), 0.0001, 1.0))
+	var t := create_tween()
+	t.set_process_mode(Tween.TWEEN_PROCESS_IDLE)
+	t.tween_method(func(v: float): AudioServer.set_bus_volume_db(mi, v), AudioServer.get_bus_volume_db(mi), target, 0.4)
+
 ## Short haptic pulse on handhelds, honouring the setting.
 func vibrate(ms: int = 30) -> void:
 	if not bool(SaveData.setting("haptics")):

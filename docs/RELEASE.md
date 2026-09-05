@@ -13,14 +13,14 @@ The 1.x build on the store is the single-game version. 2.0 is a four-game arcade
 
 The code ships with a mock ad provider so all reward flows work without any SDK. To serve real ads:
 
-1. Create an AdMob app and a **rewarded** ad unit. Put the unit id in `autoload/Ads.gd` (`ADMOB_REWARDED_UNIT_ID`).
-2. Install a Godot 4 AdMob plugin for iOS (for example Poing Studios' `godot-admob-plugin` plus its iOS export plugin) and enable it in the iOS export preset. `Ads.gd` detects the plugin's classes at runtime and falls back to the mock when they are missing.
-3. In the exported Xcode project's Info.plist add `GADApplicationIdentifier` (your AdMob app id), `NSUserTrackingUsageDescription` (for the App Tracking Transparency prompt), and the `SKAdNetworkItems` list from Google's docs. Request ATT permission before the first ad loads, or configure non-personalised ads.
-4. App Store Connect > App Privacy: the app itself collects nothing, but the ad SDK does. Declare **Device ID** and **Product Interaction / Advertising Data** as collected by third parties for advertising, and answer "Yes" to tracking if you use the IDFA.
+1. Create an AdMob app for the iOS bundle `com.karanvirKhanna.comme` and one **rewarded** ad unit in the [AdMob console](https://apps.admob.com). You get two ids: the app id (`ca-app-pub-XXXX~YYYY`) and the ad unit id (`ca-app-pub-XXXX/ZZZZ`).
+2. Put them in Project Settings (or edit `project.godot`): `admob/general/ios/app_id` and `ninja/ads/rewarded_unit_id`. Both default to Google's official **test** ids, which serve real, test-labelled video on device and are safe to watch as often as you like. Never watch your own live ads: that is invalid traffic.
+3. The Poing Studios AdMob plugin (`addons/admob`, with the Godot 4.7.2 iOS binaries in `addons/admob/ios/bin`) is enabled in the project. On export it adds the Google Mobile Ads SDK via Swift Package Manager, links the native plugin, and writes `GADApplicationIdentifier` plus the full `SKAdNetworkItems` list into Info.plist. `tools/ship_ios.sh` needs no changes; the first archive after a fresh export downloads the SDK packages (a few minutes).
+4. No App Tracking Transparency prompt is shown and the IDFA is never requested, so ads are non-personalised. App Store Connect > App Privacy: answer **No** to "Do you or your third-party partners use data for tracking?", then declare what the ad SDK still collects - **Identifiers (Device ID)**, **Usage Data (Product Interaction, Advertising Data)** and **Diagnostics (Crash Data)** - as "used for third-party advertising", not linked to the user.
 5. Point the App Privacy link at the updated policy (`docs/privacy.html`, "Optional rewarded ads" section). The in-app Privacy screen adds the same paragraph automatically when a real ad provider is active.
-6. Age rating: rewarded video ads mean answering "Yes" to "Unrestricted Web Access"? No; but do answer the advertising questions truthfully. Keep the 4+ rating unless the ad network's content requires otherwise.
+6. Age rating: rewarded video ads mean answering the advertising questions truthfully; keep the 4+ rating unless the ad network's content requires otherwise. New AdMob apps usually need a few hours (and a verified payments profile) before live ads fill; until then the SDK reports "no fill" and the game simply offers the booster path instead.
 
-If you ship **without** the plugin, nothing changes for reviewers: no ad ever loads, and the privacy policy's ad paragraph explicitly covers that case.
+On macOS, in the editor and in the debug tour the game uses its own offline "test ad" overlay instead of the SDK, so tests stay deterministic; only iOS and Android builds with the native plugin show real ads.
 
 ## 3. Store listing
 

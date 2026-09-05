@@ -1,28 +1,31 @@
 extends Node
 ## Rewarded ads behind a tiny provider interface.
 ##
-## The game ships with a MOCK provider: a local, offline "test ad" overlay with a
-## countdown, so every reward flow (hints, boosters, level skips, revives) works
-## end to end without any SDK. To serve real ads:
+## On iOS the Poing Studios AdMob plugin (addons/admob, Google Mobile Ads SDK via
+## Swift Package Manager) serves real rewarded video. Everywhere else - the
+## editor, macOS, the debug tour - a local, offline "test ad" overlay with a
+## countdown stands in, so every reward flow works end to end and stays
+## deterministic in tests.
 ##
-##  1. Install an AdMob plugin for Godot 4 on iOS (for example the Poing Studios
-##     "godot-admob-plugin" and its iOS export template) and add your app id to
-##     the export preset's plist as GADApplicationIdentifier.
-##  2. Fill in ADMOB_REWARDED_UNIT_ID below with your rewarded ad unit id.
-##  3. Add NSUserTrackingUsageDescription to the plist and request tracking
-##     permission (ATT) before loading ads, or use non-personalised ads.
-##  4. Update the privacy policy and App Store privacy labels: ad SDKs collect
-##     device identifiers and usage data.
+## Configuration lives in Project Settings, not in code:
+##   admob/general/ios/app_id       - the AdMob APP id  (ca-app-pub-XXXX~YYYY)
+##   ninja/ads/rewarded_unit_id     - the rewarded AD UNIT id (ca-app-pub-XXXX/ZZZZ)
+## Both default to Google's official TEST ids, which serve real (test-labelled)
+## video on device and never count as invalid traffic. Swap in the ids from the
+## AdMob console for the store release.
 ##
-## `_admob_available()` detects the plugin's classes at runtime; when they are
-## missing the mock provider is used, so a build without the plugin still works.
+## No App Tracking Transparency prompt is made: the SDK serves non-personalised
+## ads without the IDFA, which keeps the app's no-tracking stance and its App
+## Privacy answers simple.
 
 signal reward_granted(placement: String)
 signal ad_finished(placement: String, rewarded: bool)
 
 enum Provider { NONE, MOCK, ADMOB }
 
-const ADMOB_REWARDED_UNIT_ID := ""   # e.g. "ca-app-pub-XXXX/YYYY"; empty keeps the mock
+const UNIT_SETTING := "ninja/ads/rewarded_unit_id"
+const TEST_REWARDED_UNIT_ID := "ca-app-pub-3940256099942544/1712485313"   # Google's iOS test unit
+const RELOAD_BACKOFF := [2.0, 5.0, 15.0, 30.0, 60.0]
 const MOCK_AD_SCENE := "res://UI/mock_ad.tscn"
 
 ## What each placement gives the player, for the offer dialogs.
@@ -46,6 +49,12 @@ func _ready() -> void:
 		_admob_init()
 	else:
 		provider = Provider.MOCK
+	print("Ads: provider=%s unit=%s" % [Provider.keys()[provider], unit_id()])
+
+## The rewarded ad unit id from Project Settings (falls back to Google's test unit).
+static func unit_id() -> String:
+	var v := str(ProjectSettings.get_setting(UNIT_SETTING, ""))
+	return v if v != "" else TEST_REWARDED_UNIT_ID
 
 ## True when a reward ad can be offered right now.
 func available(placement: String = "") -> bool:
@@ -96,57 +105,74 @@ func _mock_show(placement: String) -> bool:
 	overlay.queue_free()
 	return ok
 
-# ---------------------------------------------------------------- AdMob (optional plugin)
+# ---------------------------------------------------------------- AdMob (iOS, Poing Studios plugin)
 
-var _admob_rewarded: Object = null
-var _admob_loaded := false
+var _rewarded_ad: RewardedAd = null
+var _loading := false
+var _load_failures := 0
+var _load_callback := RewardedAdLoadCallback.new()
+var _content_callback := FullScreenContentCallback.new()
 
+## Real ads only where the native singleton exists (an iOS/Android export with the
+## plugin enabled). The editor and desktop builds keep the local mock so tests and
+## screenshots never depend on the network.
 func _admob_available() -> bool:
-	return ADMOB_REWARDED_UNIT_ID != "" and ClassDB.class_exists("RewardedAdLoader") and ClassDB.class_exists("MobileAds")
+	return (OS.has_feature("ios") or OS.has_feature("android")) and Engine.has_singleton("PoingGodotAdMob")
 
 func _admob_init() -> void:
-	# Written against the Poing Studios plugin API (v3/v4). Everything is duck-typed
-	# so a missing method degrades to "no ad available" instead of crashing.
-	var ads = ClassDB.instantiate("MobileAds")
-	if ads and ads.has_method("initialize"):
-		ads.initialize()
+	_load_callback.on_ad_loaded = func(ad: RewardedAd) -> void:
+		_loading = false
+		_load_failures = 0
+		ad.full_screen_content_callback = _content_callback
+		_rewarded_ad = ad
+	_load_callback.on_ad_failed_to_load = func(error: LoadAdError) -> void:
+		_loading = false
+		_rewarded_ad = null
+		push_warning("Ads: rewarded load failed (%s); retrying" % error.message)
+		_schedule_reload()
+	# Keep the game's music going underneath the SDK's own audio handling.
+	MobileAds.set_ios_app_pause_on_background(false)
+	MobileAds.initialize()
 	_admob_load()
 
 func _admob_load() -> void:
-	_admob_loaded = false
-	if not ClassDB.class_exists("RewardedAdLoader") or not ClassDB.class_exists("AdRequest"):
+	if _loading or _rewarded_ad != null:
 		return
-	var loader = ClassDB.instantiate("RewardedAdLoader")
-	var request = ClassDB.instantiate("AdRequest")
-	if loader == null or request == null:
-		return
-	if loader.has_signal("rewarded_ad_loaded"):
-		loader.rewarded_ad_loaded.connect(func(ad): _admob_rewarded = ad; _admob_loaded = true)
-	if loader.has_signal("rewarded_ad_failed_to_load"):
-		loader.rewarded_ad_failed_to_load.connect(func(_err): _admob_loaded = false)
-	if loader.has_method("load"):
-		loader.load(ADMOB_REWARDED_UNIT_ID, request)
+	_loading = true
+	RewardedAdLoader.new().load(unit_id(), AdRequest.new(), _load_callback)
+
+func _schedule_reload() -> void:
+	var wait: float = RELOAD_BACKOFF[mini(_load_failures, RELOAD_BACKOFF.size() - 1)]
+	_load_failures += 1
+	get_tree().create_timer(wait, true, false, true).timeout.connect(_admob_load)
 
 func _admob_ready() -> bool:
-	return _admob_loaded and _admob_rewarded != null
+	return _rewarded_ad != null
 
+## Show the loaded ad; resolve when it is dismissed. The reward callback and the
+## dismiss callback are both deferred by the plugin, so wait a couple of frames
+## after the close before reading the result.
 func _admob_show(_placement: String) -> bool:
 	if not _admob_ready():
 		return false
-	var ad = _admob_rewarded
+	var ad := _rewarded_ad
+	_rewarded_ad = null
 	var earned := false
 	var closed := false
-	if ad.has_signal("user_earned_reward"):
-		ad.user_earned_reward.connect(func(_reward): earned = true)
-	if ad.has_signal("dismissed_full_screen_content"):
-		ad.dismissed_full_screen_content.connect(func(): closed = true)
-	if ad.has_method("show"):
-		ad.show()
-	else:
-		return false
+	_content_callback.on_ad_dismissed_full_screen_content = func() -> void: closed = true
+	_content_callback.on_ad_failed_to_show_full_screen_content = func(error: AdError) -> void:
+		push_warning("Ads: failed to show (%s)" % error.message)
+		closed = true
+	var listener := OnUserEarnedRewardListener.new()
+	listener.on_user_earned_reward = func(_item: RewardedItem) -> void: earned = true
+	AudioManager.duck(true)
+	ad.show(listener)
 	var t0 := Time.get_ticks_msec()
-	while not closed and Time.get_ticks_msec() - t0 < 120000:
+	while not closed and Time.get_ticks_msec() - t0 < 180000:
 		await get_tree().process_frame
-	_admob_rewarded = null
+	await get_tree().process_frame
+	await get_tree().process_frame
+	AudioManager.duck(false)
+	ad.destroy()
 	_admob_load()
 	return earned
