@@ -9,6 +9,7 @@ var director: GuideDirector
 var sensei: Mascot
 var pip: Mascot
 var _cards := {}
+var _pending_launch := ""
 var _card_styles := {}
 var _seal_icons := {}
 
@@ -81,7 +82,7 @@ func _trial_card(g: Dictionary) -> Button:
 	b.add_theme_stylebox_override("pressed", lit)
 	b.add_theme_stylebox_override("hover_pressed", lit)
 	b.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
-	b.pressed.connect(func(): AudioManager.click(); Globals.start_game(id))
+	b.pressed.connect(func(): AudioManager.click(); _launch(id))
 	var v := VBoxContainer.new()
 	v.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	v.offset_left = 16
@@ -213,7 +214,7 @@ func _trial_card(g: Dictionary) -> Button:
 	play.theme_type_variation = &"MagentaButton" if g.category == "mind" else &"PrimaryButton"
 	play.add_theme_font_size_override("font_size", 20)
 	play.text = "PLAY"
-	play.pressed.connect(func(): AudioManager.click(); Globals.start_game(id))
+	play.pressed.connect(func(): AudioManager.click(); _launch(id))
 	v.add_child(play)
 	return b
 
@@ -341,6 +342,20 @@ func _target_rect(name: String) -> Rect2:
 			r = _cards[id].get_global_rect() if r.size == Vector2.ZERO else r.merge(_cards[id].get_global_rect())
 	return r if r.size != Vector2.ZERO else Globals.view_rect()
 
+## Start a trial. The first time, its chapter opening plays here first.
+func _launch(id: String) -> void:
+	if director.running:
+		director.skip_all()
+	if Story.has_opening(id) and not SaveData.trial_opened(id):
+		SaveData.set_trial_opened(id)
+		_pending_launch = id
+		%SkipIntro.text = "SKIP"
+		%SkipIntro.visible = true
+		%Version.visible = false
+		director.run(Story.opening_scene(id, SaveData.player_name()))
+		return
+	Globals.start_game(id)
+
 # ---------------------------------------------------------------- guides and story beats
 
 func _setup_guides() -> void:
@@ -372,6 +387,8 @@ func _setup_guides() -> void:
 	var pending := Story.pending_celebrations()
 	if not pending.is_empty():
 		_celebrate(str(pending[0]))
+	elif Story.midpoint_due():
+		_play_midpoint()
 	elif Story.all_sealed() and not SaveData.story_flag("epilogue_seen"):
 		SaveData.set_story_flag("epilogue_seen")
 		director.run(Story.epilogue_scene(SaveData.player_name()))
@@ -381,6 +398,11 @@ func _setup_guides() -> void:
 		director.run(GuideDirector.intro(SaveData.player_name()))
 	else:
 		director.run(GuideDirector.greeting(SaveData.player_name()))
+
+func _play_midpoint() -> void:
+	SaveData.set_story_flag("midpoint_seen")
+	AudioManager.play_sfx("rise", 1.0, -8.0)
+	director.run(Story.midpoint_scene(SaveData.player_name()))
 
 func _celebrate(id: String) -> void:
 	SaveData.set_seal_celebrated(id)
@@ -416,13 +438,22 @@ func _tip(who: String) -> void:
 
 func _on_script_finished() -> void:
 	%SkipIntro.visible = false
+	%SkipIntro.text = "SKIP INTRO"
 	%Version.visible = true
 	if not SaveData.intro_seen():
 		SaveData.set_intro_seen()
+	if not _pending_launch.is_empty():
+		var id := _pending_launch
+		_pending_launch = ""
+		Globals.start_game(id)
+		return
 	var pending := Story.pending_celebrations()
 	if not pending.is_empty():
 		await get_tree().create_timer(0.6).timeout
 		_celebrate(str(pending[0]))
+	elif Story.midpoint_due():
+		await get_tree().create_timer(0.6).timeout
+		_play_midpoint()
 	elif Story.all_sealed() and not SaveData.story_flag("epilogue_seen"):
 		SaveData.set_story_flag("epilogue_seen")
 		await get_tree().create_timer(0.6).timeout

@@ -28,7 +28,7 @@ func _defaults() -> Dictionary:
 		"settings": {"music": true, "music_volume": 0.8, "sfx": true, "sfx_volume": 1.0, "haptics": true},
 		"tutorials": {},
 		"guides": {"intro_seen": false, "launches": 0},
-		"story": {"prologue_seen": false, "epilogue_seen": false, "celebrated": {}},
+		"story": {"prologue_seen": false, "epilogue_seen": false, "midpoint_seen": false, "celebrated": {}, "opened": {}},
 		"boosters": DEFAULT_BOOSTERS.duplicate(),
 		"knife": {"best": 0, "runs": 0, "total_dodged": 0, "near_misses": 0, "time_played": 0.0, "best_wave": 0, "board": []},
 		"match": {"next_level": 1, "games": 0, "total_stars": 0, "levels": {}, "board": [], "attempts": {}},
@@ -136,6 +136,14 @@ func story_flag(key: String) -> bool:
 
 func set_story_flag(key: String, value: bool = true) -> void:
 	data.story[key] = value
+	save()
+
+## Has the chapter-opening scene for this trial already played?
+func trial_opened(id: String) -> bool:
+	return bool(data.story.opened.get(id, false))
+
+func set_trial_opened(id: String) -> void:
+	data.story.opened[id] = true
 	save()
 
 func seal_celebrated(id: String) -> bool:

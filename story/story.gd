@@ -25,8 +25,14 @@ const TRIALS := {
 		"seal_text": "The pattern lives in you now. The Seal of Memory is yours."},
 }
 
+## The turn, played once at MIDPOINT_AT seals. Copy is filled in by the story pass.
+const MIDPOINT: Array = []
+
 const PROLOGUE_SUMMARY := "Before the first ninja there was only the void. In the Star Dojo, Kuro trained for a hundred years. Then a star fell, and the daggers of light came hunting. The old master stood between them, and took the star as his student. Four trials remain."
 const EPILOGUE_SUMMARY := "With four seals the star shines unbroken. The daggers still come, as they always will, but now the void has a ninja who is ready for them."
+
+## Seals earned before the midpoint scene plays.
+const MIDPOINT_AT := 2
 
 static func trial(id: String) -> Dictionary:
 	return TRIALS.get(id, {})
@@ -62,6 +68,32 @@ static func pending_celebrations() -> Array:
 	for id in ORDER:
 		if seal_earned(id) and not SaveData.seal_celebrated(id):
 			out.append(id)
+	return out
+
+## Lines played on the hub the first time the player opens a trial.
+static func opening_scene(id: String, pname: String) -> Array:
+	var t := trial(id)
+	var lines: Array = t.get("opening", [])
+	var out := []
+	for l in lines:
+		var d: Dictionary = l.duplicate()
+		d.text = str(d.text).replace("{name}", pname)
+		out.append(d)
+	return out
+
+static func has_opening(id: String) -> bool:
+	return not trial(id).get("opening", []).is_empty()
+
+## The turn: played once, on the hub, when the player reaches MIDPOINT_AT seals.
+static func midpoint_due() -> bool:
+	return seals_count() >= MIDPOINT_AT and not seals_count() >= ORDER.size() and not SaveData.story_flag("midpoint_seen")
+
+static func midpoint_scene(pname: String) -> Array:
+	var out := []
+	for l in MIDPOINT:
+		var d: Dictionary = l.duplicate()
+		d.text = str(d.text).replace("{name}", pname)
+		out.append(d)
 	return out
 
 ## Guide lines played on the hub when a seal is earned.
