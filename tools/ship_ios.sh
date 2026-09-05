@@ -16,6 +16,8 @@ cd "$(dirname "$0")/.."
 KEY_ID="${ASC_KEY_ID:-9S2ALUPNQR}"
 ISSUER_ID="${ASC_ISSUER_ID:-$(cat ~/.appstoreconnect/issuer_id)}"
 SIGNING=~/.appstoreconnect/ninja-signing
+KEYCHAIN="${NINJA_KEYCHAIN:-$SIGNING/ninja-build.keychain-db}"
+KEYCHAIN_PW_FILE="${NINJA_KEYCHAIN_PW:-$SIGNING/keychain_pw}"
 OUT="${NINJA_OUT:-$(cd .. && pwd)/ninja-ios}"
 SCHEME="ninja"
 
@@ -26,10 +28,12 @@ BUILD=$(grep -E '^application/version="' export_presets.cfg | tail -1 | sed -E '
 VERSION=$(grep -E '^application/short_version="' export_presets.cfg | tail -1 | sed -E 's/.*"([^"]+)".*/\1/')
 echo "== Ninja Knife Dodge $VERSION build $BUILD"
 
-echo "== keychain"
-security unlock-keychain -p "$(cat "$SIGNING/keychain_pw")" "$SIGNING/ninja-build.keychain-db"
-security set-keychain-settings -lut 21600 "$SIGNING/ninja-build.keychain-db"
-security list-keychains -d user -s "$SIGNING/ninja-build.keychain-db" ~/Library/Keychains/login.keychain-db >/dev/null
+echo "== keychain ($KEYCHAIN)"
+security unlock-keychain -p "$(tr -d '\n\r' < "$KEYCHAIN_PW_FILE")" "$KEYCHAIN"
+security set-keychain-settings -lut 21600 "$KEYCHAIN"
+# Put our keychain first in the search list without dropping anyone else's.
+OTHERS=$(security list-keychains -d user | tr -d '" ' | grep -v "^$KEYCHAIN$" || true)
+security list-keychains -d user -s "$KEYCHAIN" $OTHERS >/dev/null
 
 echo "== godot export (Xcode project)"
 rm -rf "$OUT/$SCHEME" "$OUT/$SCHEME.xcodeproj" "$OUT/build"
