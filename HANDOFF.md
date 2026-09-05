@@ -8,7 +8,12 @@ Last updated: September 1, 2026
 A separate edition, kept off `main` on purpose: the four games are presented as
 the **Four Trials** of one storyline, with an animated prologue about Sensei
 Kuro. See `docs/STORY.md` for the premise, the trial/seal table and the tools.
-Shipped to TestFlight as 2.1 build 5 from the worktree
+Storyline "The Last Lantern" (designed by a judged four-treatment pass, see
+`docs/STORY.md`): the void is the Quiet, which unmakes things and takes a name
+last; the daggers are stars it already took; Kuro is the ninth master who kept
+his own master's drill but lost her name. Delivered as a chapter opening the
+first time each trial is launched, a midpoint turn at two seals, per-trial seal
+scenes and an epilogue. First shipped to TestFlight as 2.1 build 5 from the worktree
 `/Users/karanvirkhanna/game-ninja/ninja-story`, building into
 `ninja-ios-story/` via `NINJA_OUT` so `main`'s artifacts are untouched.
 
