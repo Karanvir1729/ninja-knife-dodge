@@ -9,6 +9,7 @@ var director: GuideDirector
 var sensei: Mascot
 var pip: Mascot
 var _cards := {}
+var _card_count := 4
 var _pending_launch := ""
 var _card_styles := {}
 var _seal_icons := {}
@@ -46,14 +47,27 @@ func _on_resize() -> void:
 
 # ---------------------------------------------------------------- trial cards
 
+## The Yard: games that sit beside the four story trials (no seal, just scores).
+func _yard_games() -> Array:
+	var out := []
+	for g in Globals.GAMES:
+		if bool(g.get("yard", false)) and not Story.ORDER.has(str(g.id)):
+			out.append(g)
+	return out
+
 func _build_cards() -> void:
 	for c in %Cards.get_children():
 		c.queue_free()
+	_card_count = Story.ORDER.size() + _yard_games().size()
 	for id in Story.ORDER:
 		var g := Globals.game(id)
 		var card := _trial_card(g)
 		%Cards.add_child(card)
 		_cards[id] = card
+	for g in _yard_games():
+		var card := _trial_card(g)
+		%Cards.add_child(card)
+		_cards[str(g.id)] = card
 
 func _card_style(accent: Color, lit: bool) -> StyleBoxFlat:
 	var sb := StyleBoxFlat.new()
@@ -69,7 +83,9 @@ func _card_style(accent: Color, lit: bool) -> StyleBoxFlat:
 func _trial_card(g: Dictionary) -> Button:
 	var id := str(g.id)
 	var t := Story.trial(id)
+	var yard := t.is_empty()
 	var accent: Color = ACCENTS.get(id, g.accent)
+	var dense := _card_count > 4
 	var b := Button.new()
 	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	b.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -100,7 +116,9 @@ func _trial_card(g: Dictionary) -> Button:
 	num.add_theme_font_size_override("font_size", 14)
 	num.add_theme_color_override("font_color", accent)
 	num.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	num.text = "TRIAL %s" % str(t.get("numeral", ""))
+	num.text = "THE YARD" if yard else "TRIAL %s" % str(t.get("numeral", ""))
+	if yard:
+		num.add_theme_color_override("font_color", Globals.GREEN)
 	num.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	head.add_child(num)
 	var chip := PanelContainer.new()
@@ -131,7 +149,7 @@ func _trial_card(g: Dictionary) -> Button:
 	# names
 	var title := Label.new()
 	title.theme_type_variation = &"DisplayLabel"
-	title.add_theme_font_size_override("font_size", 28)
+	title.add_theme_font_size_override("font_size", 23 if dense else 28)
 	title.text = str(g.title)
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	v.add_child(title)
@@ -139,12 +157,12 @@ func _trial_card(g: Dictionary) -> Button:
 	trial.theme_type_variation = &"CapsLabel"
 	trial.add_theme_font_size_override("font_size", 13)
 	trial.add_theme_color_override("font_color", accent)
-	trial.text = str(t.get("trial", ""))
+	trial.text = "YARD GAME  ·  NO SEAL" if yard else str(t.get("trial", ""))
 	trial.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	v.add_child(trial)
 	var hook := Label.new()
 	hook.theme_type_variation = &"MutedLabel"
-	hook.add_theme_font_size_override("font_size", 16)
+	hook.add_theme_font_size_override("font_size", 15 if dense else 16)
 	hook.text = str(t.get("hook", g.tagline))
 	hook.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	hook.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -160,8 +178,19 @@ func _trial_card(g: Dictionary) -> Button:
 		stat.text = "%s %s   ·   %d PLAYS" % [str(g.stat_label), Globals.format_number(value), SaveData.plays_for(id)]
 	stat.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	v.add_child(stat)
+	if yard:
+		var lb := Label.new()
+		lb.theme_type_variation = &"CapsLabel"
+		lb.add_theme_font_size_override("font_size", 12)
+		lb.add_theme_color_override("font_color", Globals.MUTED)
+		var yb: Dictionary = SaveData.game_stats(id)
+		var top: int = int(yb.board[0].score) if not yb.board.is_empty() else 0
+		lb.text = ("TOP OF THE BOARD: %s" % Globals.format_number(top)) if top > 0 else "NO INNINGS YET"
+		lb.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		v.add_child(lb)
 	# seal row
 	var seal := HBoxContainer.new()
+	seal.visible = not yard
 	seal.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	seal.add_theme_constant_override("separation", 8)
 	var earned := Story.seal_earned(id)
@@ -255,6 +284,27 @@ func _art(id: String, accent: Color) -> Control:
 				var sh := _tex("res://graphics/gen/shuriken.png", Globals.GEM_COLORS[(i * 5 + (i / 3)) % 6], 32)
 				sh.name = "Gem%d" % i
 				box.add_child(sh)
+		"cricket":
+			var pitch := ColorRect.new()
+			pitch.name = "Pitch"
+			pitch.color = Color(Globals.GREEN, 0.12)
+			pitch.size = Vector2(46, 110)
+			pitch.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			box.add_child(pitch)
+			for i in 3:
+				var st := ColorRect.new()
+				st.name = "Stump%d" % i
+				st.color = Globals.TEXT
+				st.size = Vector2(3, 18)
+				st.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				box.add_child(st)
+			var ball := _tex("res://graphics/gen/glow.png", Color(Globals.GREEN, 0.95), 26)
+			ball.name = "Ball"
+			box.add_child(ball)
+			for i in 3:
+				var f := _tex("res://graphics/gen/dot.png", Globals.ORANGE, 14)
+				f.name = "Fielder%d" % i
+				box.add_child(f)
 		"simon":
 			for i in 9:
 				var lit := i in [1, 4, 5]
@@ -308,6 +358,17 @@ func _layout_art(box: Control, id: String) -> void:
 		"match":
 			for i in 9:
 				_center(box.get_node("Gem%d" % i), box, Vector2((i % 3 - 1) * 40, (i / 3 - 1) * 38))
+		"cricket":
+			var k := _art_k(box)
+			var pitch: Control = box.get_node("Pitch")
+			pitch.pivot_offset = pitch.size * 0.5
+			pitch.scale = Vector2(k, k)
+			pitch.position = box.size * 0.5 - pitch.size * 0.5 + Vector2(0, -6) * k
+			for i in 3:
+				_center(box.get_node("Stump%d" % i), box, Vector2((i - 1) * 7, 40))
+			_center(box.get_node("Ball"), box, Vector2(2, -30))
+			for i in 3:
+				_center(box.get_node("Fielder%d" % i), box, Vector2([-72, -40, 66][i], [18, 50, 30][i]))
 		"simon":
 			for i in 9:
 				var off := Vector2((i % 3 - 1) * 42, (i / 3 - 1) * 36)

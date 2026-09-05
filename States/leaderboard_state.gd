@@ -20,7 +20,7 @@ func _ready() -> void:
 		b.theme_type_variation = &"TabButton"
 		b.toggle_mode = true
 		b.text = str(g.title)
-		b.add_theme_font_size_override("font_size", 18)
+		b.add_theme_font_size_override("font_size", 16 if Globals.GAMES.size() > 4 else 18)
 		b.pressed.connect(_select.bind(str(g.id), false))
 		%TabsBox.add_child(b)
 		_tabs[str(g.id)] = b
