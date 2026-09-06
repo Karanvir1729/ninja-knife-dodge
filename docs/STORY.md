@@ -59,3 +59,13 @@ Shipping this edition without disturbing `main`'s build artifacts:
 ```bash
 NINJA_OUT=/Users/karanvirkhanna/game-ninja/ninja-ios-story tools/ship_ios.sh 6
 ```
+
+## The Yard
+
+Games outside the trials. No seal, but a story hook of their own in `Story.YARD`
+(a chapter opening the first time you launch them, and a journal entry).
+
+- **Star Cricket** — every spring a cricket team from Japan climbs to the Star Dojo
+  to pray before they play India. They have never won. Kuro does not do miracles;
+  he does drills, so he laid a pitch in the yard and bowls with the void itself.
+  Score fifty in one innings and Pip tells the team a ninja did it.

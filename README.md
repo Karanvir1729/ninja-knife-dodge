@@ -20,6 +20,10 @@ Everything shares one menu with Mind and Skill categories, one tutorial format, 
 - Optional **rewarded ads** for power-ups, hints, level skips and revives. The repo ships a mock ad provider so every flow works without an SDK; see `docs/RELEASE.md` to plug in AdMob
 - Ships on the iOS App Store as **Ninja Knife Dodge**
 
+## The Yard
+
+Games beyond the four trials live in **the Yard**: a fifth card on the hub, a leaderboard tab, results and tour coverage, all driven by a `Globals.GAMES` entry flagged `yard: true`, with no seal to earn. The first is **Star Cricket** (`cricket/`, `States/cricket_*`): the void bowls, three fielders cover three of the five shot zones so you read the gaps, and your tap's timing sets the shot (perfect is a six regardless, good into a gap is a four, a weak shot into a fielder is caught, a miss on the stumps is bowled), three wickets, an extra-life offer. Its story lives in `story/story.gd` under `YARD`: a cricket team from Japan that prays to Kuro before they play India, and the yard is how he trains them.
+
 ## Rewarded ads
 
 On iOS the game serves real rewarded video through the Poing Studios AdMob plugin (`addons/admob`, Google Mobile Ads SDK via Swift Package Manager). Every "Watch ad" offer is optional and every reward can also be earned without one. The ad ids live in Project Settings — `admob/general/ios/app_id` and `ninja/ads/rewarded_unit_id` — and default to Google's official test ids; put the ids from your AdMob console there for the store release. No tracking prompt is shown and the IDFA is never requested, so ads are non-personalised. On macOS, in the editor and in the debug tour a local offline "test ad" overlay stands in, keeping tests deterministic. See `docs/RELEASE.md` for the App Privacy answers.
