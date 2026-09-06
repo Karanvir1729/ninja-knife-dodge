@@ -65,6 +65,10 @@ ui_pause={
 [ninja]
 
 ads/rewarded_unit_id="ca-app-pub-8472416478626307/4361402439"
+ads/interstitial_unit_id="ca-app-pub-8472416478626307/7349512528"
+ads/interstitial_every_rounds=3
+ads/interstitial_min_gap_sec=120
+ads/interstitial_warmup_rounds=2
 
 [rendering]
 

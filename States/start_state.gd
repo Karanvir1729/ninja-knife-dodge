@@ -11,11 +11,14 @@ var pip: Mascot
 var _cards := {}
 var _card_count := 4
 var _pending_launch := ""
+var _launch_on_ready := ""
 var _card_styles := {}
 var _seal_icons := {}
 
-func init(_params: Dictionary) -> void:
-	pass
+## {"launch": id} - the journal sends players here so a game's opening scene
+## plays with the guides before the first innings/run.
+func init(params: Dictionary) -> void:
+	_launch_on_ready = str(params.get("launch", ""))
 
 func _ready() -> void:
 	var bg := get_tree().get_first_node_in_group("background")
@@ -25,7 +28,7 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_on_resize)
 	%PlayerName.text = SaveData.player_name()
 	%Seals.text = "%d / 4 SEALS" % Story.seals_count()
-	%Version.text = "V%s  ·  OFFLINE  ·  %s" % [Globals.VERSION, "OPTIONAL REWARD ADS" if Ads.is_real() else "NO ADS"]
+	%Version.text = "V%s  ·  OFFLINE  ·  %s" % [Globals.VERSION, "AD SUPPORTED" if Ads.is_real() else "NO ADS"]
 	%StoryBtn.pressed.connect(func(): AudioManager.click(); Globals.go("story"))
 	%TrophyBtn.pressed.connect(func(): AudioManager.click(); Globals.go("leaderboard"))
 	%BoardBtn.pressed.connect(func(): AudioManager.click(); Globals.go("leaderboard"))
@@ -151,6 +154,7 @@ func _trial_card(g: Dictionary) -> Button:
 	title.theme_type_variation = &"DisplayLabel"
 	title.add_theme_font_size_override("font_size", 23 if dense else 28)
 	title.text = str(g.title)
+	title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	v.add_child(title)
 	var trial := Label.new()
@@ -158,6 +162,7 @@ func _trial_card(g: Dictionary) -> Button:
 	trial.add_theme_font_size_override("font_size", 13)
 	trial.add_theme_color_override("font_color", accent)
 	trial.text = "THE YARD  ·  NO SEAL" if yard else str(t.get("trial", ""))
+	_fit(trial)
 	trial.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	v.add_child(trial)
 	var hook := Label.new()
@@ -172,10 +177,13 @@ func _trial_card(g: Dictionary) -> Button:
 	stat.theme_type_variation = &"CapsLabel"
 	stat.add_theme_font_size_override("font_size", 13)
 	var value := SaveData.best_for(id)
+	var dot := " · " if dense else "   ·   "
 	if id == "match":
-		stat.text = "LEVEL %d   ·   %d STARS" % [value, SaveData.match_total_stars()]
+		stat.text = "LEVEL %d%s%d STARS" % [value, dot, SaveData.match_total_stars()]
 	else:
-		stat.text = "%s %s   ·   %d PLAYS" % [str(g.stat_label), Globals.format_number(value), SaveData.plays_for(id)]
+		var label := str(g.stat_label).replace("BEST ROUND", "ROUND") if dense else str(g.stat_label)
+		stat.text = "%s %s%s%d PLAYS" % [label, Globals.format_number(value), dot, SaveData.plays_for(id)]
+	_fit(stat)
 	stat.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	v.add_child(stat)
 	if yard:
@@ -186,6 +194,7 @@ func _trial_card(g: Dictionary) -> Button:
 		var yb: Dictionary = SaveData.game_stats(id)
 		var top: int = int(yb.board[0].score) if not yb.board.is_empty() else 0
 		lb.text = ("TOP OF THE BOARD: %s" % Globals.format_number(top)) if top > 0 else "NO INNINGS YET"
+		_fit(lb)
 		lb.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		v.add_child(lb)
 	# seal row
@@ -223,6 +232,7 @@ func _trial_card(g: Dictionary) -> Button:
 	sl.add_theme_font_size_override("font_size", 12)
 	sl.add_theme_color_override("font_color", Globals.GOLD if earned else Globals.MUTED)
 	sl.text = "SEAL EARNED" if earned else "SEAL: " + str(t.get("seal_rule", "")).to_upper()
+	sl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	sl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	seal_text.add_child(sl)
 	if not earned:
@@ -246,6 +256,13 @@ func _trial_card(g: Dictionary) -> Button:
 	play.pressed.connect(func(): AudioManager.click(); _launch(id))
 	v.add_child(play)
 	return b
+
+## Single-line caps labels must never widen a card: with five cards in the row
+## a long stat line used to push its card under the next one. Clipped labels
+## report a 1px minimum width and trim with an ellipsis instead.
+func _fit(l: Label) -> void:
+	l.clip_text = true
+	l.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 
 ## A small illustration per trial, built from the generated sprites.
 func _art(id: String, accent: Color) -> Control:
@@ -444,6 +461,10 @@ func _setup_guides() -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 	_place_guides(true)
+	if _launch_on_ready != "":
+		await get_tree().create_timer(0.35).timeout
+		_launch(_launch_on_ready)
+		return
 	await get_tree().create_timer(0.9).timeout
 	var pending := Story.pending_celebrations()
 	if not pending.is_empty():

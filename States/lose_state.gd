@@ -7,6 +7,17 @@ var elapsed := 0.0
 var near := 0
 var dodged := 0
 
+var _leaving := false
+
+## Leaving the results is the one place an interstitial may play (if one is due).
+func _leave(state: String, params: Dictionary = {}) -> void:
+	if _leaving:
+		return
+	_leaving = true
+	await Ads.maybe_interstitial("results")
+	if is_inside_tree():
+		Globals.go(state, params)
+
 func init(params: Dictionary) -> void:
 	score = int(params.get("score", 0))
 	wave = int(params.get("wave", 0))
@@ -19,6 +30,7 @@ func _ready() -> void:
 	if bg: bg.set_mood("knife")
 	Globals.apply_safe_margins(%Root, 24)
 	var result: Dictionary = SaveData.record_knife_run(score, wave, elapsed, near)
+	Ads.round_finished()
 	%ScoreVal.text = str(score)
 	%DodgedVal.text = str(dodged)
 	%WavesVal.text = str(wave)
@@ -31,9 +43,9 @@ func _ready() -> void:
 	%BestLine.text = "BEST %d" % int(SaveData.knife_stats().best)
 	%BestLine.visible = not %RecordChip.visible
 	%Title.text = _title_for(score)
-	%PlayAgain.pressed.connect(func(): AudioManager.click(); Globals.go("play"))
-	%Board.pressed.connect(func(): AudioManager.click(); Globals.go("leaderboard", {"tab": "knife"}))
-	%Menu.pressed.connect(func(): AudioManager.back(); Globals.go("start"))
+	%PlayAgain.pressed.connect(func(): AudioManager.click(); _leave("play"))
+	%Board.pressed.connect(func(): AudioManager.click(); _leave("leaderboard", {"tab": "knife"}))
+	%Menu.pressed.connect(func(): AudioManager.back(); _leave("start"))
 	_layout_daggers()
 	get_viewport().size_changed.connect(_layout_daggers)
 	_animate(result)

@@ -86,7 +86,10 @@ const TRIALS := {
 const YARD := {
 	"cricket": {
 		"caps": "THE YARD  ·  STAR CRICKET",
-		"hook": "Read the field. Wait. Swing once.",
+		"hook": "Japan's cricket team prays here before they face India.",
+		"quote": "I do not do miracles. I do drills.", "quote_by": "KURO",
+		"drill": "KURO'S DRILL  ·  READ THE FIELD. SWING ONCE.",
+		"intro": "EVERY SPRING A TEAM FROM JAPAN CLIMBS UP HERE AND PRAYS TO KURO BEFORE THEY PLAY INDIA. HE ANSWERS WITH A DRILL. THIS IS IT.",
 		"opening": [
 			{"who": "sensei", "mood": "neutral", "gesture": "point", "target": "cricket", "text": "A cricket team climbs up here every spring. From Japan. They pray to me before they play India."},
 			{"who": "pip", "mood": "think", "text": "They have never beaten India. Not once. I keep the scorebook."},

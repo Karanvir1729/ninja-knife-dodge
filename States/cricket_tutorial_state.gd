@@ -21,6 +21,7 @@ var ball_in_flight: bool:
 		return _field != null and is_instance_valid(_field) and _field.ball_in_flight
 
 var _done := false
+var _in_intro := false
 var _swung := false
 var _bowl_in := -1.0
 var _flash_tween: Tween
@@ -44,6 +45,28 @@ func _ready() -> void:
 	t.tween_property($Helper/Glow, "scale", Vector2(0.62, 0.62), 0.7).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 	t.tween_property($Helper/Glow, "scale", Vector2(0.48, 0.48), 0.7).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 	_field.passed.connect(_on_passed)
+	_intro()
+
+## The story beat before the drill: who the team is and why Kuro bothers.
+## A tap (or four seconds) moves on to step one.
+func _intro() -> void:
+	_in_intro = true
+	step = -1
+	%L1.text = str(Story.yard("cricket").get("intro", ""))
+	%L1.add_theme_font_size_override("font_size", 27)
+	%L1.modulate.a = 0.0
+	create_tween().tween_property(%L1, "modulate:a", 1.0, 0.4)
+	%Step.text = "THE YARD  ·  TAP TO BEGIN"
+	for d in %Dots.get_children():
+		d.color = Globals.LINE2
+	await get_tree().create_timer(4.0).timeout
+	dismiss_intro()
+
+func dismiss_intro() -> void:
+	if not _in_intro or _done:
+		return
+	_in_intro = false
+	%L1.add_theme_font_size_override("font_size", 38)
 	_set_step(0)
 
 func _layout() -> void:
@@ -144,6 +167,9 @@ func zone_center_x(zone: int) -> float:
 	return r.position.x + r.size.x * 0.5 + CricketRules.zone_fraction(zone) * r.size.x * 0.5
 
 func _unhandled_input(event: InputEvent) -> void:
+	if _in_intro and ((event is InputEventMouseButton and event.pressed) or (event is InputEventScreenTouch and event.pressed)):
+		dismiss_intro()
+		return
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		tap_at(event.position)
 	elif event is InputEventScreenTouch and event.pressed and event.index > 0:

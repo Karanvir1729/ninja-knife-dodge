@@ -13,8 +13,8 @@ Questions: mehar.khanna@uwaterloo.ca"""
 
 const ADS_TEXT := """
 
-[b]Optional rewarded ads[/b]
-The game never shows ads on its own. When you tap "Watch ad" for a power-up, hint, skip or second chance, the ad is served by Google AdMob, which may collect device identifiers and usage information under Google's privacy policy. Every reward can also be used without watching an ad."""
+[b]Ads[/b]
+This version is ad supported. Between rounds a short full-screen ad may play - never during play, never in your first rounds, at most one every few rounds and never twice within a couple of minutes. You can also choose to watch a rewarded video for a power-up, hint, skip or second chance; every reward can be used without watching one. Ads are served by Google AdMob, which may collect device identifiers and usage information under Google's privacy policy. The app never asks to track you and the ads are non-personalised."""
 
 const SUPPORT_TEXT := """Found a bug or have an idea?
 

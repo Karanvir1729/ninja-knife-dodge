@@ -25,6 +25,7 @@ func _ready() -> void:
 	Globals.apply_safe_margins(%Root, 24)
 	var prev_best := int(SaveData.match_level_info(level).best)
 	var result: Dictionary = SaveData.record_match_result(level, score, stars, cleared)
+	Ads.round_finished()
 	%LevelCaps.text = "LEVEL %d" % level
 	%Title.text = "CLEARED" if cleared else "OUT OF MOVES"
 	if not cleared:
@@ -42,15 +43,26 @@ func _ready() -> void:
 	%RankChip.visible = rank > 0
 	%RankLabel.text = "#%d ON THE BOARD" % rank
 	%NextBtn.visible = cleared and level < MatchLevels.LEVEL_COUNT
-	%NextBtn.pressed.connect(func(): AudioManager.click(); Globals.go("match_play", {"level": level + 1}))
-	%RetryBtn.pressed.connect(func(): AudioManager.click(); Globals.go("match_play", {"level": level}))
+	%NextBtn.pressed.connect(func(): AudioManager.click(); _leave("match_play", {"level": level + 1}))
+	%RetryBtn.pressed.connect(func(): AudioManager.click(); _leave("match_play", {"level": level}))
 	%RetryBtn.theme_type_variation = &"MagentaButton" if not cleared else &"Button"
-	%LevelsBtn.pressed.connect(func(): AudioManager.back(); Globals.go("match_levels"))
+	%LevelsBtn.pressed.connect(func(): AudioManager.back(); _leave("match_levels"))
 	%Hint.visible = not cleared
 	%Hint.text = _hint_text()
 	%SkipBtn.visible = not cleared and SaveData.match_attempts(level) >= 2
 	%SkipBtn.pressed.connect(_skip)
 	_animate()
+
+var _leaving := false
+
+## Leaving the results is the one place an interstitial may play (if one is due).
+func _leave(state: String, params: Dictionary = {}) -> void:
+	if _leaving:
+		return
+	_leaving = true
+	await Ads.maybe_interstitial("results")
+	if is_inside_tree():
+		Globals.go(state, params)
 
 ## After two failed attempts: skip the level (booster or ad) with one star.
 func _skip() -> void:

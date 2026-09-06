@@ -70,9 +70,16 @@ func _build() -> void:
 		_cards.append(card)
 		%Journal.add_child(card)
 	%Journal.add_child(_epilogue_entry())
+	var yard := []
 	for g in Globals.GAMES:
-		if bool(g.get("yard", false)) and not Story.yard(str(g.id)).is_empty():
-			%Journal.add_child(_yard_entry(g))
+		if bool(g.get("yard", false)) and not Story.ORDER.has(str(g.id)):
+			yard.append(g)
+	if not yard.is_empty():
+		var head := _caps("THE YARD  ·  BESIDE THE TRIALS", 14, Globals.GREEN)
+		head.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		%Journal.add_child(head)
+	for g in yard:
+		%Journal.add_child(_yard_entry(g))
 	_build_wheel()
 	var next_id := _next_trial()
 	if next_id.is_empty():
@@ -245,7 +252,7 @@ func _chapter_card(id: String) -> Control:
 		s.content_margin_left = 24
 		s.content_margin_right = 24
 		play.add_theme_stylebox_override(style, s)
-	play.pressed.connect(func(): AudioManager.click(); Globals.start_game(id))
+	play.pressed.connect(func(): AudioManager.click(); _play(id))
 	h.add_child(play)
 	return card
 
@@ -329,6 +336,10 @@ func _yard_entry(g: Dictionary) -> Control:
 	title.text = str(g.title)
 	col.add_child(title)
 	col.add_child(_body_label(str(y.get("lore", "")), 18, Globals.MUTED))
+	if y.has("quote"):
+		var q := _caps("\"%s\"  -  %s" % [str(y.quote).to_upper(), str(y.get("quote_by", "KURO"))], 13, accent)
+		q.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		col.add_child(q)
 	var best: int = SaveData.best_for(id)
 	var target: int = int(y.get("goal_target", 0))
 	if target > 0 and best >= target:
@@ -342,9 +353,17 @@ func _yard_entry(g: Dictionary) -> Control:
 	play.add_theme_font_size_override("font_size", 20)
 	play.text = "PLAY"
 	play.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	play.pressed.connect(func(): AudioManager.click(); Globals.start_game(id))
+	play.pressed.connect(func(): AudioManager.click(); _play(id))
 	h.add_child(play)
 	return p
+
+## The first time, a game's opening scene plays on the hub with the guides;
+## after that the journal starts the game directly.
+func _play(id: String) -> void:
+	if Story.has_opening(id) and not SaveData.trial_opened(id):
+		Globals.go("start", {"launch": id})
+	else:
+		Globals.start_game(id)
 
 # ---------------------------------------------------------------- seal wheel
 

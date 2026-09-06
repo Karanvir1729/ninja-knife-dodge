@@ -26,6 +26,7 @@ func _ready() -> void:
 	if check_only:
 		call_deferred("_check_all")
 		return
+	Ads.interstitials_enabled = false
 	if not film_dir.is_empty():
 		out_dir = film_dir
 		DirAccess.make_dir_recursive_absolute(out_dir)

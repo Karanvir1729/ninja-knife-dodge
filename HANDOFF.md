@@ -26,7 +26,7 @@ The v2 rebuild is implemented and verified. The original single-game Godot proje
 - Branch: `main`
 - Engine: Godot 4.3+; most recent verification used Godot 4.7.2
 - Platforms: iPhone and iPad, landscape
-- Privacy model: fully offline; no accounts, ads, analytics, network access, or data collection
+- Privacy model: offline save data, no accounts or analytics; the iOS build is ad supported (AdMob interstitials between rounds, paced in `autoload/Ads.gd`, plus optional rewarded video) with no tracking prompt
 - Claude design canvas: `https://claude.ai/code/artifact/5c30bb3c-82a6-4675-8952-410068ea3938`
 
 ## Original product request

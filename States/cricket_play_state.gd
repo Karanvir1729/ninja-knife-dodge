@@ -68,7 +68,7 @@ func _ready() -> void:
 	_field.passed.connect(_on_passed)
 	_update_runs(true)
 	_update_wickets(true)
-	_toast("READ THE FIELD. TIME THE SWING.", 1.4)
+	_toast(str(Story.yard("cricket").get("drill", "READ THE FIELD. TIME THE SWING.")), 1.6)
 
 func _layout() -> void:
 	Globals.apply_safe_margins(%Root, MARGIN)
@@ -283,7 +283,7 @@ func _end() -> void:
 	_offering = false
 	_field.clear_fielders()
 	AudioManager.play_sfx("level_fail", 1.0, -6.0)
-	_toast("INNINGS OVER", 1.2)
+	_toast("FIFTY. PIP IS TELLING THE TEAM." if runs >= int(Story.yard("cricket").get("goal_target", 50)) else "INNINGS OVER", 1.2)
 	await get_tree().create_timer(1.1).timeout
 	if not is_inside_tree():
 		return
@@ -303,11 +303,11 @@ func _quip() -> String:
 	if runs >= 100:
 		return "Sensei: \"A century. Do not smile yet; the stumps remember.\""
 	if runs >= 50:
-		return "Sensei: \"Fifty. Half a story, told well.\""
+		return "Pip: \"Fifty! I am telling the team a ninja did it. They might finally listen.\""
 	if runs >= 25:
 		return "Sensei: \"You read the field. Now read it faster.\""
 	if runs == 0:
-		return "Sensei: \"Three wickets, no runs. Even the void looked away.\""
+		return "Sensei: \"Three wickets, no runs. The team from Japan started here too.\""
 	return "Sensei: \"The ball arrives when it arrives, not when you swing.\""
 
 # ---------------------------------------------------------------- HUD

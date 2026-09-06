@@ -27,6 +27,7 @@ func _ready() -> void:
 	if bg: bg.set_mood("menu")
 	Globals.apply_safe_margins(%Root, 24)
 	var result: Dictionary = SaveData.record_game_score(game_id, score, {"detail": detail}, time_sec)
+	Ads.round_finished()
 	%GameCaps.text = str(g.get("title", game_id.to_upper()))
 	%GameCaps.add_theme_color_override("font_color", accent)
 	%Title.text = title if title != "" else "ROUND OVER"
@@ -61,11 +62,22 @@ func _ready() -> void:
 		if colon > 0 and colon < 16:
 			text = quip.substr(colon + 1).strip_edges().trim_prefix("\"").trim_suffix("\"")
 		GuideCameo.create(self, who, [text], "left" if who == "sensei" else "right")
-	%PlayAgain.pressed.connect(func(): AudioManager.click(); Globals.go(str(g.get("play_state", "start"))))
+	%PlayAgain.pressed.connect(func(): AudioManager.click(); _leave(str(g.get("play_state", "start"))))
 	%PlayAgain.theme_type_variation = &"MagentaButton" if g.get("category", "skill") == "mind" else &"PrimaryButton"
-	%Board.pressed.connect(func(): AudioManager.click(); Globals.go("leaderboard", {"tab": game_id}))
-	%Menu.pressed.connect(func(): AudioManager.back(); Globals.go("start"))
+	%Board.pressed.connect(func(): AudioManager.click(); _leave("leaderboard", {"tab": game_id}))
+	%Menu.pressed.connect(func(): AudioManager.back(); _leave("start"))
 	_animate(result)
+
+var _leaving := false
+
+## Leaving the results is the one place an interstitial may play (if one is due).
+func _leave(state: String, params: Dictionary = {}) -> void:
+	if _leaving:
+		return
+	_leaving = true
+	await Ads.maybe_interstitial("results")
+	if is_inside_tree():
+		Globals.go(state, params)
 
 func _stat_tile(val: String, caps: String, color: Color) -> Control:
 	var p := PanelContainer.new()
