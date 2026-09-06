@@ -70,6 +70,9 @@ func _build() -> void:
 		_cards.append(card)
 		%Journal.add_child(card)
 	%Journal.add_child(_epilogue_entry())
+	for g in Globals.GAMES:
+		if bool(g.get("yard", false)) and not Story.yard(str(g.id)).is_empty():
+			%Journal.add_child(_yard_entry(g))
 	_build_wheel()
 	var next_id := _next_trial()
 	if next_id.is_empty():
@@ -300,6 +303,47 @@ func _epilogue_entry() -> Control:
 		h.add_child(v)
 		p.add_child(h)
 	p.add_theme_stylebox_override("panel", sb)
+	return p
+
+## A yard game: lore, the best innings, and a way in. No seal to earn.
+func _yard_entry(g: Dictionary) -> Control:
+	var id := str(g.id)
+	var y := Story.yard(id)
+	var accent: Color = g.get("accent", Globals.GREEN)
+	var p := PanelContainer.new()
+	var sb: StyleBoxFlat = p.get_theme_stylebox("panel", "RaisedPanel").duplicate()
+	sb.border_color = Color(accent, 0.4)
+	sb.content_margin_top = 18
+	sb.content_margin_bottom = 18
+	p.add_theme_stylebox_override("panel", sb)
+	var h := HBoxContainer.new()
+	h.add_theme_constant_override("separation", 18)
+	p.add_child(h)
+	var col := VBoxContainer.new()
+	col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	col.add_theme_constant_override("separation", 6)
+	col.add_child(_caps(str(y.get("caps", "THE YARD")), 14, accent))
+	var title := Label.new()
+	title.theme_type_variation = &"DisplayLabel"
+	title.add_theme_font_size_override("font_size", 26)
+	title.text = str(g.title)
+	col.add_child(title)
+	col.add_child(_body_label(str(y.get("lore", "")), 18, Globals.MUTED))
+	var best: int = SaveData.best_for(id)
+	var target: int = int(y.get("goal_target", 0))
+	if target > 0 and best >= target:
+		col.add_child(_caps("BEST %s  ·  PIP TOLD THEM. A NINJA DID IT." % Globals.format_number(best), 13, Globals.GOLD))
+	else:
+		col.add_child(_caps(("BEST %s  ·  " % Globals.format_number(best) if best > 0 else "") + str(y.get("goal", "")).to_upper(), 13, Globals.MUTED))
+	h.add_child(col)
+	var play := Button.new()
+	play.custom_minimum_size = Vector2(0, 44)
+	play.theme_type_variation = &"PrimaryButton"
+	play.add_theme_font_size_override("font_size", 20)
+	play.text = "PLAY"
+	play.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	play.pressed.connect(func(): AudioManager.click(); Globals.start_game(id))
+	h.add_child(play)
 	return p
 
 # ---------------------------------------------------------------- seal wheel

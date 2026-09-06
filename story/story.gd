@@ -82,6 +82,23 @@ const TRIALS := {
 	},
 }
 
+## Yard games sit beside the trials: no seal, but a story of their own.
+const YARD := {
+	"cricket": {
+		"caps": "THE YARD  ·  STAR CRICKET",
+		"hook": "Read the field. Wait. Swing once.",
+		"opening": [
+			{"who": "sensei", "mood": "neutral", "gesture": "point", "target": "cricket", "text": "A cricket team climbs up here every spring. From Japan. They pray to me before they play India."},
+			{"who": "pip", "mood": "think", "text": "They have never beaten India. Not once. I keep the scorebook."},
+			{"who": "sensei", "mood": "think", "text": "I do not do miracles, {name}. I do drills. Read the field. Wait for the ball. Swing once."},
+			{"who": "pip", "mood": "excited", "gesture": "hop", "text": "Score fifty out here and I will tell them a ninja did it. They might finally listen."},
+		],
+		"lore": "Every spring a cricket team from Japan climbs to the Star Dojo to pray before they play India. They have never won. Kuro does not do miracles; he does drills, so he laid a pitch in the yard and bowls with the void itself. Read the field. Wait for the ball. Swing once. The daggers, for once, stay out of it.",
+		"goal": "Score fifty in one innings and Pip tells the team a ninja did it.",
+		"goal_target": 50,
+	},
+}
+
 ## The turn: the truth about the daggers, once the player has two seals.
 const MIDPOINT := [
 	{"who": "sensei", "mood": "neutral", "text": "{name}. Two seals. You have earned the truth about what you have been dodging."},
@@ -148,12 +165,18 @@ static func _scene(lines: Array, pname: String) -> Array:
 		out.append(d)
 	return out
 
-## Lines played on the hub the first time the player opens a trial.
+static func yard(id: String) -> Dictionary:
+	return YARD.get(id, {})
+
+## Lines played on the hub the first time the player opens a trial or a yard game.
 static func opening_scene(id: String, pname: String) -> Array:
-	return _scene(trial(id).get("opening", []), pname)
+	var lines: Array = trial(id).get("opening", [])
+	if lines.is_empty():
+		lines = yard(id).get("opening", [])
+	return _scene(lines, pname)
 
 static func has_opening(id: String) -> bool:
-	return not trial(id).get("opening", []).is_empty()
+	return not trial(id).get("opening", []).is_empty() or not yard(id).get("opening", []).is_empty()
 
 ## Lines played on the hub when a seal is earned.
 static func seal_scene(id: String, pname: String) -> Array:

@@ -157,13 +157,13 @@ func _trial_card(g: Dictionary) -> Button:
 	trial.theme_type_variation = &"CapsLabel"
 	trial.add_theme_font_size_override("font_size", 13)
 	trial.add_theme_color_override("font_color", accent)
-	trial.text = "YARD GAME  ·  NO SEAL" if yard else str(t.get("trial", ""))
+	trial.text = "THE YARD  ·  NO SEAL" if yard else str(t.get("trial", ""))
 	trial.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	v.add_child(trial)
 	var hook := Label.new()
 	hook.theme_type_variation = &"MutedLabel"
 	hook.add_theme_font_size_override("font_size", 15 if dense else 16)
-	hook.text = str(t.get("hook", g.tagline))
+	hook.text = str(Story.yard(id).get("hook", g.tagline)) if yard else str(t.get("hook", g.tagline))
 	hook.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	hook.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	v.add_child(hook)

@@ -426,5 +426,7 @@ func toggle_pause() -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_PAUSED or what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+		if Ads.is_showing():
+			return
 		if not paused and not ended and not _offering and is_inside_tree() and elapsed > 0.5:
 			toggle_pause()

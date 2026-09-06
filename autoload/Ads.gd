@@ -41,6 +41,12 @@ const PLACEMENTS := {
 
 var provider: int = Provider.NONE
 var _busy := false
+var _showing := false
+
+## True while a full-screen ad is on top of the game. Play states use this to
+## skip their auto-pause when iOS reports the focus change the ad causes.
+func is_showing() -> bool:
+	return _showing
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -120,6 +126,8 @@ func _mock_show(placement: String) -> bool:
 # ---------------------------------------------------------------- AdMob (iOS, Poing Studios plugin)
 
 var _rewarded_ad: RewardedAd = null
+var _show_closed := false
+var _show_earned := false
 var _loading := false
 var _load_failures := 0
 var _load_callback := RewardedAdLoadCallback.new()
@@ -169,22 +177,28 @@ func _admob_show(_placement: String) -> bool:
 		return false
 	var ad := _rewarded_ad
 	_rewarded_ad = null
-	var earned := false
-	var closed := false
-	_content_callback.on_ad_dismissed_full_screen_content = func() -> void: closed = true
+	# Member flags, not locals: GDScript lambdas capture locals by value, so a
+	# local `closed` flipped inside a callback would never be seen out here.
+	_show_closed = false
+	_show_earned = false
+	_content_callback.on_ad_dismissed_full_screen_content = func() -> void: _show_closed = true
 	_content_callback.on_ad_failed_to_show_full_screen_content = func(error: AdError) -> void:
 		push_warning("Ads: failed to show (%s)" % error.message)
-		closed = true
+		_show_closed = true
 	var listener := OnUserEarnedRewardListener.new()
-	listener.on_user_earned_reward = func(_item: RewardedItem) -> void: earned = true
+	listener.on_user_earned_reward = func(_item: RewardedItem) -> void: _show_earned = true
+	_showing = true
 	AudioManager.duck(true)
 	ad.show(listener)
 	var t0 := Time.get_ticks_msec()
-	while not closed and Time.get_ticks_msec() - t0 < 180000:
+	while not _show_closed and Time.get_ticks_msec() - t0 < 180000:
 		await get_tree().process_frame
+	# The reward and dismiss callbacks are both deferred by the plugin; give the
+	# reward two more frames to land before reading it.
 	await get_tree().process_frame
 	await get_tree().process_frame
+	_showing = false
 	AudioManager.duck(false)
 	ad.destroy()
 	_admob_load()
-	return earned
+	return _show_earned

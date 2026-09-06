@@ -337,6 +337,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_PAUSED or what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+		if Ads.is_showing():
+			return
 		if not paused and not ended and is_inside_tree():
 			toggle_pause()
 
