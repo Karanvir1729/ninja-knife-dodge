@@ -62,6 +62,11 @@ const GAMES := [
 	 "tour": [{"state": "draw_play", "params": {}, "wait": 2.0, "name": "draw_play"}],
 	 "milestones": [[20, "QUICK HANDS"], [50, "SHARPSHOOTER"], [100, "DEADEYE"], [200, "LIGHTNING"], [400, "UNTOUCHABLE"]],
 	 "milestone_text": "Score %d in one round to earn the %s title.", "milestone_stat": "best"},
+	{"id": "cricket", "title": "STAR CRICKET", "category": "skill", "tagline": "Read the field. Time the swing.",
+	 "accent": Color("4dffa6"), "play_state": "cricket_play", "tutorial_state": "cricket_tutorial", "stat_label": "BEST",
+	 "tour": [{"state": "cricket_play", "params": {}, "wait": 2.5, "name": "cricket_play"}],
+	 "milestones": [[25, "OPENER"], [50, "HALF CENTURY"], [100, "CENTURY"], [200, "DOUBLE TON"], [400, "IMMORTAL"]],
+	 "milestone_text": "Score %d runs in one innings to earn the %s title.", "milestone_stat": "best", "yard": true},
 ]
 
 static func game(id: String) -> Dictionary:
