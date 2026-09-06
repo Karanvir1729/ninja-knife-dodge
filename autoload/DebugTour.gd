@@ -26,8 +26,10 @@ func _ready() -> void:
 	if check_only:
 		call_deferred("_check_all")
 		return
-	Ads.interstitials_enabled = false
 	if not film_dir.is_empty():
+		# Tours and films run with interstitials off so timing stays deterministic;
+		# a normal launch never reaches these lines and keeps them on.
+		Ads.interstitials_enabled = false
 		out_dir = film_dir
 		DirAccess.make_dir_recursive_absolute(out_dir)
 		SaveData.read_only = true
@@ -36,6 +38,7 @@ func _ready() -> void:
 		return
 	if out_dir.is_empty():
 		return
+	Ads.interstitials_enabled = false
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	DirAccess.make_dir_recursive_absolute(out_dir)
 	SaveData.read_only = true

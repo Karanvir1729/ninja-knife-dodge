@@ -1,4 +1,5 @@
-[gd_scene load_steps=4 format=3 uid="uid://c1leaderboard0"]
+[gd_scene load_steps=5 format=3 uid="uid://c1leaderboard0"]
+[ext_resource type="Script" path="res://UI/touch_scroll.gd" id="touch_scroll"]
 
 [ext_resource type="Script" path="res://States/leaderboard_state.gd" id="1_lb"]
 [ext_resource type="Texture2D" path="res://graphics/gen/icon_back.png" id="2_back"]
@@ -77,6 +78,7 @@ size_flags_vertical = 3
 theme_override_constants/separation = 24
 
 [node name="Scroll" type="ScrollContainer" parent="Root/V/Body"]
+script = ExtResource("touch_scroll")
 layout_mode = 2
 size_flags_horizontal = 3
 horizontal_scroll_mode = 0

@@ -1,4 +1,5 @@
-[gd_scene load_steps=6 format=3 uid="uid://c1matchlevels0"]
+[gd_scene load_steps=7 format=3 uid="uid://c1matchlevels0"]
+[ext_resource type="Script" path="res://UI/touch_scroll.gd" id="touch_scroll"]
 
 [ext_resource type="Script" path="res://States/match_levels_state.gd" id="1_ml"]
 [ext_resource type="Texture2D" path="res://graphics/gen/icon_back.png" id="2_back"]
@@ -119,6 +120,7 @@ theme_override_font_sizes/font_size = 16
 text = "TARGET 1,650  ·  22 MOVES  ·  5 COLOURS"
 
 [node name="Scroll" type="ScrollContainer" parent="Root/V"]
+script = ExtResource("touch_scroll")
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
