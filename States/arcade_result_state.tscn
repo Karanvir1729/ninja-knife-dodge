@@ -69,7 +69,7 @@ layout_mode = 2
 
 [node name="Card" type="PanelContainer" parent="Root/Center"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(820, 0)
+custom_minimum_size = Vector2(740, 0)
 layout_mode = 2
 theme_override_styles/panel = SubResource("card")
 

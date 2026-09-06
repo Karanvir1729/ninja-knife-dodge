@@ -9,6 +9,7 @@ extends RefCounted
 const SETTLE := 2.8
 
 func run(tour) -> void:
+	await _yard(tour)
 	# A fresh journal (in memory): no seals, locked epilogue, Sensei's opening line.
 	var keep := {"knife": int(SaveData.data.knife.best), "match": int(SaveData.data.match.next_level),
 		"simon": int(SaveData.game_stats("simon").best), "draw": int(SaveData.game_stats("draw").best)}
@@ -81,3 +82,21 @@ func run(tour) -> void:
 
 func _state(tour) -> Node:
 	return tour._sm().get_node("CurrentState").get_child(0)
+
+## The Yard lives at the bottom of the journal: scroll all the way down.
+func _yard(tour) -> void:
+	# The Yard lives at the bottom of the journal: scroll all the way down.
+	await tour._go("story")
+	await tour._wait(0.8)
+	var st = tour._sm().get_node("CurrentState").get_child(0)
+	var sc = st.get_node("%Journal").get_parent()
+	if sc is ScrollContainer:
+		sc.scroll_vertical = 100000
+	await tour._frames(3)
+	var yard_cards := 0
+	for c in st.get_node("%Journal").get_children():
+		if c.has_node("HBoxContainer/VBoxContainer") or c.get_child_count() > 0:
+			yard_cards += 1
+	tour._check(st.get_node("%Journal").get_child_count() >= 7, "journal: prologue, four trials, epilogue and the Yard are listed (%d entries)" % st.get_node("%Journal").get_child_count())
+	await tour._shot("smoke_journal_yard")
+	await tour._go("start")
