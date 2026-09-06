@@ -49,12 +49,24 @@ func _ready() -> void:
 		_admob_init()
 	else:
 		provider = Provider.MOCK
-	print("Ads: provider=%s unit=%s" % [Provider.keys()[provider], unit_id()])
+	print("Ads: provider=%s unit=%s test_install=%s" % [Provider.keys()[provider], unit_id(), is_test_install()])
 
-## The rewarded ad unit id from Project Settings (falls back to Google's test unit).
+## The rewarded ad unit id. TestFlight and development installs carry an
+## embedded provisioning profile that App Store installs do not, so those builds
+## keep Google's test unit: testers can watch as much as they like without the
+## live unit ever seeing invalid traffic. Only a real App Store install serves
+## the live unit from Project Settings.
 static func unit_id() -> String:
+	if is_test_install():
+		return TEST_REWARDED_UNIT_ID
 	var v := str(ProjectSettings.get_setting(UNIT_SETTING, ""))
 	return v if v != "" else TEST_REWARDED_UNIT_ID
+
+static func is_test_install() -> bool:
+	if not OS.has_feature("ios"):
+		return true
+	var bundle_dir := OS.get_executable_path().get_base_dir()
+	return FileAccess.file_exists(bundle_dir.path_join("embedded.mobileprovision"))
 
 ## True when a reward ad can be offered right now.
 func available(placement: String = "") -> bool:
