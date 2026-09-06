@@ -192,6 +192,15 @@ def build():
             if start + i < n: out[start + i] += s
         t += random.choice([1.0, 1.5, 2.0, 2.5])
     write("match_loop", out, peak=0.5)
+    # Star Cricket
+    write("bat_hit", mix(noise(0.035, 1.0, lp=0.9, curve=9, attack=0.001), noise(0.09, 0.35, lp=0.45, curve=6),
+                         tone(sweep(190, 70), 0.16, 0.9, curve=5, harmonics=((1, 1), (2, 0.35), (3, 0.12)))))
+    write("six", mix(noise(1.1, 0.7, lp=0.35, attack=0.4, curve=2.2), offset(noise(0.5, 0.4, lp=0.8, curve=3), 0.35),
+                     offset(tone(NOTE(88), 0.9, 0.5, curve=2.2, harmonics=((1, 1), (2.76, 0.3), (5.4, 0.12))), 0.3),
+                     offset(tone(NOTE(95), 0.8, 0.28, curve=2.6), 0.36)))
+    write("wicket", mix(*[offset(mix(noise(0.07, 0.9, lp=0.75, curve=7), tone(f, 0.08, 0.35, curve=8)), k * 0.065) for k, f in enumerate((2400, 1900, 2900))],
+                        tone(sweep(160, 60), 0.28, 0.6, curve=3, harmonics=((1, 1), (2, 0.3)))))
+    write("bowl", mix(noise(0.24, 1.0, lp=0.45, attack=0.03, curve=2.6), tone(sweep(720, 240), 0.22, 0.3, attack=0.02, curve=3)))
 
 if __name__ == "__main__":
     build()
