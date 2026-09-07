@@ -3,6 +3,14 @@
 Last updated: September 1, 2026
 
 
+## Chapter path and films (2026-09-06)
+
+The hub no longer lists games: it is a scrolling path of chapters (prologue,
+Chapter I, the Yard interlude, Chapter II, the turn, Chapter III, Chapter IV,
+epilogue) unlocked one by one by the seals. Every chapter has an opening film and
+a seal film, all built on `story/film.gd` (see `docs/FILMS.md`, `docs/STORY.md`).
+`Story.pending_films()` queues the films due on the hub and chains them.
+
 ## Story edition (branch `story-edition`, version 2.1)
 
 A separate edition, kept off `main` on purpose: the four games are presented as

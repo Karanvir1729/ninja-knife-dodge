@@ -122,10 +122,10 @@ func _end() -> void:
 static func intro(pname: String) -> Array:
 	return [
 		{"who": "pip", "mood": "excited", "gesture": "hop", "text": "Whoa, a new ninja! Welcome to the Star Dojo, %s!" % pname},
-		{"who": "sensei", "mood": "neutral", "text": "I am Sensei Kuro. Four trials await you, one seal each."},
-		{"who": "sensei", "mood": "think", "gesture": "point", "target": "skill", "text": "The Blade and the Eye test your reflexes: dodge the daggers, strike the targets."},
-		{"who": "sensei", "mood": "think", "gesture": "point", "target": "mind", "text": "The Mind and the Name test your patience: align the shurikens, keep the pattern."},
-		{"who": "pip", "mood": "excited", "gesture": "hop", "text": "Earn all four seals and I'll shine unbroken! Tap us any time for a tip."},
+		{"who": "sensei", "mood": "neutral", "gesture": "point", "target": "knife", "text": "I am Sensei Kuro. The story runs in chapters, one seal each. The Blade is first."},
+		{"who": "sensei", "mood": "think", "gesture": "point", "target": "draw", "text": "Earn a chapter's seal and the next one opens. Nothing here is skipped."},
+		{"who": "pip", "mood": "excited", "gesture": "hop", "text": "Every chapter starts with a little film. Earn all four seals and I'll shine unbroken!"},
+		{"who": "sensei", "mood": "happy", "text": "Tap either of us whenever you want a tip. Begin when you are ready."},
 	]
 
 static func intro_legacy(pname: String) -> Array:
@@ -145,7 +145,7 @@ static func greeting(pname: String) -> Array:
 		[{"who": "pip", "mood": "excited", "gesture": "hop", "text": "You're back, %s! Let's beat a high score today!" % pname}],
 		[{"who": "sensei", "mood": "think", "text": "A calm mind sees the whole board. Breathe, then play."}],
 		[{"who": "pip", "mood": "happy", "text": "Psst. Knife Dodge waves get faster every loop. Just saying!"}],
-		[{"who": "sensei", "mood": "happy", "text": "Welcome back. Which path today, %s: mind or skill?" % pname}],
+		[{"who": "sensei", "mood": "happy", "text": "Welcome back, %s. The next chapter is waiting where you left it." % pname}],
 	]
 	return options[randi() % options.size()]
 

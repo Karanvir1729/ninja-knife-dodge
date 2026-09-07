@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://070fe7u3i6dv"]
+[gd_scene load_steps=9 format=3 uid="uid://070fe7u3i6dv"]
 
 [ext_resource type="Script" path="res://States/start_state.gd" id="1_prv3t"]
 [ext_resource type="PackedScene" path="res://UI/speech_bubble.tscn" id="2_bubble"]
@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" path="res://graphics/gen/story/seal_ring.png" id="icon_seal"]
 [ext_resource type="Texture2D" path="res://graphics/gen/glow.png" id="glow"]
 [ext_resource type="Texture2D" path="res://graphics/gen/player_star.png" id="player_star"]
+[ext_resource type="Script" path="res://UI/touch_scroll.gd" id="touch_scroll"]
 
 [node name="StartState" type="CanvasLayer"]
 script = ExtResource("1_prv3t")
@@ -161,12 +162,34 @@ icon = ExtResource("icon_gear")
 icon_alignment = 1
 expand_icon = true
 
-[node name="Cards" type="HBoxContainer" parent="Root/V"]
+[node name="PathScroll" type="ScrollContainer" parent="Root/V"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
+horizontal_scroll_mode = 3
+vertical_scroll_mode = 0
+script = ExtResource("touch_scroll")
+
+[node name="PathBox" type="MarginContainer" parent="Root/V/PathScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 22
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 22
+
+[node name="PathLine" type="Control" parent="Root/V/PathScroll/PathBox"]
+unique_name_in_owner = true
+layout_mode = 2
 mouse_filter = 2
-theme_override_constants/separation = 14
+
+[node name="Cards" type="HBoxContainer" parent="Root/V/PathScroll/PathBox"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 40
 
 [node name="Bottom" type="HBoxContainer" parent="Root/V"]
 custom_minimum_size = Vector2(0, 172)

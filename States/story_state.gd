@@ -194,7 +194,7 @@ func _chapter_card(id: String) -> Control:
 	col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	col.add_theme_constant_override("separation", 4)
 	h.add_child(col)
-	col.add_child(_caps("TRIAL %s  ·  %s" % [str(t.numeral), str(t.trial)], 14, accent))
+	col.add_child(_caps("CHAPTER %s  ·  %s%s" % [str(t.numeral), str(t.trial), "" if Story.chapter_unlocked(id) else "  ·  LOCKED"], 14, accent if Story.chapter_unlocked(id) else Globals.DIM))
 	var title := Label.new()
 	title.theme_type_variation = &"DisplayLabel"
 	title.add_theme_font_size_override("font_size", 26)
@@ -236,8 +236,11 @@ func _chapter_card(id: String) -> Control:
 		row.add_child(rule)
 		row.add_child(_caps("%d / %d" % [progress, target], 13, accent))
 		col.add_child(row)
+	col.add_child(_film_row(id))
+	var unlocked := Story.chapter_unlocked(id)
 	var play := Button.new()
-	play.text = "PLAY"
+	play.text = "PLAY" if unlocked else "LOCKED"
+	play.disabled = not unlocked
 	var variation: StringName = &"MagentaButton" if str(g.get("category", "skill")) == "mind" else &"PrimaryButton"
 	play.theme_type_variation = variation
 	play.custom_minimum_size = Vector2(118, 44)
@@ -255,6 +258,39 @@ func _chapter_card(id: String) -> Control:
 	play.pressed.connect(func(): AudioManager.click(); _play(id))
 	h.add_child(play)
 	return card
+
+## Replays for the films a chapter has already shown (its opening, its seal).
+func _film_row(id: String) -> Control:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+	var opening := Story.opening_film(id)
+	if not opening.is_empty() and Story.film_seen(opening):
+		row.add_child(_film_button("WATCH THE OPENING", opening))
+	var seal := Story.seal_film(id)
+	if not seal.is_empty() and Story.film_seen(seal):
+		row.add_child(_film_button("WATCH THE SEAL", seal))
+	var c := Story.chapter(id)
+	var goal := str(c.get("goal_film", ""))
+	if Story.film_exists(goal) and Story.film_seen(goal):
+		row.add_child(_film_button("WATCH THE FIFTY", goal))
+	row.visible = row.get_child_count() > 0
+	return row
+
+func _film_button(text: String, film: String) -> Button:
+	var b := Button.new()
+	b.text = text
+	b.focus_mode = Control.FOCUS_NONE
+	b.add_theme_font_size_override("font_size", 14)
+	b.custom_minimum_size = Vector2(0, 32)
+	for style in ["normal", "hover", "pressed", "hover_pressed"]:
+		var s: StyleBoxFlat = b.get_theme_stylebox(style, "Button").duplicate()
+		s.content_margin_top = 4
+		s.content_margin_bottom = 4
+		s.content_margin_left = 12
+		s.content_margin_right = 12
+		b.add_theme_stylebox_override(style, s)
+	b.pressed.connect(func(): AudioManager.click(); Globals.go("film", {"film": film, "return": "story"}))
+	return b
 
 ## The 56px seal medallion: ring and glyph in gold once earned, else dim.
 func _medallion(id: String, earned: bool) -> Control:
@@ -346,24 +382,24 @@ func _yard_entry(g: Dictionary) -> Control:
 		col.add_child(_caps("BEST %s  ·  PIP TOLD THEM. A NINJA DID IT." % Globals.format_number(best), 13, Globals.GOLD))
 	else:
 		col.add_child(_caps(("BEST %s  ·  " % Globals.format_number(best) if best > 0 else "") + str(y.get("goal", "")).to_upper(), 13, Globals.MUTED))
+	col.add_child(_film_row(id))
 	h.add_child(col)
+	var unlocked := Story.chapter_unlocked(id)
 	var play := Button.new()
 	play.custom_minimum_size = Vector2(0, 44)
 	play.theme_type_variation = &"PrimaryButton"
 	play.add_theme_font_size_override("font_size", 20)
-	play.text = "PLAY"
+	play.text = "PLAY" if unlocked else "LOCKED"
+	play.disabled = not unlocked
 	play.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	play.pressed.connect(func(): AudioManager.click(); _play(id))
 	h.add_child(play)
 	return p
 
-## The first time, a game's opening scene plays on the hub with the guides;
-## after that the journal starts the game directly.
+## The hub owns the way in (locks, the opening film the first time, then the
+## game), so the journal hands over to it.
 func _play(id: String) -> void:
-	if Story.has_opening(id) and not SaveData.trial_opened(id):
-		Globals.go("start", {"launch": id})
-	else:
-		Globals.start_game(id)
+	Globals.go("start", {"launch": id})
 
 # ---------------------------------------------------------------- seal wheel
 

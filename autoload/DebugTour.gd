@@ -61,6 +61,15 @@ func _seed_sample_data() -> void:
 		SaveData.record_match_result(lv, 2000 + lv * 900, 3 if lv % 2 == 1 else 2, true)
 	SaveData.set_tutorial_done("knife", true)
 	SaveData.set_tutorial_done("match", true)
+	# The sample profile has every seal: keep the hub from opening with the
+	# seal, turn and ending films, and from revealing chapters, on every visit.
+	SaveData.set_story_flag("prologue_seen", true)
+	for id in Story.ORDER:
+		SaveData.set_seal_celebrated(str(id))
+	for f in ["midpoint", "epilogue", "cricket_fifty"]:
+		SaveData.set_story_flag(Story.film_flag(f), true)
+	for id in Story.chapter_ids():
+		SaveData.set_chapter_revealed(str(id))
 
 func _frames(n: int) -> void:
 	for i in n:
