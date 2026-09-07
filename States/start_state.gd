@@ -197,7 +197,11 @@ func _chapter_card(id: String) -> Button:
 	title.text = str(g.get("title", Story.chapter_title(id))) if not is_film else Story.chapter_title(id)
 	title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	if is_film:
+		# An autowrapped label reports no minimum height in this column: give it two lines.
 		title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		title.max_lines_visible = 2
+		title.custom_minimum_size = Vector2(0, 50)
+		title.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	v.add_child(title)
 	var sub := _caps(Story.chapter_title(id) if not is_film else str(c.get("label", "")), 12, accent)
