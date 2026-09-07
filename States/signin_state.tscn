@@ -1,0 +1,146 @@
+[gd_scene load_steps=4 format=3 uid="uid://c1signin0state0"]
+
+[ext_resource type="Script" path="res://States/signin_state.gd" id="1_signin"]
+[ext_resource type="Texture2D" path="res://graphics/apple_logo.svg" id="2_apple"]
+
+[sub_resource type="StyleBoxFlat" id="apple_normal"]
+content_margin_left = 22.0
+content_margin_top = 12.0
+content_margin_right = 26.0
+content_margin_bottom = 12.0
+bg_color = Color(0, 0, 0, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.85)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="SignInState" type="CanvasLayer"]
+script = ExtResource("1_signin")
+
+[node name="Root" type="MarginContainer" parent="."]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Center" type="CenterContainer" parent="Root"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Card" type="PanelContainer" parent="Root/Center"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(560, 0)
+layout_mode = 2
+theme_type_variation = &"RaisedPanel"
+
+[node name="V" type="VBoxContainer" parent="Root/Center/Card"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Caps" type="Label" parent="Root/Center/Card/V"]
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_colors/font_color = Color(1, 0.31, 0.847, 1)
+theme_override_font_sizes/font_size = 15
+text = "THE STAR DOJO KEEPS A ROLL"
+horizontal_alignment = 1
+
+[node name="Title" type="Label" parent="Root/Center/Card/V"]
+layout_mode = 2
+theme_type_variation = &"DisplayLabel"
+theme_override_colors/font_outline_color = Color(0.337, 0.941, 1, 0.32)
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 46
+text = "NINJA KNIFE DODGE"
+horizontal_alignment = 1
+
+[node name="Line" type="Label" parent="Root/Center/Card/V"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 19
+text = "Sign in so your seals, chapters and best scores follow you, and your name can stand on the leaderboards."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Gap" type="Control" parent="Root/Center/Card/V"]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+
+[node name="AppleBtn" type="Button" parent="Root/Center/Card/V"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(340, 56)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_colors/icon_normal_color = Color(1, 1, 1, 1)
+theme_override_colors/icon_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/icon_pressed_color = Color(0.85, 0.85, 0.85, 1)
+theme_override_constants/h_separation = 12
+theme_override_constants/icon_max_width = 26
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("apple_normal")
+theme_override_styles/hover = SubResource("apple_normal")
+theme_override_styles/pressed = SubResource("apple_normal")
+theme_override_styles/hover_pressed = SubResource("apple_normal")
+theme_override_styles/disabled = SubResource("apple_normal")
+text = "Sign in with Apple"
+icon = ExtResource("2_apple")
+expand_icon = true
+
+[node name="NoApple" type="Label" parent="Root/Center/Card/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_colors/font_color = Color(0.545, 0.573, 0.671, 1)
+theme_override_font_sizes/font_size = 13
+text = "SIGN IN WITH APPLE IS ONLY AVAILABLE ON IPHONE AND IPAD"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="GuestBtn" type="Button" parent="Root/Center/Card/V"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(340, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 19
+text = "CONTINUE ON THIS DEVICE"
+
+[node name="Busy" type="Label" parent="Root/Center/Card/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_colors/font_color = Color(0.337, 0.941, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "TALKING TO APPLE..."
+horizontal_alignment = 1
+
+[node name="Status" type="Label" parent="Root/Center/Card/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"CapsLabel"
+theme_override_font_sizes/font_size = 14
+text = ""
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Privacy" type="Label" parent="Root/Center/Card/V"]
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_colors/font_color = Color(0.353, 0.38, 0.502, 1)
+theme_override_font_sizes/font_size = 14
+text = "Apple shares only an ID and, if you allow it, your email. You can hide your email, and you can delete the account from Settings at any time."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Actors" type="Node2D" parent="."]
+unique_name_in_owner = true

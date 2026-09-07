@@ -31,6 +31,7 @@ Globals="*res://Globals.gd"
 SaveData="*res://autoload/SaveData.gd"
 AudioManager="*res://autoload/AudioManager.gd"
 Ads="*res://autoload/Ads.gd"
+Backend="*res://autoload/Backend.gd"
 DebugTour="*res://autoload/DebugTour.gd"
 
 [display]
@@ -64,6 +65,8 @@ ui_pause={
 
 [ninja]
 
+backend/url="https://inbwlcpvunzeprmhxyhd.supabase.co"
+backend/publishable_key="sb_publishable_7DSI-DG0pwfxqTEoAucN-w_G8Mcb2c-"
 ads/rewarded_unit_id="ca-app-pub-8472416478626307/4361402439"
 ads/interstitial_unit_id="ca-app-pub-8472416478626307/7349512528"
 ads/interstitial_every_rounds=3

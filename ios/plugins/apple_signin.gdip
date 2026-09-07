@@ -1,0 +1,15 @@
+[config]
+name="AppleSignIn"
+binary="apple_signin/apple_signin.xcframework"
+initialization="apple_signin_init"
+deinitialization="apple_signin_deinit"
+
+[dependencies]
+linked=[]
+embedded=[]
+system=["AuthenticationServices.framework"]
+capabilities=[]
+files=[]
+linker_flags=[]
+
+[plist]

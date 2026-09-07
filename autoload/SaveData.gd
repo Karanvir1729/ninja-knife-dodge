@@ -29,6 +29,7 @@ func _defaults() -> Dictionary:
 		"tutorials": {},
 		"guides": {"intro_seen": false, "launches": 0},
 		"story": {"prologue_seen": false, "epilogue_seen": false, "midpoint_seen": false, "celebrated": {}, "opened": {}, "revealed": {}},
+		"account": {},
 		"boosters": DEFAULT_BOOSTERS.duplicate(),
 		"knife": {"best": 0, "runs": 0, "total_dodged": 0, "near_misses": 0, "time_played": 0.0, "best_wave": 0, "board": []},
 		"match": {"next_level": 1, "games": 0, "total_stars": 0, "levels": {}, "board": [], "attempts": {}},
@@ -235,6 +236,7 @@ func record_game_score(id: String, score: int, extra: Dictionary = {}, time_sec:
 	if score > 0:
 		rank = _insert(g.board, _entry(player_name(), score, extra))
 	save()
+	Backend.sync_later()
 	return {"rank": rank, "new_record": new_record}
 
 ## The headline number for a game on the menu (see Globals.GAMES stat_label).
@@ -264,6 +266,7 @@ func record_knife_run(score: int, wave: int, time_sec: float, near_misses: int) 
 	if score > 0:
 		rank = _insert(k.board, _entry(player_name(), score, {"wave": wave, "time": time_sec, "near": near_misses}))
 	save()
+	Backend.sync_later()
 	return {"rank": rank, "new_record": new_record}
 
 ## Record a Shuriken Match level attempt. Returns {rank, new_best, unlocked_next}.
@@ -291,6 +294,7 @@ func record_match_result(level: int, score: int, stars: int, cleared: bool) -> D
 	if score > 0:
 		rank = _insert(m.board, _entry(player_name(), score, {"level": level, "stars": stars}))
 	save()
+	Backend.sync_later()
 	return {"rank": rank, "new_best": new_best, "unlocked_next": unlocked}
 
 ## Consecutive failed attempts on a level (reset when it is cleared).

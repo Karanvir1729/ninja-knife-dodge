@@ -1,13 +1,12 @@
 extends CanvasLayer
 ## Settings: ninja name, audio, haptics, tutorials, about, and a guarded reset.
 
-const PRIVACY_TEXT := """[b]Ninja Knife Dodge does not collect, store, or share any personal data.[/b]
+const PRIVACY_TEXT := """[b]What Ninja Knife Dodge stores about you.[/b]
 
-• The game runs entirely offline and makes no network connections.
-• There are no accounts, no sign-in, no ads, and no third-party analytics or tracking SDKs.
-• Your scores, level progress, power-ups, settings and tutorial flags are saved only on this device and never leave it. Deleting the app deletes them.
-
-Because no data is collected, there is nothing to access, correct, delete, or opt out of.
+• You sign in with Apple. Apple gives the game a random account ID and, if you allow it, your email address (you can choose to hide it). Nothing else from your Apple ID is shared.
+• Your ninja name, best scores, chapter and seal progress and boosters are backed up to the game's account database (hosted by Supabase) after each round, so they follow you to a new device. Your name and best scores may appear on the public leaderboards; your email never does.
+• Everything is also saved on this device. There are no third-party analytics or tracking SDKs.
+• Delete your account at any time from Settings > Account: the cloud copy is erased for good. Deleting the app deletes the local copy.
 
 Questions: mehar.khanna@uwaterloo.ca"""
 
@@ -64,7 +63,7 @@ func _ready() -> void:
 	%HapticsRow.visible = OS.has_feature("mobile") or OS.has_feature("editor") or true
 	%ReplayBtn.pressed.connect(_replay_tutorials)
 	%ResetBtn.pressed.connect(func(): AudioManager.click(); _show(%Confirm, true))
-	%ConfirmCancel.pressed.connect(func(): AudioManager.back(); _show(%Confirm, false))
+	%ConfirmCancel.pressed.connect(func(): AudioManager.back(); _show(%Confirm, false); if _confirm_mode == "delete": _delete_cancel())
 	%ConfirmReset.pressed.connect(_reset)
 	%PrivacyBtn.pressed.connect(func(): _info("PRIVACY", PRIVACY_TEXT + (ADS_TEXT if Ads.is_real() else "")))
 	%SupportBtn.pressed.connect(func(): _info("SUPPORT", SUPPORT_TEXT))
@@ -74,6 +73,7 @@ func _ready() -> void:
 	%Confirm.visible = false
 	%Info.visible = false
 	%Toast.modulate.a = 0.0
+	_build_account()
 
 func _back() -> void:
 	AudioManager.back()
@@ -97,10 +97,112 @@ func _replay_tutorials() -> void:
 	_toast("ALL TUTORIALS WILL PLAY AGAIN NEXT TIME YOU START EACH GAME")
 
 func _reset() -> void:
+	if _confirm_mode == "delete":
+		_delete_account()
+		return
 	AudioManager.play_sfx("level_fail")
 	SaveData.reset_all()
 	_show(%Confirm, false)
 	_toast("PROGRESS RESET. THE VOID IS EMPTY AGAIN.")
+
+# ---------------------------------------------------------------- account
+
+var _confirm_mode := "reset"
+var _account_label: Label
+var _sign_out_btn: Button
+var _delete_btn: Button
+
+## Who is signed in (Sign in with Apple through Supabase), with sign-out and
+## the account deletion App Review requires. Guests see a way to sign in.
+func _build_account() -> void:
+	var danger: Control = %ResetBtn.get_parent().get_parent()
+	var right: Control = danger.get_parent()
+	var panel := PanelContainer.new()
+	panel.name = "Account"
+	var v := VBoxContainer.new()
+	v.add_theme_constant_override("separation", 8)
+	panel.add_child(v)
+	var caps := Label.new()
+	caps.theme_type_variation = &"CapsLabel"
+	caps.add_theme_font_size_override("font_size", 14)
+	caps.add_theme_color_override("font_color", Globals.CYAN)
+	caps.text = "ACCOUNT"
+	v.add_child(caps)
+	_account_label = Label.new()
+	_account_label.theme_type_variation = &"MutedLabel"
+	_account_label.add_theme_font_size_override("font_size", 17)
+	_account_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	v.add_child(_account_label)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	_sign_out_btn = Button.new()
+	_sign_out_btn.add_theme_font_size_override("font_size", 17)
+	_sign_out_btn.custom_minimum_size = Vector2(0, 44)
+	_sign_out_btn.pressed.connect(_on_sign_out)
+	row.add_child(_sign_out_btn)
+	_delete_btn = Button.new()
+	_delete_btn.theme_type_variation = &"DangerButton"
+	_delete_btn.add_theme_font_size_override("font_size", 17)
+	_delete_btn.custom_minimum_size = Vector2(0, 44)
+	_delete_btn.text = "DELETE ACCOUNT"
+	_delete_btn.pressed.connect(_on_delete_account)
+	row.add_child(_delete_btn)
+	v.add_child(row)
+	right.add_child(panel)
+	right.move_child(panel, danger.get_index())
+	panel.visible = Backend.is_configured()
+	_refresh_account()
+
+func _refresh_account() -> void:
+	if _account_label == null:
+		return
+	if Backend.has_session():
+		_account_label.text = "Signed in with Apple as %s. Seals and scores are backed up after every round." % Backend.account_label()
+		_sign_out_btn.text = "SIGN OUT"
+		_delete_btn.visible = true
+	else:
+		_account_label.text = "Playing on this device only. Sign in with Apple to back up your seals and scores."
+		_sign_out_btn.text = "SIGN IN"
+		_delete_btn.visible = false
+
+func _on_sign_out() -> void:
+	AudioManager.click()
+	if Backend.has_session():
+		await Backend.sign_out()
+		_refresh_account()
+		_toast("SIGNED OUT. THE NEXT LAUNCH ASKS YOU TO SIGN IN.")
+	else:
+		SaveData.data.account = {}
+		SaveData.save()
+		Globals.go("signin")
+
+func _on_delete_account() -> void:
+	AudioManager.click()
+	_confirm_mode = "delete"
+	%Confirm.get_node("Center/Card/V/T").text = "DELETE YOUR ACCOUNT?"
+	%Confirm.get_node("Center/Card/V/S").text = "Your account and its cloud backup are erased for good. Progress on this device stays until you reset it."
+	%ConfirmReset.text = "DELETE"
+	_show(%Confirm, true)
+
+func _delete_cancel() -> void:
+	_confirm_mode = "reset"
+	%Confirm.get_node("Center/Card/V/T").text = "RESET EVERYTHING?"
+	%Confirm.get_node("Center/Card/V/S").text = "Both leaderboards, all level stars and every stat will be erased. This cannot be undone."
+	%ConfirmReset.text = "RESET"
+
+func _delete_account() -> void:
+	_show(%Confirm, false)
+	_confirm_mode = "reset"
+	%Confirm.get_node("Center/Card/V/T").text = "RESET EVERYTHING?"
+	%Confirm.get_node("Center/Card/V/S").text = "Both leaderboards, all level stars and every stat will be erased. This cannot be undone."
+	%ConfirmReset.text = "RESET"
+	var ok: bool = await Backend.delete_account()
+	_refresh_account()
+	if ok:
+		AudioManager.play_sfx("level_fail")
+		_toast("ACCOUNT DELETED. YOU ARE PLAYING ON THIS DEVICE ONLY.")
+	else:
+		_toast("COULD NOT DELETE THE ACCOUNT: %s" % Backend.last_error.to_upper())
 
 func _info(title: String, body: String) -> void:
 	AudioManager.click()

@@ -24,6 +24,7 @@ const STATES := {
 	"cricket_tutorial": "res://States/cricket_tutorial_state.tscn",
 	"cricket_play": "res://States/cricket_play_state.tscn",
 	"cinematic": "res://story/films/prologue.tscn",
+	"signin": "res://States/signin_state.tscn",
 	"story": "res://States/story_state.tscn",
 }
 ## Story films live in story/films/<name>.tscn and share one state: go("film", {"film": name, ...}).
@@ -38,7 +39,10 @@ var _pending: Array = []
 
 func _ready() -> void:
 	var first := "start"
-	if not SaveData.story_flag("prologue_seen") and not DebugTour.check_only and DebugTour.out_dir.is_empty():
+	var normal_launch := not DebugTour.check_only and DebugTour.out_dir.is_empty()
+	if normal_launch and Backend.needs_sign_in():
+		first = "signin"
+	elif normal_launch and not SaveData.story_flag("prologue_seen"):
 		first = "cinematic"
 	_swap(first, {"return": "start"})
 	$Transition.snap_clear()

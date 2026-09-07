@@ -22,6 +22,32 @@ The code ships with a mock ad provider so all reward flows work without any SDK.
 
 On macOS, in the editor and in the debug tour the game uses its own offline "test ad" overlay instead of the SDK, so tests stay deterministic; only iOS and Android builds with the native plugin show real ads.
 
+## 2b. Accounts: Sign in with Apple and Supabase
+
+Since build 11 players sign in with Apple on first launch (`States/signin_state`), and
+`autoload/Backend.gd` mirrors the save to a Supabase project after every round.
+
+- **Supabase project** `ninja-knife-dodge` (org Daybot, ref `inbwlcpvunzeprmhxyhd`,
+  `https://inbwlcpvunzeprmhxyhd.supabase.co`). The publishable key and URL live in
+  `project.godot` under `ninja/backend/*`; the publishable key is safe to ship. Never put a
+  secret key in the app. Schema: table `public.players` (one row per auth user, RLS: own row
+  only), view `public.leaderboard` (names and scores, readable by anyone), functions
+  `handle_new_user` (row on sign-up), `delete_my_account` (App Review 5.1.1(v)). Auth >
+  Providers > Apple is enabled with the bundle id `com.karanvirKhanna.comme` as a client id;
+  native sign-in needs no secret key.
+- **Native plugin** `ios/plugins/apple_signin` (`apple_signin.gdip`, built by
+  `tools/build_ios_plugin.sh` against a Godot source checkout of the template version, see
+  the script header). The preset enables it (`plugins/AppleSignIn=true`) and adds the
+  `com.apple.developer.applesignin` entitlement (`entitlements/additional`). The App ID has the
+  Sign in with Apple capability; the "Ninja App Store" profile was regenerated after adding it
+  (uuid in `application/provisioning_profile_uuid_release`).
+- **App Privacy**: Sign in with Apple collects an identifier and optionally an email, linked
+  to the user, used for app functionality. Declare **Contact Info (Email)**, **Identifiers
+  (User ID)** and **Gameplay Content** as linked to the user; the privacy policy has an
+  "Your account" section.
+- Desktop, the simulator and the debug tour have no Apple plugin: the sign-in screen offers
+  "continue on this device" there, and the tour never touches the network.
+
 ## 3. Store listing
 
 - Add iPad screenshots (12.9" and 11") alongside the 6.7"/6.5" iPhone set. The debug tour produces clean captures at the right aspect ratios: `godot --path . -- --tour=/tmp/shots` (iphone_* and ipad_* files); upscale to the exact store sizes.
