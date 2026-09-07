@@ -10,6 +10,7 @@ var quick := false
 var check_only := false
 var film_dir := ""
 var film_reel := "prologue"
+var film_size := Vector2i(1408, 792)   # --film-size=WxH films at another aspect (store screenshots)
 var _fails := 0
 var _checks := 0
 var _scale := 1.0
@@ -26,6 +27,10 @@ func _ready() -> void:
 			film_dir = arg.trim_prefix("--film=")
 		if arg.begins_with("--reel="):
 			film_reel = arg.trim_prefix("--reel=")
+		if arg.begins_with("--film-size="):
+			var parts := arg.trim_prefix("--film-size=").split("x")
+			if parts.size() == 2:
+				film_size = Vector2i(int(parts[0]), int(parts[1]))
 	if check_only:
 		call_deferred("_check_all")
 		return
@@ -439,7 +444,9 @@ func _find_offer() -> OfferOverlay:
 ## Fast iteration on a film.
 func _film() -> void:
 	await _frames(3)
-	DisplayServer.window_set_size(Vector2i(int(1408 * _scale), int(792 * _scale)))
+	var screen := DisplayServer.screen_get_size()
+	_scale = minf(1.0, minf((screen.y - 140.0) / float(film_size.y), (screen.x - 40.0) / float(film_size.x)))
+	DisplayServer.window_set_size(Vector2i(int(film_size.x * _scale), int(film_size.y * _scale)))
 	await _frames(3)
 	SaveData.set_story_flag(Story.film_flag(film_reel), false)
 	await _go("film", {"film": film_reel, "return": "start"})
