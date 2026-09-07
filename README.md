@@ -15,7 +15,7 @@ A four-game offline arcade for iPhone and iPad, built with [Godot 4](https://god
 Everything shares one menu with Mind and Skill categories, one tutorial format, a pause overlay, local top-10 leaderboards with lifetime stats and milestone titles, settings (ninja name, music, sound, haptics, tutorial replay, reset), and the guides: **Sensei Kuro** and **Pip** introduce the app on first launch, greet you on later ones, hand out tips when tapped, and pop in with a line on results screens.
 
 - One-touch controls, landscape, works offline
-- Local leaderboards only; no accounts, no analytics
+- Sign in with Apple backs up progress to a Supabase player account (`docs/RELEASE.md` section 2b); local leaderboards; no analytics
 - Fills iPhone (19.5:9) and iPad (4:3) screens edge to edge, with safe-area aware HUDs
 - Optional **rewarded ads** for power-ups, hints, level skips and revives. The repo ships a mock ad provider so every flow works without an SDK; see `docs/RELEASE.md` to plug in AdMob
 - Ships on the iOS App Store as **Ninja Knife Dodge**
@@ -70,7 +70,7 @@ See `docs/RELEASE.md` for the full update checklist (export templates, build num
 
 ## Support / Privacy
 
-Questions or bug reports: [open an issue](https://github.com/Karanvir1729/ninja-knife-dodge/issues) or email [mehar.khanna@uwaterloo.ca](mailto:mehar.khanna@uwaterloo.ca). The game collects no data itself; optional rewarded ads are covered in the [privacy policy](docs/privacy.md).
+Questions or bug reports: [open an issue](https://github.com/Karanvir1729/ninja-knife-dodge/issues) or email [mehar.khanna@uwaterloo.ca](mailto:mehar.khanna@uwaterloo.ca). What the account stores, and the optional rewarded ads, are covered in the [privacy policy](docs/privacy.md).
 
 ## Credits
 

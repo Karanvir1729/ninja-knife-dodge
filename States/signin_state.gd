@@ -8,9 +8,10 @@ const MASCOT := preload("res://UI/mascot.gd")
 var _sensei: Mascot
 var _pip: Mascot
 var _leaving := false
+var _from := ""          # "settings" when opened from Settings > Account
 
-func init(_params: Dictionary) -> void:
-	pass
+func init(params: Dictionary) -> void:
+	_from = str(params.get("from", ""))
 
 func _ready() -> void:
 	var bg := get_tree().get_first_node_in_group("background")
@@ -20,12 +21,17 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_on_resize)
 	%AppleBtn.pressed.connect(_on_apple)
 	%GuestBtn.pressed.connect(_on_guest)
+	%BackBtn.pressed.connect(_on_back)
 	%Status.text = ""
 	%Busy.visible = false
 	var apple := Backend.apple_available()
 	%AppleBtn.visible = apple
+	# Apple first. The device-only option appears only where Apple cannot sign
+	# in at all, after an attempt fails or is cancelled, or when coming from Settings.
 	%GuestBtn.visible = not apple
+	%GuestBtn.text = "CONTINUE ON THIS DEVICE"
 	%NoApple.visible = not apple
+	%BackBtn.visible = _from == "settings"
 	Backend.signed_in.connect(_on_signed_in)
 	Backend.sign_in_failed.connect(_on_failed)
 	_setup_guides()
@@ -65,16 +71,31 @@ func _on_failed(message: String) -> void:
 	%Busy.visible = false
 	%AppleBtn.disabled = false
 	%Status.add_theme_color_override("font_color", Globals.RED if not message.is_empty() else Globals.MUTED)
-	%Status.text = message.to_upper() if not message.is_empty() else "NO SIGN-IN. TAP THE BUTTON TO TRY AGAIN."
+	%Status.text = message.to_upper() if not message.is_empty() else "NO SIGN-IN YET. TAP THE BUTTON TO TRY AGAIN."
 	if _pip and not message.is_empty(): _pip.set_mood("think")
+	# Never a dead end: after a failed or cancelled attempt the player can go on
+	# without an account (offline launch, no Apple ID on the device) and sign in
+	# later from Settings > Account.
+	%GuestBtn.text = "NOT NOW  ·  PLAY ON THIS DEVICE"
+	%GuestBtn.visible = true
 
-## On into the story (the prologue the first time).
+func _on_back() -> void:
+	if _leaving:
+		return
+	AudioManager.back()
+	_leaving = true
+	Globals.go("settings")
+
+## On into the story (the prologue the first time), or back to Settings.
 func _proceed() -> void:
 	if _leaving:
 		return
 	_leaving = true
 	await get_tree().create_timer(0.6).timeout
-	Globals.go("start" if SaveData.story_flag("prologue_seen") else "cinematic", {"return": "start"})
+	if _from == "settings":
+		Globals.go("settings")
+	else:
+		Globals.go("start" if SaveData.story_flag("prologue_seen") else "cinematic", {"return": "start"})
 
 func _setup_guides() -> void:
 	_sensei = MASCOT.new()

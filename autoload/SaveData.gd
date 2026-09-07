@@ -334,9 +334,15 @@ func match_stats() -> Dictionary:
 func reset_all() -> void:
 	var name_keep := player_name()
 	var settings_keep: Dictionary = data.settings.duplicate()
+	var account_keep: Dictionary = data.get("account", {}).duplicate(true)
+	var owner_keep := str(data.profile.get("owner_uid", ""))
 	data = _defaults()
 	data.profile.name = name_keep
+	if not owner_keep.is_empty():
+		data.profile.owner_uid = owner_keep
 	data.settings = settings_keep
+	data.account = account_keep
 	save()
 	data_reset.emit()
 	boosters_changed.emit()
+	Backend.sync_later()

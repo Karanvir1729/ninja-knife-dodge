@@ -288,7 +288,7 @@ text = "Ninja Knife Dodge v2.0"
 layout_mode = 2
 theme_type_variation = &"MutedLabel"
 theme_override_font_sizes/font_size = 19
-text = "Runs fully offline. No ads, no accounts, no tracking. Scores and settings never leave this device."
+text = "Plays offline. Your account backs up seals and scores after each round; no tracking, no analytics."
 autowrap_mode = 3
 
 [node name="Links" type="HBoxContainer" parent="Root/V/Body/Right/About/V"]

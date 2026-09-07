@@ -49,8 +49,6 @@ static String ns_to_godot(NSString *s) {
 	Dictionary result;
 	result["user"] = ns_to_godot(cred.user);
 	result["email"] = ns_to_godot(cred.email);
-	result["given_name"] = ns_to_godot(cred.fullName.givenName);
-	result["family_name"] = ns_to_godot(cred.fullName.familyName);
 	NSString *token = cred.identityToken ? [[NSString alloc] initWithData:cred.identityToken encoding:NSUTF8StringEncoding] : nil;
 	NSString *code = cred.authorizationCode ? [[NSString alloc] initWithData:cred.authorizationCode encoding:NSUTF8StringEncoding] : nil;
 	result["identity_token"] = ns_to_godot(token);
@@ -98,7 +96,7 @@ void AppleSignIn::sign_in(const String &p_hashed_nonce) {
 		GodotAppleSignInDelegate *d = (__bridge GodotAppleSignInDelegate *)delegate;
 		ASAuthorizationAppleIDProvider *provider = [[ASAuthorizationAppleIDProvider alloc] init];
 		ASAuthorizationAppleIDRequest *request = [provider createRequest];
-		request.requestedScopes = @[ ASAuthorizationScopeFullName, ASAuthorizationScopeEmail ];
+		request.requestedScopes = @[ ASAuthorizationScopeEmail ];
 		if (!p_hashed_nonce.is_empty()) {
 			request.nonce = [NSString stringWithUTF8String:p_hashed_nonce.utf8().get_data()];
 		}

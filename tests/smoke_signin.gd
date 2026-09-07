@@ -15,6 +15,11 @@ func run(tour) -> void:
 	var st = tour._sm().get_node("CurrentState").get_child(0)
 	tour._check(not st.get_node("%AppleBtn").visible and st.get_node("%GuestBtn").visible, "signin: without the plugin the screen offers to continue on this device")
 	await tour._shot("smoke_signin")
+	# A failed attempt must never be a dead end: the device-only option appears.
+	st.get_node("%GuestBtn").visible = false
+	Backend.sign_in_failed.emit("Could not reach the dojo.")
+	await tour._wait(0.2)
+	tour._check(st.get_node("%GuestBtn").visible, "signin: after a failed attempt the player can continue on this device")
 	st.get_node("%GuestBtn").pressed.emit()
 	await tour._wait_until(func(): return tour._sm().current_name in ["start", "cinematic"], 6.0)
 	tour._check(tour._sm().current_name in ["start", "cinematic"], "signin: continuing on this device enters the game (state=%s)" % tour._sm().current_name)
@@ -28,6 +33,7 @@ func run(tour) -> void:
 		tour._check(payload.has(k), "backend: payload has %s" % k)
 	tour._check(int(payload.best_knife) == int(SaveData.knife_stats().best) and str(payload.ninja_name) == SaveData.player_name(), "backend: payload mirrors the local bests and name")
 	tour._check(payload.save.has("story") and payload.save.has("games"), "backend: the save blob carries story and game stats")
+	tour._check(Backend.clean_name("ké$vin-42 ") == "KVIN42" and Backend.clean_name("") == "NINJA" and Backend.clean_name("abcdefghijklmnop").length() == 12, "backend: ninja names are cleaned to the server's charset and length")
 	var hashed: String = Backend._sha256_hex("abc")
 	tour._check(hashed == "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad", "backend: the nonce hash is SHA-256 hex")
 	# Settings shows the account panel with sign-out and delete when signed in.

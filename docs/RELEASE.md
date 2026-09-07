@@ -31,7 +31,9 @@ Since build 11 players sign in with Apple on first launch (`States/signin_state`
   `https://inbwlcpvunzeprmhxyhd.supabase.co`). The publishable key and URL live in
   `project.godot` under `ninja/backend/*`; the publishable key is safe to ship. Never put a
   secret key in the app. Schema: table `public.players` (one row per auth user, RLS: own row
-  only), view `public.leaderboard` (names and scores, readable by anyone), functions
+  only; CHECK constraints cap the name to 12 chars of A-Z 0-9 space underscore, scores to
+  sane ranges and the save blob to 64 KB), view `public.leaderboard` (ninja name and
+  scores only, no ids, readable by anyone), functions
   `handle_new_user` (row on sign-up), `delete_my_account` (App Review 5.1.1(v)). Auth >
   Providers > Apple is enabled with the bundle id `com.karanvirKhanna.comme` as a client id;
   native sign-in needs no secret key.
@@ -46,7 +48,14 @@ Since build 11 players sign in with Apple on first launch (`States/signin_state`
   (User ID)** and **Gameplay Content** as linked to the user; the privacy policy has an
   "Your account" section.
 - Desktop, the simulator and the debug tour have no Apple plugin: the sign-in screen offers
-  "continue on this device" there, and the tour never touches the network.
+  "continue on this device" there, and the tour never touches the network. On iOS the
+  device-only option appears only after an Apple attempt fails or is cancelled (offline
+  first launch, no Apple ID), so nobody is locked out and App Review 5.1.1(v) has a way in.
+- Sign-in order is pull, merge, push (`Backend.merge_from_cloud`): a reinstall or second
+  device never overwrites cloud progress; a different Apple ID on a device that already
+  belongs to another account starts from a clean save. Not done yet: revoking Apple's
+  token on account deletion (needs an Edge Function holding the SIWA .p8 key) and moving
+  tokens from `user://save.json` into the Keychain.
 
 ## 3. Store listing
 

@@ -4,7 +4,7 @@ extends CanvasLayer
 const PRIVACY_TEXT := """[b]What Ninja Knife Dodge stores about you.[/b]
 
 • You sign in with Apple. Apple gives the game a random account ID and, if you allow it, your email address (you can choose to hide it). Nothing else from your Apple ID is shared.
-• Your ninja name, best scores, chapter and seal progress and boosters are backed up to the game's account database (hosted by Supabase) after each round, so they follow you to a new device. Your name and best scores may appear on the public leaderboards; your email never does.
+• Your ninja name, best scores, chapter and seal progress and boosters are backed up to the game's account database (hosted by Supabase) after each round, so they follow you to a new device. Your ninja name and best scores may appear on leaderboards; your email never does.
 • Everything is also saved on this device. There are no third-party analytics or tracking SDKs.
 • Delete your account at any time from Settings > Account: the cloud copy is erased for good. Deleting the app deletes the local copy.
 
@@ -157,7 +157,7 @@ func _refresh_account() -> void:
 	if _account_label == null:
 		return
 	if Backend.has_session():
-		_account_label.text = "Signed in with Apple as %s. Seals and scores are backed up after every round." % Backend.account_label()
+		_account_label.text = "Signed in with Apple as %s. Seals, chapters and scores are backed up after every round." % Backend.account_label()
 		_sign_out_btn.text = "SIGN OUT"
 		_delete_btn.visible = true
 	else:
@@ -170,17 +170,15 @@ func _on_sign_out() -> void:
 	if Backend.has_session():
 		await Backend.sign_out()
 		_refresh_account()
-		_toast("SIGNED OUT. THE NEXT LAUNCH ASKS YOU TO SIGN IN.")
+		_toast("SIGNED OUT. YOUR PROGRESS STAYS ON THIS DEVICE.")
 	else:
-		SaveData.data.account = {}
-		SaveData.save()
-		Globals.go("signin")
+		Globals.go("signin", {"from": "settings"})
 
 func _on_delete_account() -> void:
 	AudioManager.click()
 	_confirm_mode = "delete"
 	%Confirm.get_node("Center/Card/V/T").text = "DELETE YOUR ACCOUNT?"
-	%Confirm.get_node("Center/Card/V/S").text = "Your account and its cloud backup are erased for good. Progress on this device stays until you reset it."
+	%Confirm.get_node("Center/Card/V/S").text = "Your account and its cloud backup are erased for good. Progress on this device stays until you reset it, and the game keeps working without an account."
 	%ConfirmReset.text = "DELETE"
 	_show(%Confirm, true)
 

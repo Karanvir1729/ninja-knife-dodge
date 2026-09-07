@@ -66,7 +66,7 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_type_variation = &"MutedLabel"
 theme_override_font_sizes/font_size = 19
-text = "Sign in so your seals, chapters and best scores follow you, and your name can stand on the leaderboards."
+text = "Sign in so your seals, chapters and best scores are backed up and follow you to a new device."
 horizontal_alignment = 1
 autowrap_mode = 3
 
@@ -133,12 +133,21 @@ text = ""
 horizontal_alignment = 1
 autowrap_mode = 3
 
+[node name="BackBtn" type="Button" parent="Root/Center/Card/V"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(340, 44)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 17
+text = "BACK TO SETTINGS"
+
 [node name="Privacy" type="Label" parent="Root/Center/Card/V"]
 layout_mode = 2
 theme_type_variation = &"MutedLabel"
 theme_override_colors/font_color = Color(0.353, 0.38, 0.502, 1)
 theme_override_font_sizes/font_size = 14
-text = "Apple shares only an ID and, if you allow it, your email. You can hide your email, and you can delete the account from Settings at any time."
+text = "Apple shares only a random ID and, if you allow it, your email (you can hide it). Sign out or delete the account from Settings at any time."
 horizontal_alignment = 1
 autowrap_mode = 3
 
