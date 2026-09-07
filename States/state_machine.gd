@@ -23,9 +23,11 @@ const STATES := {
 	"draw_play": "res://States/draw_play_state.tscn",
 	"cricket_tutorial": "res://States/cricket_tutorial_state.tscn",
 	"cricket_play": "res://States/cricket_play_state.tscn",
-	"cinematic": "res://story/cinematic.tscn",
+	"cinematic": "res://story/films/prologue.tscn",
 	"story": "res://States/story_state.tscn",
 }
+## Story films live in story/films/<name>.tscn and share one state: go("film", {"film": name, ...}).
+const FILM_DIR := "res://story/films/"
 
 signal state_changed(state_name: String)
 
@@ -41,14 +43,20 @@ func _ready() -> void:
 	_swap(first, {"return": "start"})
 	$Transition.snap_clear()
 
-func _scene(state_name: String) -> PackedScene:
-	if not _cache.has(state_name):
-		var path: String = STATES.get(state_name, "")
+func _scene(state_name: String, params: Dictionary = {}) -> PackedScene:
+	var path: String = STATES.get(state_name, "")
+	if state_name == "film":
+		path = FILM_DIR + str(params.get("film", "prologue")) + ".tscn"
+	if not _cache.has(path):
 		if path.is_empty() or not ResourceLoader.exists(path):
 			push_error("Unknown state: " + state_name)
 			return null
-		_cache[state_name] = load(path)
-	return _cache[state_name]
+		_cache[path] = load(path)
+	return _cache[path]
+
+## Does a story film with this name exist?
+static func film_exists(film: String) -> bool:
+	return ResourceLoader.exists(FILM_DIR + film + ".tscn")
 
 ## Requests made mid-transition are queued (last one wins) rather than dropped.
 func change(next: String, params: Dictionary = {}) -> void:
@@ -70,7 +78,7 @@ func is_busy() -> bool:
 	return _busy
 
 func _swap(next: String, params: Dictionary) -> void:
-	var scene := _scene(next)
+	var scene := _scene(next, params)
 	if scene == null:
 		return
 	for n in $CurrentState.get_children():

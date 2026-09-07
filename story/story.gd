@@ -15,6 +15,26 @@ const ORDER := ["knife", "draw", "match", "simon"]
 ## Seals earned before the midpoint scene plays.
 const MIDPOINT_AT := 2
 
+## The chapter path, in the order the hub shows it. A chapter is unlocked when
+## every trial before it has its seal (films and the yard never gate). Each
+## chapter names the film that opens it; trials also name the film that plays
+## when their seal is earned, the yard interlude the film for its goal.
+##   kind   film | trial | yard
+const CHAPTERS := [
+	{"id": "prologue", "kind": "film", "film": "prologue", "label": "PROLOGUE", "title": "THE STAR DOJO",
+	 "hook": "The void, the dojo, and the star that fell into it.", "glyph": "res://graphics/gen/story/lantern.png", "accent": Color("ffd84d")},
+	{"id": "knife", "kind": "trial", "film": "blade", "seal_film": "seal_blade"},
+	{"id": "cricket", "kind": "yard", "film": "cricket", "goal_film": "cricket_fifty", "label": "INTERLUDE", "title": "THE TEAM FROM JAPAN"},
+	{"id": "draw", "kind": "trial", "film": "eye", "seal_film": "seal_eye"},
+	{"id": "midpoint", "kind": "film", "film": "midpoint", "label": "THE TURN", "title": "WHAT THE DAGGERS WERE",
+	 "hook": "Two seals buy the truth about what you have been dodging.", "glyph": "res://graphics/skeleton_sword.png", "accent": Color("ff3b5c")},
+	{"id": "match", "kind": "trial", "film": "mind", "seal_film": "seal_mind"},
+	{"id": "simon", "kind": "trial", "film": "name", "seal_film": "seal_name"},
+	{"id": "epilogue", "kind": "film", "film": "epilogue", "label": "EPILOGUE", "title": "THE STAR SHINES",
+	 "hook": "Four seals. Kuro sits down, and the dojo changes hands.", "glyph": "res://graphics/gen/player_star.png", "accent": Color("ffd84d")},
+]
+const FILM_DIR := "res://story/films/"
+
 const TRIALS := {
 	"knife": {
 		"numeral": "I", "trial": "TRIAL OF THE BLADE", "glyph": "blade",
@@ -198,3 +218,149 @@ static func midpoint_scene(pname: String) -> Array:
 
 static func epilogue_scene(pname: String) -> Array:
 	return _scene(EPILOGUE, pname)
+
+# ---------------------------------------------------------------- films
+
+## The story flag a film sets when it has played (or been skipped).
+static func film_flag(film: String) -> String:
+	match film:
+		"prologue": return "prologue_seen"
+		"midpoint": return "midpoint_seen"
+		"epilogue": return "epilogue_seen"
+	return "film_%s_seen" % film
+
+static func film_seen(film: String) -> bool:
+	return SaveData.story_flag(film_flag(film))
+
+## Films are optional until they are built: a missing one is simply skipped.
+static func film_exists(film: String) -> bool:
+	return not film.is_empty() and ResourceLoader.exists(FILM_DIR + film + ".tscn")
+
+## The film that opens a chapter ("" when it is missing).
+static func opening_film(id: String) -> String:
+	var f := str(chapter(id).get("film", ""))
+	return f if film_exists(f) else ""
+
+## The film that plays when a trial's seal is earned ("" when missing).
+static func seal_film(id: String) -> String:
+	var f := str(chapter(id).get("seal_film", ""))
+	return f if film_exists(f) else ""
+
+## Films due on the hub right now, in order: seal films for seals earned but
+## not yet celebrated, the turn, the ending, then the yard's goal film. Each
+## entry is the params for Globals.go("film", ...) plus the chapter it is for.
+static func pending_films() -> Array:
+	var out := []
+	for id in ORDER:
+		if seal_earned(id) and not SaveData.seal_celebrated(id):
+			var f := seal_film(id)
+			if not f.is_empty():
+				out.append({"film": f, "chapter": id, "return": "start"})
+	if midpoint_due() and film_exists("midpoint"):
+		out.append({"film": "midpoint", "chapter": "midpoint", "return": "start"})
+	if all_sealed() and not SaveData.story_flag("epilogue_seen") and film_exists("epilogue"):
+		out.append({"film": "epilogue", "chapter": "epilogue", "return": "start"})
+	for c in CHAPTERS:
+		if str(c.kind) == "yard":
+			var goal := str(c.get("goal_film", ""))
+			var y := yard(str(c.id))
+			if film_exists(goal) and not film_seen(goal) and int(y.get("goal_target", 0)) > 0 and SaveData.best_for(str(c.id)) >= int(y.goal_target):
+				out.append({"film": goal, "chapter": str(c.id), "return": "start"})
+	return out
+
+## Chain a list of pending films into one params dictionary (each "then"s the next).
+static func chain_films(entries: Array) -> Dictionary:
+	if entries.is_empty():
+		return {}
+	var head: Dictionary = entries[0].duplicate()
+	var rest := entries.slice(1)
+	if not rest.is_empty():
+		head["then"] = chain_films(rest)
+	return head
+
+# ---------------------------------------------------------------- chapters
+
+static func chapter(id: String) -> Dictionary:
+	for c in CHAPTERS:
+		if str(c.id) == id:
+			return c
+	return {}
+
+static func chapter_index(id: String) -> int:
+	for i in CHAPTERS.size():
+		if str(CHAPTERS[i].id) == id:
+			return i
+	return -1
+
+static func chapter_ids() -> Array:
+	var out := []
+	for c in CHAPTERS:
+		out.append(str(c.id))
+	return out
+
+## Unlocked when every trial before it in the path has its seal.
+static func chapter_unlocked(id: String) -> bool:
+	var idx := chapter_index(id)
+	if idx < 0:
+		return false
+	for i in idx:
+		var c: Dictionary = CHAPTERS[i]
+		if str(c.kind) == "trial" and not seal_earned(str(c.id)):
+			return false
+	return true
+
+## Done: a film watched, a trial sealed, the yard's goal reached.
+static func chapter_done(id: String) -> bool:
+	var c := chapter(id)
+	match str(c.get("kind", "")):
+		"film": return film_seen(str(c.film))
+		"trial": return seal_earned(id)
+		"yard":
+			var y := yard(id)
+			return int(y.get("goal_target", 0)) > 0 and SaveData.best_for(id) >= int(y.goal_target)
+	return false
+
+## The chapter the player is on: the first unlocked one that is not done
+## (the yard counts as visited once its film has played). "" when all done.
+static func current_chapter() -> String:
+	for c in CHAPTERS:
+		var id := str(c.id)
+		if not chapter_unlocked(id):
+			continue
+		if str(c.kind) == "yard":
+			if not film_seen(str(c.film)) and film_exists(str(c.film)):
+				return id
+			continue
+		if not chapter_done(id):
+			return id
+	return ""
+
+## The seal a locked chapter is waiting on (the first missing one before it).
+static func unlock_seal(id: String) -> String:
+	var idx := chapter_index(id)
+	for i in maxi(0, idx):
+		var c: Dictionary = CHAPTERS[i]
+		if str(c.kind) == "trial" and not seal_earned(str(c.id)):
+			return str(c.id)
+	return ""
+
+## Small caps label above a chapter card: PROLOGUE, CHAPTER I, INTERLUDE...
+static func chapter_label(id: String) -> String:
+	var c := chapter(id)
+	if str(c.get("kind", "")) == "trial":
+		return "CHAPTER %s" % str(trial(id).get("numeral", ""))
+	return str(c.get("label", id.to_upper()))
+
+static func chapter_title(id: String) -> String:
+	var c := chapter(id)
+	match str(c.get("kind", "")):
+		"trial": return str(trial(id).get("trial", id.to_upper()))
+		"yard": return str(c.get("title", str(Globals.game(id).get("title", id.to_upper()))))
+	return str(c.get("title", id.to_upper()))
+
+static func chapter_hook(id: String) -> String:
+	var c := chapter(id)
+	match str(c.get("kind", "")):
+		"trial": return str(trial(id).get("hook", ""))
+		"yard": return str(yard(id).get("hook", ""))
+	return str(c.get("hook", ""))

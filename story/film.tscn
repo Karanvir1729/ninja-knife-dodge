@@ -1,12 +1,12 @@
-[gd_scene load_steps=6 format=3 uid="uid://c1cinematic000"]
+[gd_scene load_steps=6 format=3 uid="uid://c1filmbase00000"]
 
-[ext_resource type="Script" path="res://story/cinematic.gd" id="1_cin"]
+[ext_resource type="Script" path="res://story/film.gd" id="1_cin"]
 [ext_resource type="Texture2D" path="res://graphics/gen/story/glyph_blade.png" id="g_blade"]
 [ext_resource type="Texture2D" path="res://graphics/gen/story/glyph_eye.png" id="g_eye"]
 [ext_resource type="Texture2D" path="res://graphics/gen/story/glyph_mind.png" id="g_mind"]
 [ext_resource type="Texture2D" path="res://graphics/gen/story/glyph_memory.png" id="g_memory"]
 
-[node name="Cinematic" type="Node2D"]
+[node name="Film" type="Node2D"]
 script = ExtResource("1_cin")
 
 [node name="Stage" type="Node2D" parent="."]

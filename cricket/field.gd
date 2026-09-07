@@ -159,6 +159,10 @@ func gap_zones() -> Array:
 			out.append(z)
 	return out
 
+## Hide the batter and blade (a story film puts a guide at the crease instead).
+func set_batter_visible(on: bool) -> void:
+	_batter.visible = on
+
 # ---------------------------------------------------------------- fielders
 
 func set_fielders(zones: Array) -> void:

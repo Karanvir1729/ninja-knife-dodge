@@ -118,7 +118,106 @@ def mist(w=512, h=256):
     img = img.filter(ImageFilter.GaussianBlur(S(28)))
     save(img, w, h, "mist")
 
+# ------------------------------------------------------------------ the Yard (Star Cricket films)
+
+def steps(w=320, h=260):
+    """Stone steps climbing from bottom-left to top-right (the thousand steps)."""
+    img = canvas(w, h); d = ImageDraw.Draw(img)
+    stone = (34, 38, 64, 255); stone2 = (52, 58, 92, 255); edge = (86, 240, 255, 255)
+    n = 8
+    for i in range(n):
+        x0 = 8 + i * 36; y0 = 240 - i * 28
+        d.rounded_rectangle([S(x0), S(y0), S(x0 + 90), S(y0 + 36)], radius=S(4), fill=stone, outline=INK, width=S(4))
+        d.rectangle([S(x0 + 2), S(y0), S(x0 + 88), S(y0 + 8)], fill=stone2)
+        d.line([(S(x0 + 4), S(y0 + 1)), (S(x0 + 86), S(y0 + 1))], fill=edge, width=S(2))
+    save(img, w, h, "steps")
+
+def cricketer(w=96, h=128):
+    """A chibi cricketer in whites with a blue cap, facing right, feet at the bottom."""
+    img = canvas(w, h); d = ImageDraw.Draw(img)
+    white = (246, 247, 252, 255); shade = (208, 214, 236, 255); blue = (48, 92, 220, 255); skin = (244, 201, 163, 255); dark = (28, 30, 48, 255)
+    # shoes
+    for cx in (36, 60):
+        d.ellipse([S(cx - 14), S(108), S(cx + 14), S(124)], fill=dark, outline=INK, width=S(3))
+    # legs
+    d.rounded_rectangle([S(28), S(76), S(68), S(114)], radius=S(8), fill=white, outline=INK, width=S(4))
+    d.line([(S(48), S(80)), (S(48), S(110))], fill=shade, width=S(3))
+    # body (shirt) and arms
+    d.rounded_rectangle([S(22), S(50), S(74), S(86)], radius=S(12), fill=white, outline=INK, width=S(4))
+    d.polygon([(S(48), S(52)), (S(38), S(66)), (S(58), S(66))], fill=blue)
+    d.rectangle([S(24), S(70), S(72), S(76)], fill=blue)
+    for cx in (20, 76):
+        d.ellipse([S(cx - 9), S(56), S(cx + 9), S(82)], fill=white, outline=INK, width=S(4))
+    # head and cap
+    d.ellipse([S(26), S(12), S(70), S(56)], fill=skin, outline=INK, width=S(4))
+    d.pieslice([S(24), S(8), S(72), S(52)], 180, 360, fill=blue, outline=INK, width=S(4))
+    d.rounded_rectangle([S(46), S(26), S(82), S(34)], radius=S(3), fill=blue, outline=INK, width=S(3))
+    d.line([(S(28), S(30)), (S(68), S(30))], fill=INK, width=S(3))
+    # face (looking right)
+    d.ellipse([S(50), S(36), S(56), S(42)], fill=INK); d.ellipse([S(62), S(36), S(68), S(42)], fill=INK)
+    d.arc([S(52), S(40), S(66), S(50)], 20, 160, fill=INK, width=S(2))
+    save(img, w, h, "cricketer")
+
+def cricket_bat(w=40, h=120):
+    img = canvas(w, h); d = ImageDraw.Draw(img)
+    wood = (226, 202, 150, 255); grip = (40, 40, 60, 255)
+    d.rounded_rectangle([S(8), S(36), S(32), S(116)], radius=S(8), fill=wood, outline=INK, width=S(4))
+    d.line([(S(20), S(44)), (S(20), S(108))], fill=(200, 176, 124, 255), width=S(2))
+    d.rounded_rectangle([S(14), S(2), S(26), S(42)], radius=S(4), fill=grip, outline=INK, width=S(3))
+    for y in (10, 18, 26, 34):
+        d.line([(S(15), S(y)), (S(25), S(y))], fill=(80, 80, 110, 255), width=S(1))
+    save(img, w, h, "cricket_bat")
+
+def scorebook(w=176, h=120):
+    """An open scorebook: tally marks for the losses, a ring for the wins."""
+    img = canvas(w, h); d = ImageDraw.Draw(img)
+    page = (245, 238, 220, 255); line = (200, 190, 168, 255); red = (226, 60, 90, 255); spine = (120, 60, 50, 255)
+    d.polygon([(S(6), S(20)), (S(86), S(12)), (S(88), S(110)), (S(10), S(116))], fill=page, outline=INK)
+    d.polygon([(S(90), S(12)), (S(170), S(20)), (S(166), S(116)), (S(88), S(110))], fill=page, outline=INK)
+    d.line([(S(6), S(20)), (S(86), S(12)), (S(88), S(110)), (S(10), S(116)), (S(6), S(20))], fill=INK, width=S(4), joint="curve")
+    d.line([(S(90), S(12)), (S(170), S(20)), (S(166), S(116)), (S(88), S(110)), (S(90), S(12))], fill=INK, width=S(4), joint="curve")
+    d.line([(S(88), S(10)), (S(88), S(112))], fill=spine, width=S(4))
+    for y in range(34, 104, 12):
+        d.line([(S(16), S(y)), (S(78), S(y - 1))], fill=line, width=S(1))
+        d.line([(S(98), S(y - 1)), (S(160), S(y))], fill=line, width=S(1))
+    d.rectangle([S(16), S(22), S(52), S(28)], fill=INK)
+    d.rectangle([S(98), S(22), S(128), S(28)], fill=INK)
+    # 27 losses as tally groups; the win column holds one empty ring
+    x = 18; y = 36
+    for g in range(6):
+        strokes = 5 if g < 5 else 2
+        for k in range(min(strokes, 4)):
+            d.line([(S(x + k * 6), S(y)), (S(x + k * 6), S(y + 18))], fill=red, width=S(2))
+        if strokes == 5:
+            d.line([(S(x - 2), S(y + 16)), (S(x + 22), S(y + 2))], fill=red, width=S(2))
+        x += 30
+        if x > 62:
+            x = 18; y += 26
+    d.ellipse([S(112), S(46), S(148), S(92)], outline=red, width=S(4))
+    save(img, w, h, "scorebook")
+
+def g_bat(d, Z):
+    c = Z / 2
+    d.rounded_rectangle([c - Z * 0.11, Z * 0.3, c + Z * 0.11, Z * 0.94], radius=Z * 0.06, fill=(255,) * 4)
+    d.rounded_rectangle([c - Z * 0.05, Z * 0.04, c + Z * 0.05, Z * 0.34], radius=Z * 0.02, fill=(255,) * 4)
+
+def g_ball(d, Z):
+    c = Z / 2; r = Z * 0.4
+    d.ellipse([c - r, c - r, c + r, c + r], fill=(255,) * 4)
+    d.arc([c - r * 0.55, c - r * 1.25, c + r * 0.55, c + r * 1.25], 250, 290, fill=(0, 0, 0, 0), width=int(Z * 0.035))
+    d.arc([c - r * 1.6, c - r * 0.9, c - r * 0.1, c + r * 0.9], 300, 60, fill=(0, 0, 0, 0), width=int(Z * 0.035))
+    d.arc([c + r * 0.1, c - r * 0.9, c + r * 1.6, c + r * 0.9], 120, 240, fill=(0, 0, 0, 0), width=int(Z * 0.035))
+
+def g_stumps(d, Z):
+    for i in range(3):
+        x = Z * (0.3 + i * 0.2)
+        d.rounded_rectangle([x - Z * 0.045, Z * 0.2, x + Z * 0.045, Z * 0.92], radius=Z * 0.03, fill=(255,) * 4)
+    d.rounded_rectangle([Z * 0.22, Z * 0.1, Z * 0.78, Z * 0.17], radius=Z * 0.02, fill=(255,) * 4)
+
 if __name__ == "__main__":
     torii(); platform(); lantern(); pillar(); seal_ring(); mist()
     for n, f in (("blade", g_blade), ("eye", g_eye), ("mind", g_mind), ("memory", g_memory)):
+        glyph(n, f)
+    steps(); cricketer(); cricket_bat(); scorebook()
+    for n, f in (("bat", g_bat), ("ball", g_ball), ("stumps", g_stumps)):
         glyph(n, f)

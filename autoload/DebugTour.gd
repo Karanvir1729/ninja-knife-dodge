@@ -9,6 +9,7 @@ var out_dir := ""
 var quick := false
 var check_only := false
 var film_dir := ""
+var film_reel := "prologue"
 var _fails := 0
 var _checks := 0
 var _scale := 1.0
@@ -23,6 +24,8 @@ func _ready() -> void:
 			check_only = true
 		if arg.begins_with("--film="):
 			film_dir = arg.trim_prefix("--film=")
+		if arg.begins_with("--reel="):
+			film_reel = arg.trim_prefix("--reel=")
 	if check_only:
 		call_deferred("_check_all")
 		return
@@ -422,17 +425,18 @@ func _find_offer() -> OfferOverlay:
 			return c
 	return null
 
-## `-- --film=<dir>`: play only the prologue, screenshot every 0.8 s with debug
-## state in the log, then quit. Fast iteration on the cinematic.
+## `-- --film=<dir> [--reel=<name>]`: play one story film (the prologue by
+## default), screenshot every 0.8 s with debug state in the log, then quit.
+## Fast iteration on a film.
 func _film() -> void:
 	await _frames(3)
 	DisplayServer.window_set_size(Vector2i(int(1408 * _scale), int(792 * _scale)))
 	await _frames(3)
-	SaveData.set_story_flag("prologue_seen", false)
-	await _go("cinematic", {"return": "start"})
+	SaveData.set_story_flag(Story.film_flag(film_reel), false)
+	await _go("film", {"film": film_reel, "return": "start"})
 	var n := 0
 	var t0 := Time.get_ticks_msec()
-	while _sm().current_name == "cinematic" and Time.get_ticks_msec() - t0 < 80000:
+	while _sm().current_name == "film" and Time.get_ticks_msec() - t0 < 80000:
 		var cin = _sm().get_node("CurrentState").get_child(0)
 		var fade: float = cin.get_node("%Fade").color.a
 		var cap: Label = cin.get_node("%Caption")
