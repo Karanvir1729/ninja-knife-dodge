@@ -1,0 +1,7 @@
+[gd_scene load_steps=3 format=3 uid="uid://c1filmsealmind0"]
+
+[ext_resource type="PackedScene" uid="uid://c1filmbase00000" path="res://story/film.tscn" id="1_base"]
+[ext_resource type="Script" path="res://story/films/seal_mind.gd" id="2_script"]
+
+[node name="Film" instance=ExtResource("1_base")]
+script = ExtResource("2_script")
