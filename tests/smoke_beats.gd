@@ -100,7 +100,7 @@ func run(tour) -> void:
 	tour._check(Story.midpoint_due(), "beats: the turn is due at %d seals" % Story.MIDPOINT_AT)
 	var rev_hold: Dictionary = SaveData.data.story.revealed.duplicate(true)
 	SaveData.data.story.revealed = {}
-	tour._check(not Story.chapter_unlocked("simon") and Story.chapter_unlocked("match"), "beats: two seals open Chapter II but not III")
+	tour._check(Story.chapter_unlocked("simon") and not Story.chapter_unlocked("knife"), "beats: the Eye and the Mind open Chapter III but not the Blade")
 	SaveData.data.story.revealed = rev_hold
 	await tour._go("start")
 	if Story.film_exists("midpoint"):
