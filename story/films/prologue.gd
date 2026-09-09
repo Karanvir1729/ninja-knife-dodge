@@ -226,8 +226,7 @@ func _shot_years() -> void:
 	_hint(true)
 	await _wait(2.6)
 	_swirl_on = false
-	if is_instance_valid(_young):
-		_young.queue_free()
+	_retire(_young)
 	_clear_caption()
 
 func _shot_trials() -> void:

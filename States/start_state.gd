@@ -49,6 +49,7 @@ func _ready() -> void:
 	%HowTo.visible = false
 	%SkipIntro.visible = false
 	%SkipIntro.pressed.connect(func(): AudioManager.back(); director.skip_all())
+	_add_loop_room_button()
 	%PathLine.draw.connect(_draw_path)
 	%PathLine.resized.connect(func(): %PathLine.queue_redraw())
 	%Cards.sort_children.connect(func(): %PathLine.queue_redraw())
@@ -846,3 +847,17 @@ func _enter_animation() -> void:
 		card.modulate.a = 0.0
 		create_tween().tween_property(card, "modulate:a", 1.0, 0.4).set_delay(0.1 + i * 0.1)
 		i += 1
+
+## The Loop Room sits beside the leaderboards rather than on the chapter path: it is how
+## the player fixes the music, so it must not wait on a seal.
+func _add_loop_room_button() -> void:
+	var row: Control = %BoardBtn.get_parent()
+	var b := Button.new()
+	b.name = "LoopRoomBtn"
+	b.custom_minimum_size = Vector2(0, 46)
+	b.add_theme_font_size_override("font_size", 17)
+	b.add_theme_color_override("font_color", Globals.GREEN)
+	b.text = "LOOP ROOM"
+	b.pressed.connect(func(): AudioManager.click(); Globals.go("loops_play"))
+	row.add_child(b)
+	row.move_child(b, %BoardBtn.get_index())

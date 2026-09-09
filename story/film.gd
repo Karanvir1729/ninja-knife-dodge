@@ -316,6 +316,21 @@ func _cam(k: float, offset: Vector2, dur: float) -> void:
 	t.tween_property($Stage, "scale", Vector2(k, k), dur).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 	t.tween_property($Stage, "position", _c * (1.0 - k) + offset, dur).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 
+## Take a shared actor off the stage without freeing it.
+##
+## Films hurry when the player taps, so a shot can reach the moment that writes an actor
+## out while effects an earlier shot started are still in flight on their own timing. If
+## the actor has been freed by then, those callbacks land on a dead instance, which is a
+## hard crash rather than an error GDScript can shrug off. Hiding costs nothing: the whole
+## film is torn down a few seconds later anyway.
+func _retire(n: Node) -> void:
+	if not is_instance_valid(n):
+		return
+	if n is CanvasItem:
+		n.visible = false
+	n.set_process(false)
+	n.set_physics_process(false)
+
 func _tween_alpha(node: CanvasItem, a: float, dur: float) -> Tween:
 	var t := create_tween()
 	t.tween_property(node, "modulate:a", a, dur)

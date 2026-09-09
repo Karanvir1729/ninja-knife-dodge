@@ -23,6 +23,7 @@ const STATES := {
 	"draw_play": "res://States/draw_play_state.tscn",
 	"cricket_tutorial": "res://States/cricket_tutorial_state.tscn",
 	"cricket_play": "res://States/cricket_play_state.tscn",
+	"loops_play": "res://States/loops_play_state.tscn",
 	"cinematic": "res://story/films/prologue.tscn",
 	"signin": "res://States/signin_state.tscn",
 	"story": "res://States/story_state.tscn",
@@ -62,12 +63,18 @@ func _scene(state_name: String, params: Dictionary = {}) -> PackedScene:
 static func film_exists(film: String) -> bool:
 	return ResourceLoader.exists(FILM_DIR + film + ".tscn")
 
-## Requests made mid-transition are queued (last one wins) rather than dropped.
+## Requests made mid-transition are queued (last one wins) rather than dropped, except a
+## repeat of the transition already running: a second tap on the same card used to queue
+## a duplicate and swap the freshly built state out from under its own coroutines.
 func change(next: String, params: Dictionary = {}) -> void:
 	if _busy:
+		if next == _target and params == _target_params:
+			return
 		_pending = [next, params]
 		return
 	_busy = true
+	_target = next
+	_target_params = params
 	get_tree().paused = false
 	await $Transition.fade_out()
 	_swap(next, params)
@@ -77,6 +84,9 @@ func change(next: String, params: Dictionary = {}) -> void:
 		var p: Array = _pending
 		_pending = []
 		change(p[0], p[1])
+
+var _target := ""
+var _target_params := {}
 
 func is_busy() -> bool:
 	return _busy

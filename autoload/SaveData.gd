@@ -26,6 +26,7 @@ func _defaults() -> Dictionary:
 		"version": 3,
 		"profile": {"name": DEFAULT_NAME},
 		"settings": {"music": true, "music_volume": 0.8, "music_vibe": "classic", "sfx": true, "sfx_volume": 1.0, "haptics": true},
+		"loop_mix": [],
 		"tutorials": {},
 		"guides": {"intro_seen": false, "launches": 0},
 		"story": {"prologue_seen": false, "epilogue_seen": false, "midpoint_seen": false, "celebrated": {}, "opened": {}, "revealed": {}},
@@ -100,6 +101,16 @@ func setting(key: String):
 
 func set_setting(key: String, value) -> void:
 	data.settings[key] = value
+	save()
+	settings_changed.emit()
+
+## The tunes the player kept in The Loop Room, in AudioManager.LOOPS names.
+func loop_mix() -> Array:
+	var m = data.get("loop_mix", [])
+	return m.duplicate() if m is Array else []
+
+func set_loop_mix(mix: Array) -> void:
+	data["loop_mix"] = mix.duplicate()
 	save()
 	settings_changed.emit()
 

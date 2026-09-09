@@ -235,7 +235,7 @@ func _shot_one() -> void:
 	xf.tween_property(_old, "modulate:a", 1.0, 1.0 * PACE)
 	xf.tween_property(_young, "modulate:a", 0.0, 1.0 * PACE)
 	xf.tween_property(_pip, "modulate:a", 1.0, 1.0 * PACE)
-	xf.chain().tween_callback(_young.queue_free)
+	xf.chain().tween_callback(_retire.bind(_young))
 	_tween_alpha($Stage/Far/Torii, 1.0, 1.0 * PACE)
 	_tween_alpha($Stage/Mid/Platform, 1.0, 1.0 * PACE)
 	_tween_alpha(_lantern(1), 0.0, 1.0 * PACE)

@@ -137,6 +137,14 @@ func _build_vibe_row() -> void:
 	_vibe_desc.add_theme_font_size_override("font_size", 18)
 	_vibe_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	t.add_child(_vibe_desc)
+	var make := Button.new()
+	make.add_theme_font_size_override("font_size", 14)
+	make.custom_minimum_size = Vector2(150, 34)
+	make.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	make.add_theme_color_override("font_color", Globals.GREEN)
+	make.text = "MAKE YOUR OWN"
+	make.pressed.connect(func(): AudioManager.click(); Globals.go("loops_play"))
+	t.add_child(make)
 	var tabs := HBoxContainer.new()
 	tabs.add_theme_constant_override("separation", 6)
 	tabs.size_flags_vertical = Control.SIZE_SHRINK_CENTER

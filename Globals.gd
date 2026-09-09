@@ -67,6 +67,11 @@ const GAMES := [
 	 "tour": [{"state": "cricket_play", "params": {}, "wait": 2.5, "name": "cricket_play"}],
 	 "milestones": [[25, "OPENER"], [50, "HALF CENTURY"], [100, "CENTURY"], [200, "DOUBLE TON"], [400, "IMMORTAL"]],
 	 "milestone_text": "Score %d runs in one innings to earn the %s title. The team from Japan is watching.", "milestone_stat": "best", "yard": true},
+	{"id": "loops", "title": "THE LOOP ROOM", "category": "mind", "tagline": "Layer the tunes. Make your own music.",
+	 "accent": Color("4dffa6"), "play_state": "loops_play", "tutorial_state": "loops_play", "stat_label": "MOST TUNES",
+	 "tour": [{"state": "loops_play", "params": {}, "wait": 1.6, "name": "loops_play"}],
+	 "milestones": [[3, "LAYERED"], [6, "ARRANGER"], [10, "COMPOSER"], [15, "CONDUCTOR"], [20, "FULL ENSEMBLE"]],
+	 "milestone_text": "Keep a mix of %d tunes at once to earn the %s title.", "milestone_stat": "best", "yard": true},
 ]
 
 static func game(id: String) -> Dictionary:

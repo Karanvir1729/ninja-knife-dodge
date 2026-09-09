@@ -1,0 +1,115 @@
+[gd_scene load_steps=3 format=3 uid="uid://c1looproom0000"]
+
+[ext_resource type="Script" path="res://States/loops_play_state.gd" id="1_lr"]
+
+[sub_resource type="StyleBoxFlat" id="board"]
+content_margin_left = 20.0
+content_margin_top = 20.0
+content_margin_right = 20.0
+content_margin_bottom = 20.0
+bg_color = Color(0.0549, 0.0588, 0.0863, 0.86)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.302, 1, 0.651, 0.35)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0.302, 1, 0.651, 0.1)
+shadow_size = 40
+
+[node name="LoopsPlay" type="CanvasLayer"]
+script = ExtResource("1_lr")
+
+[node name="Root" type="MarginContainer" parent="."]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="V" type="VBoxContainer" parent="Root"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Head" type="HBoxContainer" parent="Root/V"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Back" type="Button" parent="Root/V/Head"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 56)
+layout_mode = 2
+text = "<"
+
+[node name="Title" type="Label" parent="Root/V/Head"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_type_variation = &"DisplayLabel"
+text = "THE LOOP ROOM"
+
+[node name="Count" type="Label" parent="Root/V/Head"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"CapsLabel"
+text = "0 TUNES"
+
+[node name="Sub" type="Label" parent="Root/V"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"MutedLabel"
+theme_override_font_sizes/font_size = 18
+text = "Tap the tunes to layer them. They all keep the same time, so nothing can clash."
+
+[node name="Board" type="PanelContainer" parent="Root/V"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("board")
+
+[node name="Grid" type="GridContainer" parent="Root/V/Board"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 5
+
+[node name="Foot" type="HBoxContainer" parent="Root/V"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Bar" type="ProgressBar" parent="Root/V/Foot"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.001
+show_percentage = false
+
+[node name="Clear" type="Button" parent="Root/V/Foot"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "CLEAR"
+
+[node name="Keep" type="Button" parent="Root/V/Foot"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+theme_type_variation = &"PrimaryButton"
+text = "KEEP AS MY MUSIC"
+
+[node name="Toast" type="Label" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 8
+horizontal_alignment = 1
+theme_type_variation = &"CapsLabel"

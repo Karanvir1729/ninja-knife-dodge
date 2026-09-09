@@ -11,6 +11,8 @@ var quick := false
 var check_only := false
 var film_dir := ""
 var audio_dir := ""
+var stress_film := ""
+var room_dir := ""
 var film_reel := "prologue"
 var film_size := Vector2i(1408, 792)   # --film-size=WxH films at another aspect (store screenshots)
 var _fails := 0
@@ -29,6 +31,10 @@ func _ready() -> void:
 			film_dir = arg.trim_prefix("--film=")
 		if arg.begins_with("--audio="):
 			audio_dir = arg.trim_prefix("--audio=")
+		if arg.begins_with("--stress="):
+			stress_film = arg.trim_prefix("--stress=")
+		if arg.begins_with("--room="):
+			room_dir = arg.trim_prefix("--room=")
 		if arg.begins_with("--reel="):
 			film_reel = arg.trim_prefix("--reel=")
 		if arg.begins_with("--film-size="):
@@ -37,6 +43,17 @@ func _ready() -> void:
 				film_size = Vector2i(int(parts[0]), int(parts[1]))
 	if check_only:
 		call_deferred("_check_all")
+		return
+	if not room_dir.is_empty():
+		SaveData.read_only = true
+		out_dir = room_dir
+		DirAccess.make_dir_recursive_absolute(out_dir)
+		call_deferred("_room")
+		return
+	if not stress_film.is_empty():
+		SaveData.read_only = true
+		_seed_sample_data()
+		call_deferred("_stress")
 		return
 	if not audio_dir.is_empty():
 		SaveData.read_only = true
@@ -383,11 +400,35 @@ func _smoke() -> void:
 	SaveData.set_setting("music_volume", 0.5)
 	_check(absf(AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Music")) - linear_to_db(0.5)) < 0.01, "audio: music volume setting applied to bus")
 	SaveData.set_setting("music_volume", 0.8)
+	# --- The Loop Room's tunes must all be the same length, or layers drift apart.
+	var loop_frames := -1
+	for tune in AudioManager.LOOPS:
+		var st: AudioStream = AudioManager.music_loop(tune)
+		if st == null:
+			_check(false, "loops: %s exists" % tune)
+			continue
+		var frames: int = int(round(st.get_length() * 1000.0))
+		if loop_frames < 0:
+			loop_frames = frames
+		_check(frames == loop_frames, "loops: %s is the shared loop length (%d ms)" % [tune, frames])
+	_check(AudioManager.LOOPS.size() == 20, "loops: twenty tunes are on offer (%d)" % AudioManager.LOOPS.size())
 	# --- Music vibes: whatever the Settings picker can choose has to resolve to a
 	# bed that exists and loops, or a screen would fall silent after one pass.
 	var start_vibe: String = AudioManager.current_vibe()
 	for vibe in AudioManager.VIBE_ORDER:
 		SaveData.set_setting("music_vibe", vibe)
+		if vibe == "yours":
+			# YOURS has no files: it plays the layered mix, and is not offered until
+			# the player has kept one.
+			SaveData.set_loop_mix([])
+			_check(AudioManager.current_vibe() == AudioManager.DEFAULT_VIBE, "audio: YOURS falls back until a mix is kept")
+			SaveData.set_loop_mix(["sub", "padwarm", "koto"])
+			_check(AudioManager.current_vibe() == "yours", "audio: YOURS is selectable once a mix is kept")
+			AudioManager.play_music("menu")
+			_check(AudioManager.mix_active().size() == 3, "audio: choosing YOURS plays the kept mix (%d layers)" % AudioManager.mix_active().size())
+			AudioManager.stop_mix()
+			SaveData.set_loop_mix([])
+			continue
 		_check(AudioManager.current_vibe() == vibe, "audio: %s vibe selectable" % vibe)
 		for slot in ["menu", "knife", "match"]:
 			var stream: AudioStream = AudioManager.music_stream(slot)
@@ -513,6 +554,87 @@ func _audio() -> void:
 			made += 1
 			print("AUDIO  %s/%s  %.1fs" % [vibe, slot, clip.get_length()])
 	print("AUDIO done: %d clips in %s" % [made, audio_dir])
+	get_tree().quit()
+
+## `-- --room=<dir>`: open The Loop Room, layer tunes on, and capture both a screenshot
+## and the master bus for each step, so the layering can be seen and measured.
+func _room() -> void:
+	await _frames(3)
+	var rec := AudioEffectRecord.new()
+	AudioServer.add_bus_effect(AudioServer.get_bus_index("Master"), rec)
+	SaveData.set_setting("music", true)
+	SaveData.set_setting("music_volume", 0.8)
+	SaveData.set_setting("sfx", false)
+	Globals.go("loops_play")
+	await _wait_until(func(): return _sm().current_name == "loops_play", 8.0)
+	await _wait(0.8)
+	var room = _sm().get_node("CurrentState").get_child(0)
+	var steps := [[], ["sub", "padwarm", "koto", "heart"], AudioManager.LOOPS]
+	var names := ["empty", "four", "all20"]
+	for k in steps.size():
+		for tune in room._pads.keys():
+			if room._active.has(tune) != steps[k].has(tune):
+				room._toggle(str(tune))
+		await _wait(1.2)
+		_check(room._active.size() == steps[k].size(), "room: %s -> %d pads on" % [names[k], room._active.size()])
+		_check(AudioManager.mix_active().size() == steps[k].size(), "room: AudioManager is playing %d layers" % AudioManager.mix_active().size())
+		await _shot("loop_room_%s" % names[k])
+		rec.set_recording_active(true)
+		await _wait(6.5)
+		rec.set_recording_active(false)
+		var clip: AudioStreamWAV = rec.get_recording()
+		if clip:
+			clip.save_to_wav("%s/room_%s.wav" % [room_dir, names[k]])
+		print("ROOM  %s: %d layers captured" % [names[k], steps[k].size()])
+	# The room adds a sixth card to the hub and a fifth chip to the vibe picker: both
+	# have to still fit.
+	room._keep()
+	await _wait(0.4)
+	_check(str(SaveData.setting("music_vibe")) == "yours", "room: KEEP makes the mix the music vibe")
+	_check(SaveData.loop_mix().size() == 20, "room: KEEP saves every layer (%d)" % SaveData.loop_mix().size())
+	_check(AudioManager.mix_active().size() == 20, "room: the mix keeps playing after KEEP (%d layers)" % AudioManager.mix_active().size())
+	await _go("start")
+	await _wait(1.4)
+	await _shot("loop_room_hub")
+	await _go("settings")
+	await _wait(0.8)
+	await _shot("loop_room_settings")
+	print("ROOM done: %d checks, %d failures" % [_checks, _fails])
+	get_tree().quit()
+
+## `-- --stress=<film>[,<film>...]`: play each film while hammering it with taps, the way
+## a player jabs at the screen to hurry a cutscene. Reports every engine error it sees.
+func _stress() -> void:
+	await _frames(3)
+	for film in stress_film.split(","):
+		for round_n in 2:
+			print("STRESS %s round %d" % [film, round_n])
+			Globals.go("film", {"film": film, "return": "start"})
+			if round_n == 1:      # second round: jab again while it is still opening
+				Globals.go("film", {"film": film, "return": "start"})
+			await _wait_until(func(): return _sm().current_name == "film", 8.0)
+			if _sm().current_name != "film":
+				print("STRESS   %s: never reached the film" % film)
+				continue
+			var taps := 0
+			var t := 0.0
+			while t < 14.0 and _sm().current_name == "film":
+				for i in 3:
+					var down := InputEventMouseButton.new()
+					down.button_index = MOUSE_BUTTON_LEFT
+					down.pressed = true
+					down.position = Globals.view_center()
+					Input.parse_input_event(down)
+					var up := InputEventMouseButton.new()
+					up.button_index = MOUSE_BUTTON_LEFT
+					up.pressed = false
+					up.position = Globals.view_center()
+					Input.parse_input_event(up)
+					taps += 1
+				await _wait(0.05)
+				t += 0.05
+			print("STRESS   %s: %d taps, ended in %s after %.1fs" % [film, taps, _sm().current_name, t])
+	print("STRESS done")
 	get_tree().quit()
 
 func _film() -> void:
