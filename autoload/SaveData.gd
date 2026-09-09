@@ -25,7 +25,7 @@ func _defaults() -> Dictionary:
 	return {
 		"version": 3,
 		"profile": {"name": DEFAULT_NAME},
-		"settings": {"music": true, "music_volume": 0.8, "sfx": true, "sfx_volume": 1.0, "haptics": true},
+		"settings": {"music": true, "music_volume": 0.8, "music_vibe": "classic", "sfx": true, "sfx_volume": 1.0, "haptics": true},
 		"tutorials": {},
 		"guides": {"intro_seen": false, "launches": 0},
 		"story": {"prologue_seen": false, "epilogue_seen": false, "midpoint_seen": false, "celebrated": {}, "opened": {}, "revealed": {}},
@@ -237,6 +237,7 @@ func record_game_score(id: String, score: int, extra: Dictionary = {}, time_sec:
 		rank = _insert(g.board, _entry(player_name(), score, extra))
 	save()
 	Backend.sync_later()
+	GameCenter.submit(id)
 	return {"rank": rank, "new_record": new_record}
 
 ## The headline number for a game on the menu (see Globals.GAMES stat_label).
@@ -267,6 +268,7 @@ func record_knife_run(score: int, wave: int, time_sec: float, near_misses: int) 
 		rank = _insert(k.board, _entry(player_name(), score, {"wave": wave, "time": time_sec, "near": near_misses}))
 	save()
 	Backend.sync_later()
+	GameCenter.submit("knife")
 	return {"rank": rank, "new_record": new_record}
 
 ## Record a Shuriken Match level attempt. Returns {rank, new_best, unlocked_next}.
@@ -295,6 +297,7 @@ func record_match_result(level: int, score: int, stars: int, cleared: bool) -> D
 		rank = _insert(m.board, _entry(player_name(), score, {"level": level, "stars": stars}))
 	save()
 	Backend.sync_later()
+	GameCenter.submit("match")
 	return {"rank": rank, "new_best": new_best, "unlocked_next": unlocked}
 
 ## Consecutive failed attempts on a level (reset when it is cleared).

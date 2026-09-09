@@ -1,5 +1,5 @@
 extends Film
-## Chapter IV, the Trial of the Name: nine pads, one for each master of the
+## Chapter III, the Trial of the Name: nine pads, one for each master of the
 ## Star Dojo, in the order they stood at dawn. Kuro is the ninth and can still
 ## play the whole roll without thinking. The eighth was his own master; he kept
 ## her drill and lost her name. Six shots; plays the first time Sensei Says is
@@ -29,7 +29,7 @@ func _shots() -> Array:
 	return [_shot_pads, _shot_masters, _shot_roll, _shot_eighth, _shot_pip, _shot_title]
 
 func _dress() -> void:
-	_set_title("TRIAL OF THE NAME", "CHAPTER IV  ·  SENSEI SAYS", "Nine pads. Nine masters. Hold the roll.",
+	_set_title("TRIAL OF THE NAME", "CHAPTER III  ·  SENSEI SAYS", "Nine pads. Nine masters. Hold the roll.",
 		[["glyph_memory", Globals.VIOLET]])
 
 # ---------------------------------------------------------------- stage

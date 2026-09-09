@@ -1,6 +1,6 @@
 extends Film
-## The turn: with two seals the ninja has earned the truth about what they have
-## been dodging. Every dagger of light was a star; the Quiet unmade them and
+## The turn: with two seals the ninja has earned the truth about what the
+## daggers are. Every dagger of light was a star; the Quiet unmade them and
 ## kept the edges. Pip came through them whole, and nothing else ever has.
 ## Five shots; plays once on the hub at two seals, chained after the seal film.
 
@@ -23,7 +23,7 @@ func _shots() -> Array:
 
 func _dress() -> void:
 	_set_title("THE TURN", "TWO SEALS", "The daggers are what the Quiet leaves of a star.",
-		[["glyph_blade", Globals.GOLD], ["glyph_eye", Globals.GOLD]])
+		[["glyph_eye", Globals.GOLD], ["glyph_mind", Globals.GOLD]])
 
 # ---------------------------------------------------------------- stage
 
@@ -31,8 +31,8 @@ func _build_extra() -> void:
 	_show_dojo(0.0)
 	$Stage/Mid/Platform.scale = Vector2(1.35, 1.0)
 	# The first two seals stand on the dojo's left, clear of the lanterns.
-	_sealed_pillar(-345.0, "blade", Globals.CYAN)
-	_sealed_pillar(-260.0, "eye", Globals.ORANGE)
+	_sealed_pillar(-345.0, "eye", Globals.ORANGE)
+	_sealed_pillar(-260.0, "mind", Globals.MAGENTA)
 	_old = _actor("sensei", _c + KURO_HOME, 0.72, false, "neutral")
 	_pip = _actor("pip", _c + PIP_HOME, 0.62, false, "happy")
 	# The dagger waits above the top bar until the second shot.

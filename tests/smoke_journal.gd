@@ -13,20 +13,24 @@ func run(tour) -> void:
 	# A fresh journal (in memory): no seals, locked epilogue, Sensei's opening line.
 	var keep := {"knife": int(SaveData.data.knife.best), "match": int(SaveData.data.match.next_level),
 		"simon": int(SaveData.game_stats("simon").best), "draw": int(SaveData.game_stats("draw").best)}
+	var keep_revealed: Dictionary = SaveData.data.story.revealed.duplicate(true)
+	SaveData.data.story.revealed = {}        # a revealed chapter never closes, so clear them to see a locked one
 	SaveData.data.knife.best = 0
 	SaveData.data.match.next_level = 1
 	SaveData.game_stats("simon").best = 0
 	SaveData.game_stats("draw").best = 0
 	tour._check(Story.seals_count() == 0, "journal: cleared stats leave no seals")
+	tour._check(not Story.chapter_unlocked("simon"), "journal: a fresh profile has later chapters closed")
 	await tour._go("story")
 	await tour._wait(SETTLE)
 	var fresh = _state(tour)
 	tour._check(fresh.seals_shown() == 0, "journal: a fresh journal shows 0 seals (%d)" % fresh.seals_shown())
-	tour._check(fresh.get_node("%NextLine").text.begins_with("NEXT: TRIAL OF THE BLADE"), "journal: the wheel points at the Trial of the Blade first")
+	tour._check(fresh.get_node("%NextLine").text.begins_with("NEXT: TRIAL OF THE EYE"), "journal: the wheel points at the Trial of the Eye first")
 	await tour._shot("smoke_journal_fresh")
 	fresh.get_node("%Scroll").scroll_vertical = 100000
 	await tour._frames(2)
 	await tour._shot("smoke_journal_fresh_locked")
+	SaveData.data.story.revealed = keep_revealed
 	SaveData.data.knife.best = keep.knife
 	SaveData.data.match.next_level = keep.match
 	SaveData.game_stats("simon").best = keep.simon

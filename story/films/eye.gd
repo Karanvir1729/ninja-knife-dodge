@@ -1,5 +1,5 @@
 extends Film
-## Chapter II, the Trial of the Eye: the Quiet makes nothing of its own. It
+## Chapter I, the Trial of the Eye: the Quiet makes nothing of its own. It
 ## copies the light it has already taken and paints the copy red, because a
 ## hand that answers a lie is a hand out of position. Kuro answered one once.
 ## Six shots; plays the first time Quick Draw is opened.
@@ -23,7 +23,7 @@ func _shots() -> Array:
 	return [_shot_tonight, _shot_copies, _shot_answered, _shot_one, _shot_pip, _shot_title]
 
 func _dress() -> void:
-	_set_title("TRIAL OF THE EYE", "CHAPTER II  ·  QUICK DRAW", "The red ones are copies. Leave them.", [["glyph_eye", Globals.ORANGE]])
+	_set_title("TRIAL OF THE EYE", "CHAPTER I  ·  QUICK DRAW", "The red ones are copies. Leave them.", [["glyph_eye", Globals.ORANGE]])
 
 func _build_extra() -> void:
 	_show_dojo(0.0)

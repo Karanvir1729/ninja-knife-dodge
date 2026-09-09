@@ -1,10 +1,10 @@
 extends "res://story/films/name.gd"
-## Chapter IV's seal: round five held whole, and the fourth pillar rises with
+## Chapter III's seal: round five held whole, and the third pillar rises with
 ## the Seal of the Kept Name beside the three already standing. Plays once, on
 ## the hub, when the seal is earned.
 
 const SEQ := [3, 7, 0, 5, 2]    # the pattern the ninja held, one pad per round
-const GLYPHS := ["blade", "eye", "mind", "memory"]
+const GLYPHS := ["eye", "mind", "memory", "blade"]
 const PILLAR_SCALE := 0.62
 
 var _pillars: Array = []
@@ -19,7 +19,7 @@ func _shots() -> Array:
 	return [_shot_round, _shot_pillar, _shot_names, _shot_title]
 
 func _dress() -> void:
-	_set_title("SEAL OF THE KEPT NAME", "CHAPTER IV COMPLETE", "Four seals. The star holds.", [["glyph_memory", Globals.GOLD]])
+	_set_title("SEAL OF THE KEPT NAME", "CHAPTER III COMPLETE", "One trial remains.", [["glyph_memory", Globals.GOLD]])
 
 # ---------------------------------------------------------------- stage
 
@@ -27,13 +27,13 @@ func _build_extra() -> void:
 	_show_dojo(0.0)
 	$Stage/Mid/Platform.scale = Vector2(1.3, 1.0)
 	_build_pads(true)
-	for i in 4:
-		_build_pillar(i, i < 3)
+	for i in 3:
+		_build_pillar(i, i < 2)
 	_old = _actor("sensei", _c + Vector2(-330, 62), 0.72, true, "neutral")
 	_pip = _actor("pip", _c + Vector2(-195, 92), 0.62, true, "happy")
 
 func _accent(i: int) -> Color:
-	return [Globals.CYAN, Globals.ORANGE, Globals.MAGENTA, Globals.VIOLET][i]
+	return [Globals.ORANGE, Globals.MAGENTA, Globals.VIOLET, Globals.CYAN][i]
 
 ## The prologue's pillar positions, so the seals stand where the trials rose.
 func _pillar_x(i: int) -> float:
@@ -121,8 +121,8 @@ func _shot_pillar() -> void:
 	_caption("The Seal of the Kept Name.")
 	_cam(1.1, Vector2(-60, 40), 6.0)
 	_tween_alpha(_round_label, 0.0, 0.5)
-	var pillar: Sprite2D = _pillars[3]
-	var g: Sprite2D = _glyphs[3]
+	var pillar: Sprite2D = _pillars[2]
+	var g: Sprite2D = _glyphs[2]
 	var rise := create_tween()
 	rise.tween_property(pillar, "position:y", _c.y + 70.0, 0.7 * PACE).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 	rise.parallel().tween_property(g, "position:y", _slot_y(), 0.7 * PACE).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
@@ -132,12 +132,12 @@ func _shot_pillar() -> void:
 	AudioManager.play_sfx("pad_8", 1.0, -6.0)
 	_old.point_at(g.global_position)
 	await _wait(0.4)
-	_seal_ring(3, true)
+	_seal_ring(2, true)
 	await _wait(0.3)
 	_flash(0.6)
 	AudioManager.play_sfx("seal", 1.0, -4.0)
 	AudioManager.vibrate(50)
-	_burst(Vector2(_c.x + _pillar_x(3), _slot_y()), Globals.GOLD, 50, 340.0)
+	_burst(Vector2(_c.x + _pillar_x(2), _slot_y()), Globals.GOLD, 50, 340.0)
 	_pip.set_mood("excited")
 	_hint(true)
 	await _wait(1.6)

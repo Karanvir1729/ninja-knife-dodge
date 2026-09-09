@@ -36,7 +36,7 @@ func run(tour) -> void:
 	# --- the Yard's opening film plays the first time the interlude is launched, then the game
 	SaveData.set_story_flag(Story.film_flag("cricket"), false)
 	SaveData.set_tutorial_done("cricket", false)
-	tour._check(Story.chapter_unlocked("cricket"), "films: the interlude is open once the Blade is sealed")
+	tour._check(Story.chapter_unlocked("cricket"), "films: the interlude is open once the Eye is sealed")
 	await tour._go("start")
 	await tour._wait(1.2)
 	var hub = _hub(tour)
@@ -74,10 +74,10 @@ func run(tour) -> void:
 	SaveData.data.games["cricket"] = keep
 	# --- a chapter that has just opened is revealed on the path
 	SaveData.data.story.revealed.erase("cricket")
-	SaveData.data.story.revealed.erase("draw")
+	SaveData.data.story.revealed.erase("match")
 	await tour._go("start")
-	await tour._wait_until(func(): return SaveData.chapter_revealed("draw"), 8.0)
-	tour._check(SaveData.chapter_revealed("cricket") and SaveData.chapter_revealed("draw"), "films: newly open chapters are revealed on the hub")
+	await tour._wait_until(func(): return SaveData.chapter_revealed("match"), 8.0)
+	tour._check(SaveData.chapter_revealed("cricket") and SaveData.chapter_revealed("match"), "films: newly open chapters are revealed on the hub")
 	await tour._wait(0.8)
 	await tour._shot("smoke_film_reveal")
 	hub = _hub(tour)

@@ -3,15 +3,31 @@
 Last updated: September 1, 2026
 
 
+## Chapter order and Game Center (2026-09-09, version 2.3)
+
+The Blade (Knife Dodge) moved from Chapter I to Chapter IV: twenty-five was too
+hard a first gate. The path is now Eye, the Yard interlude, Mind, the turn, Name,
+Blade. `Story.ORDER` and `Story.CHAPTERS` carry the order; `_trials_before_sealed`
+gates the turn, the seal films and the celebrations on the path rather than on a
+raw seal count, and `chapter_unlocked` never closes a chapter the player already
+finished or already entered, so a build-11 save loses nothing.
+
+Game Center leaderboards ship alongside: `ios/plugins/game_center` (a second
+native plugin, GameKit), `autoload/GameCenter.gd` submits every recorded best,
+and the leaderboard screen opens Apple's own board. Five boards live in App Store
+Connect (`nkd_knife_best`, `nkd_draw_best`, `nkd_match_stars`, `nkd_simon_round`,
+`nkd_cricket_runs`); they can only be released once a version carrying the
+entitlement is eligible.
+
 ## Chapter path and films (2026-09-06)
 
 The hub no longer lists games: it is a scrolling path of chapters (prologue,
-Chapter I, the Yard interlude, Chapter II, the turn, Chapter III, Chapter IV,
+Chapter I the Eye, the Yard interlude, Chapter II the Mind, the turn, Chapter III the Name, Chapter IV the Blade,
 epilogue) unlocked one by one by the seals. Every chapter has an opening film and
 a seal film, all built on `story/film.gd` (see `docs/FILMS.md`, `docs/STORY.md`).
 `Story.pending_films()` queues the films due on the hub and chains them.
 
-## Story edition (branch `story-edition`, version 2.1)
+## Story edition (branch `story-edition`, version 2.3)
 
 A separate edition, kept off `main` on purpose: the four games are presented as
 the **Four Trials** of one storyline, with an animated prologue about Sensei
@@ -49,7 +65,7 @@ Improve the existing game with a state-of-the-art UI, menu, leaderboards, and cr
 - Per-game summaries for best score, runs, unlocked level, and stars.
 - Shared tutorial chooser, local leaderboards, settings, transitions, pause UI, responsive backgrounds, and audio handling.
 - Player name, local lifetime statistics, top-ten leaderboards, and milestone titles.
-- Settings for music, SFX, haptics, tutorial replay, privacy/support/credits, and guarded data reset.
+- Settings for music (volume plus a CLASSIC/DRIFT/RAIN/PULSE vibe picker), SFX, haptics, tutorial replay, privacy/support/credits, and guarded data reset.
 - Version 1 high-score migration into the version 2 local save format.
 
 ### Knife Dodge
@@ -77,7 +93,7 @@ Improve the existing game with a state-of-the-art UI, menu, leaderboards, and cr
 - `Globals.gd` owns palette constants, formatting, viewport helpers, safe-area calculation, and state navigation.
 - `States/state_machine.gd` swaps all screens with a fade. State names include `start`, `tutorial`, `play`, `lose`, `match_levels`, `match_tutorial`, `match_play`, `match_result`, `leaderboard`, and `settings`.
 - `autoload/SaveData.gd` owns the version 2 JSON save at `user://save.json`, local leaderboards, settings, stats, tutorials, and v1 migration.
-- `autoload/AudioManager.gd` owns music crossfades, pooled SFX, volume settings, and haptics.
+- `autoload/AudioManager.gd` owns the music vibes (`VIBES`/`VIBE_ORDER`), crossfades, pooled SFX, volume settings, and haptics.
 - `autoload/DebugTour.gd` loads every scene, captures responsive screenshots, and executes gameplay/tutorial smoke checks with in-memory sample data.
 - `match/board_model.gd` is the pure puzzle rules engine: valid moves, run detection, special creation/combinations, cascades, gravity, refill, hints, and shuffle.
 - `match/board_view.gd` renders and animates the board and owns pointer input.
@@ -87,6 +103,7 @@ Improve the existing game with a state-of-the-art UI, menu, leaderboards, and cr
 - `tests/test_board.gd` tests board rules and runs the greedy level-balancing bot.
 - `tools/gen_assets.py` regenerates the files in `graphics/gen/` and requires Pillow.
 - `tools/gen_sfx.py` regenerates the files in `sounds/gen/` using only the Python standard library.
+- `tools/gen_music.py` regenerates the DRIFT/RAIN/PULSE beds and re-masters `sounds/music_box_soft.mp3` from `sounds/raw/`; it needs ffmpeg on PATH to loudness-match each track.
 
 ## Design and layout rules
 

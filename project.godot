@@ -32,6 +32,7 @@ SaveData="*res://autoload/SaveData.gd"
 AudioManager="*res://autoload/AudioManager.gd"
 Ads="*res://autoload/Ads.gd"
 Backend="*res://autoload/Backend.gd"
+GameCenter="*res://autoload/GameCenter.gd"
 DebugTour="*res://autoload/DebugTour.gd"
 
 [display]

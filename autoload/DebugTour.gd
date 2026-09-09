@@ -361,6 +361,25 @@ func _smoke() -> void:
 	SaveData.set_setting("music_volume", 0.5)
 	_check(absf(AudioServer.get_bus_volume_db(AudioServer.get_bus_index("Music")) - linear_to_db(0.5)) < 0.01, "audio: music volume setting applied to bus")
 	SaveData.set_setting("music_volume", 0.8)
+	# --- Music vibes: whatever the Settings picker can choose has to resolve to a
+	# bed that exists and loops, or a screen would fall silent after one pass.
+	var start_vibe: String = AudioManager.current_vibe()
+	for vibe in AudioManager.VIBE_ORDER:
+		SaveData.set_setting("music_vibe", vibe)
+		_check(AudioManager.current_vibe() == vibe, "audio: %s vibe selectable" % vibe)
+		for slot in ["menu", "knife", "match"]:
+			var stream: AudioStream = AudioManager.music_stream(slot)
+			var loops: bool = stream is AudioStreamMP3 and stream.loop
+			if stream is AudioStreamWAV:
+				loops = stream.loop_mode != AudioStreamWAV.LOOP_DISABLED
+			_check(stream != null and loops, "audio: %s/%s bed loads and loops" % [vibe, slot])
+	# The story score is shared by every vibe and stays one-shot: it is scored to its film.
+	var score: AudioStream = AudioManager.music_stream("story")
+	_check(score != null, "audio: the shared story score loads")
+	_check(score is AudioStreamWAV and score.loop_mode == AudioStreamWAV.LOOP_DISABLED, "audio: the story score still plays once, not looped")
+	SaveData.set_setting("music_vibe", "a vibe that no longer ships")
+	_check(AudioManager.current_vibe() == AudioManager.DEFAULT_VIBE, "audio: an unknown saved vibe falls back to " + AudioManager.DEFAULT_VIBE)
+	SaveData.set_setting("music_vibe", start_vibe)
 
 ## `-- --check`: load every script and scene (autoloads present) and quit.
 func _check_all() -> void:

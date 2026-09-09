@@ -1,0 +1,15 @@
+[config]
+name="GameCenter"
+binary="game_center/game_center.xcframework"
+initialization="game_center_init"
+deinitialization="game_center_deinit"
+
+[dependencies]
+linked=[]
+embedded=[]
+system=["GameKit.framework"]
+capabilities=[]
+files=[]
+linker_flags=[]
+
+[plist]

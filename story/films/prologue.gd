@@ -14,7 +14,7 @@ func _shots() -> Array:
 
 func _dress() -> void:
 	_set_title("NINJA KNIFE DODGE", "THE FOUR TRIALS", "So he waited for a ninja. Tonight the waiting ends.",
-		[["glyph_blade", Globals.CYAN], ["glyph_eye", Globals.ORANGE], ["glyph_mind", Globals.MAGENTA], ["glyph_memory", Globals.VIOLET]])
+		[["glyph_eye", Globals.ORANGE], ["glyph_mind", Globals.MAGENTA], ["glyph_memory", Globals.VIOLET], ["glyph_blade", Globals.CYAN]])
 
 func _shot_void() -> void:
 	_cam(1.06, Vector2.ZERO, 0.0)
@@ -60,8 +60,8 @@ func _shot_training() -> void:
 	_orbit_on = true
 	_young.hop(1.2)
 	await _wait(2.4)
-	var glyphs := ["blade", "eye", "mind", "memory"]
-	var words := ["Blade.", "Eye.", "Mind.", "Name."]
+	var glyphs := ["eye", "mind", "memory", "blade"]
+	var words := ["Eye.", "Mind.", "Name.", "Blade."]
 	_caption("")
 	%Caption.modulate.a = 1.0
 	for i in 4:
@@ -233,8 +233,8 @@ func _shot_years() -> void:
 func _shot_trials() -> void:
 	_advance = false
 	_caption("Four trials left. His hands are old. The second lantern goes tonight.")
-	var glyphs := ["blade", "eye", "mind", "memory"]
-	var accents := [Globals.CYAN, Globals.ORANGE, Globals.MAGENTA, Globals.VIOLET]
+	var glyphs := ["eye", "mind", "memory", "blade"]
+	var accents := [Globals.ORANGE, Globals.MAGENTA, Globals.VIOLET, Globals.CYAN]
 	_cam(1.0, Vector2.ZERO, 1.2)
 	_tween_alpha(_lantern(1), 0.0, 0.5)
 	_tween_alpha(_lantern_glow(1), 0.0, 0.5)

@@ -501,7 +501,7 @@ func _enter_animation() -> void:
 
 func _cameo_line() -> void:
 	var n := _seals_shown
-	var line := "Every journey starts with a single dodge. Begin with the Blade."
+	var line := "Every journey starts somewhere. Begin with the %s." % str(Story.trial(_next_trial()).get("trial", "")).trim_prefix("TRIAL OF THE ").capitalize()
 	if n >= Story.ORDER.size():
 		line = "Four seals. You have finished what a hundred years began."
 	elif n > 0:

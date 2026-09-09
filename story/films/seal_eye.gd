@@ -1,5 +1,5 @@
 extends "res://story/films/eye.gd"
-## Chapter II's seal: twenty true lights struck before the Quiet could finish
+## Chapter I's seal, the first pillar to rise: twenty true lights struck before the Quiet could finish
 ## a copy, the second pillar rises, and Pip owns up to three flinches. Plays
 ## once, on the hub, when the Seal of the True Light is earned.
 
@@ -18,14 +18,12 @@ func _shots() -> Array:
 	return [_shot_twenty, _shot_seal, _shot_flinch, _shot_title]
 
 func _dress() -> void:
-	_set_title("SEAL OF THE TRUE LIGHT", "CHAPTER II COMPLETE", "Two seals buy the truth.", [["glyph_eye", Globals.GOLD]])
+	_set_title("SEAL OF THE TRUE LIGHT", "CHAPTER I COMPLETE", "The second chapter opens.", [["glyph_eye", Globals.GOLD]])
 
 func _build_extra() -> void:
 	_show_dojo(0.0)
 	$Stage/Mid/Platform.scale = Vector2(1.3, 1.0)
-	# Chapter I is done: the first pillar already stands, sealed in gold.
-	var p0 := _pillar(0, "blade", Globals.CYAN, true)
-	_seal_ring(p0.glyph.position, false)
+	# The Eye is the first trial: no pillar stands yet.
 	_old = _actor("sensei", _c + Vector2(-330, 62), 0.72, true, "neutral")
 	_pip = _actor("pip", _c + Vector2(-195, 92), 0.62, true, "happy")
 
@@ -123,8 +121,8 @@ func _shot_seal() -> void:
 	_caption("The Seal of the True Light.")
 	_cam(1.1, Vector2(-30, 30), 5.0)
 	_tween_alpha(_count, 0.0, 0.4)
-	var p := _pillar(1, "eye", Globals.ORANGE, false)
-	var slot := _c + Vector2(PILLAR_X + PILLAR_STEP, PILLAR_Y + SLOT_DY)
+	var p := _pillar(0, "eye", Globals.ORANGE, false)
+	var slot := _c + Vector2(PILLAR_X, PILLAR_Y + SLOT_DY)
 	var rise := create_tween()
 	rise.tween_property(p.pillar, "position:y", _c.y + PILLAR_Y, 0.7 * PACE).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 	rise.parallel().tween_property(p.glyph, "position:y", slot.y, 0.7 * PACE).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)

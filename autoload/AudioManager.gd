@@ -1,12 +1,42 @@
 extends Node
 ## Music with crossfade, a pooled SFX player set and haptics, all gated by settings.
 
-const MUSIC := {
-	"menu": "res://sounds/Music Box Game Over 2.mp3",
-	"knife": "res://sounds/Mysterious.mp3",
-	"match": "res://sounds/gen/match_loop.wav",
-	"story": "res://sounds/gen/story_theme.wav",
+## Music vibes. Each one supplies the three ambient beds; the cinematic story score is
+## shared. Every bed is loudness-matched near -24 LUFS with little energy above 1 kHz,
+## so switching vibe never jumps in level and none of them tire the ears on a long loop.
+const VIBES := {
+	"classic": {
+		"label": "CLASSIC",
+		"desc": "The original music box and knife theme, softened.",
+		"menu": "res://sounds/music_box_soft.mp3",
+		"knife": "res://sounds/Mysterious.mp3",
+		"match": "res://sounds/gen/match_loop.wav",
+	},
+	"drift": {
+		"label": "DRIFT",
+		"desc": "Weightless warm pads. The quietest one.",
+		"menu": "res://sounds/gen/drift_calm.wav",
+		"knife": "res://sounds/gen/drift_play.wav",
+		"match": "res://sounds/gen/drift_play.wav",
+	},
+	"rain": {
+		"label": "RAIN",
+		"desc": "Dojo rain, wind and a far-off temple bell.",
+		"menu": "res://sounds/gen/rain_calm.wav",
+		"knife": "res://sounds/gen/rain_play.wav",
+		"match": "res://sounds/gen/rain_play.wav",
+	},
+	"pulse": {
+		"label": "PULSE",
+		"desc": "A slow warm heartbeat under the void.",
+		"menu": "res://sounds/gen/pulse_calm.wav",
+		"knife": "res://sounds/gen/pulse_play.wav",
+		"match": "res://sounds/gen/pulse_play.wav",
+	},
 }
+const VIBE_ORDER := ["classic", "drift", "rain", "pulse"]
+const DEFAULT_VIBE := "classic"
+const STORY_TRACK := "res://sounds/gen/story_theme.wav"
 const SFX_DIR := "res://sounds/gen/"
 const LEGACY_SFX := {"jump": "res://sounds/160756__cosmicembers__fast-swing-air-woosh.wav"}
 const POOL_SIZE := 10
@@ -16,6 +46,8 @@ var _music_a: AudioStreamPlayer
 var _music_b: AudioStreamPlayer
 var _active: AudioStreamPlayer
 var _current_track := ""
+var _current_path := ""
+var _vibe := DEFAULT_VIBE
 var _pool: Array[AudioStreamPlayer] = []
 var _pool_index := 0
 var _cache := {}
@@ -48,6 +80,11 @@ func _make_music_player() -> AudioStreamPlayer:
 	return p
 
 func _apply_settings() -> void:
+	var vibe := current_vibe()
+	if vibe != _vibe:
+		_vibe = vibe
+		if _current_track != "":
+			_swap_to(_track_path(_current_track), _current_track != "story")
 	var music_on := bool(SaveData.setting("music"))
 	var music_vol := float(SaveData.setting("music_volume"))
 	var sfx_on := bool(SaveData.setting("sfx"))
@@ -59,30 +96,57 @@ func _apply_settings() -> void:
 	AudioServer.set_bus_mute(si, not sfx_on)
 	AudioServer.set_bus_volume_db(si, linear_to_db(clampf(sfx_vol, 0.0001, 1.0)))
 
-func _load(path: String) -> AudioStream:
-	if _cache.has(path):
-		return _cache[path]
+## Load a stream, forcing a loop for music. The vibe beds already carry
+## edit/loop_mode=1 from their .import; older tracks are looped here instead, so
+## whatever a vibe points at is guaranteed to run on without a gap.
+func _load(path: String, loop: bool = false) -> AudioStream:
+	var key := path + ("#loop" if loop else "")
+	if _cache.has(key):
+		return _cache[key]
 	if not ResourceLoader.exists(path):
 		push_warning("AudioManager: missing stream " + path)
 		return null
 	var s: AudioStream = load(path)
-	if s is AudioStreamWAV and path.ends_with("match_loop.wav"):
+	if loop and s is AudioStreamWAV and s.loop_mode == AudioStreamWAV.LOOP_DISABLED:
 		s = s.duplicate()
 		s.loop_mode = AudioStreamWAV.LOOP_FORWARD
 		s.loop_begin = 0
 		s.loop_end = s.data.size() / 2
-	elif s is AudioStreamMP3:
+	elif loop and s is AudioStreamMP3 and not s.loop:
 		s = s.duplicate()
 		s.loop = true
-	_cache[path] = s
+	_cache[key] = s
 	return s
 
-## Crossfade to a named track. Passing the current track is a no-op.
+## The vibe the player picked in Settings, falling back if the save holds an old name.
+func current_vibe() -> String:
+	var key := str(SaveData.setting("music_vibe"))
+	return key if VIBES.has(key) else DEFAULT_VIBE
+
+func _track_path(track: String) -> String:
+	if track == "story":
+		return STORY_TRACK
+	return str(VIBES[current_vibe()].get(track, ""))
+
+## The stream the current vibe would use for a slot, or null if it is missing. The
+## ambient beds loop; the story score is scored to its film and plays once.
+func music_stream(track: String) -> AudioStream:
+	return _load(_track_path(track), track != "story")
+
+## Crossfade to a named slot ("menu", "knife", "match", "story"). Asking for whatever is
+## already playing is a no-op, including when two slots share a bed within a vibe.
 func play_music(track: String) -> void:
-	if track == _current_track:
+	var path := _track_path(track)
+	if track == _current_track and path == _current_path:
 		return
 	_current_track = track
-	var stream := _load(MUSIC.get(track, ""))
+	_swap_to(path, track != "story")
+
+func _swap_to(path: String, loop: bool = true) -> void:
+	if path == _current_path and _active.playing:
+		return
+	_current_path = path
+	var stream := _load(path, loop)
 	var next := _music_b if _active == _music_a else _music_a
 	var prev := _active
 	_active = next
@@ -97,6 +161,7 @@ func play_music(track: String) -> void:
 
 func stop_music() -> void:
 	_current_track = ""
+	_current_path = ""
 	_fade(_active, -80.0, true)
 
 func _fade(p: AudioStreamPlayer, to_db: float, stop_after: bool = false) -> void:

@@ -1,5 +1,5 @@
 extends Film
-## Chapter III, the Trial of the Mind (Shuriken Match): the Star Dojo kept nine
+## Chapter II, the Trial of the Mind (Shuriken Match): the Star Dojo kept nine
 ## hundred shurikens on nine hundred hooks, the Quiet scattered them in a single
 ## night, and Kuro has spent eighty years bringing them back three of a colour
 ## at a time. Six shots; plays the first time the trial is opened.
@@ -35,7 +35,7 @@ func _shots() -> Array:
 	return [_shot_dojo, _shot_scatter, _shot_years, _shot_pip, _shot_board, _shot_title]
 
 func _dress() -> void:
-	_set_title("TRIAL OF THE MIND", "CHAPTER III  ·  SHURIKEN MATCH", "Three of a colour. Nine hundred to go.", [["glyph_mind", Globals.MAGENTA]])
+	_set_title("TRIAL OF THE MIND", "CHAPTER II  ·  SHURIKEN MATCH", "Three of a colour. Nine hundred to go.", [["glyph_mind", Globals.MAGENTA]])
 
 # ---------------------------------------------------------------- stage
 

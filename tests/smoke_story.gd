@@ -30,3 +30,16 @@ func run(tour) -> void:
 	tour._check(Story.seal_earned("simon"), "story: memory seal earned at round 5")
 	tour._check(Story.pending_celebrations().has("simon") or SaveData.seal_celebrated("simon"), "story: new seal is pending celebration")
 	tour._check(Story.seals_count() >= before, "story: seal count never decreases")
+	# --- the three lists that carry the chapter order must never drift apart:
+	# a half-applied reorder is exactly how a chapter ends up numbered wrong.
+	var path_trials := []
+	for c in Story.CHAPTERS:
+		if str(c.get("kind", "")) == "trial":
+			path_trials.append(str(c.id))
+	tour._check(path_trials == Story.ORDER, "story: Story.ORDER matches the trials in the chapter path (%s vs %s)" % [Story.ORDER, path_trials])
+	var numerals := ["I", "II", "III", "IV"]
+	for i in Story.ORDER.size():
+		var id := str(Story.ORDER[i])
+		tour._check(str(Story.trial(id).get("numeral", "")) == numerals[i], "story: %s is numbered %s" % [id, numerals[i]])
+		tour._check(Story.chapter_label(id) == "CHAPTER " + numerals[i], "story: %s's card reads CHAPTER %s" % [id, numerals[i]])
+	tour._check(str(Story.CHAPTERS[0].id) == "prologue" and str(Story.CHAPTERS[-1].id) == "epilogue", "story: the path opens on the prologue and ends on the epilogue")

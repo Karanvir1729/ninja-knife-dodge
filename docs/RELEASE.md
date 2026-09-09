@@ -57,6 +57,35 @@ Since build 11 players sign in with Apple on first launch (`States/signin_state`
   token on account deletion (needs an Edge Function holding the SIWA .p8 key) and moving
   tokens from `user://save.json` into the Keychain.
 
+## 2c. Game Center leaderboards
+
+Added in 2.3. Five leaderboards, one per game, all "higher is better", integer,
+best-score: `nkd_knife_best`, `nkd_draw_best`, `nkd_match_stars` (stars, not
+level), `nkd_simon_round`, `nkd_cricket_runs`.
+
+- **App ID**: the `GAME_CENTER` capability is enabled on `com.karanvirKhanna.comme`.
+  Enabling it invalidated the App Store provisioning profile, which was regenerated
+  (`tools/ship_ios.sh` reads the uuid from `export_presets.cfg`).
+- **Export**: `entitlements/game_center=true` writes `com.apple.developer.game-center`,
+  and `plugins/GameCenter=true` links the plugin. GameKit reaches the Xcode project
+  only through `system=["GameKit.framework"]` in `ios/plugins/game_center.gdip`.
+- **Plugin**: `ios/plugins/game_center/src/game_center.mm`, built by
+  `tools/build_ios_plugin.sh` (which now builds both plugins). It exposes the
+  `AppleGameCenter` singleton. GameKit allows `authenticateHandler` to be set only
+  once per process, so `authenticate()` replays the cached state on later calls.
+- **App Store Connect**: `gameCenterDetail` plus the five leaderboards and their
+  en-US localizations were created through the API. Leaderboards must then be
+  *released* (`POST /v1/gameCenterLeaderboardReleases`), which Apple refuses with
+  `NO_VERSIONS_ELIGIBLE_FOR_GAME_CENTER_RELEASE` until a version carrying the
+  entitlement is eligible, so release them once the build is attached.
+- **Privacy**: scores go to Apple, not to us, so the App Privacy label does not
+  change ("You are not responsible for disclosing data collected by Apple").
+  Guideline 4.5.5 forbids showing Game Center Player IDs; the game never does.
+- **Testing**: there is no Game Center sandbox any more. TestFlight and App Store
+  builds write to the same production leaderboards, so tester scores are real.
+  If the player declines Game Center the game is unaffected and the local
+  leaderboards remain the way in.
+
 ## 3. Store listing
 
 - Add iPad screenshots (12.9" and 11") alongside the 6.7"/6.5" iPhone set. The debug tour produces clean captures at the right aspect ratios: `godot --path . -- --tour=/tmp/shots` (iphone_* and ipad_* files); upscale to the exact store sizes.

@@ -1,5 +1,5 @@
 extends Film
-## Chapter I, the Trial of the Blade: the daggers of light hunt whatever is
+## Chapter IV, the Trial of the Blade: the daggers of light hunt whatever is
 ## still burning, and tonight that is the ninja. Kuro's first lesson is the only
 ## one the dojo ever proved against them: a blade owns the thin line it travels
 ## on, and every other place in the void belongs to you. Six shots; plays before
@@ -28,7 +28,7 @@ func _shots() -> Array:
 	return [_shot_dojo, _shot_hunt, _shot_lesson, _shot_pip, _shot_you, _shot_title]
 
 func _dress() -> void:
-	_set_title("TRIAL OF THE BLADE", "CHAPTER I  ·  KNIFE DODGE", "Be elsewhere when they arrive.", [["glyph_blade", Globals.CYAN]])
+	_set_title("TRIAL OF THE BLADE", "CHAPTER IV  ·  KNIFE DODGE", "Be elsewhere when they arrive.", [["glyph_blade", Globals.CYAN]])
 
 # ---------------------------------------------------------------- stage
 

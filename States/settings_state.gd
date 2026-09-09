@@ -35,8 +35,8 @@ const CREDITS_TEXT := """[b]Design & code[/b]  Karanvir Khanna
 
 [b]Sound[/b]
 • Fast swing air woosh by cosmicembers (freesound)
-• Mysterious; Music Box Game Over 2
-• All other effects and the Shuriken Match ambience are synthesised in-house"""
+• Mysterious; Music Box Game Over 2, re-mastered quieter and softer for this game
+• The Drift, Rain and Pulse vibes, the Shuriken Match ambience and every other effect are synthesised in-house"""
 
 func init(_params: Dictionary) -> void:
 	pass
@@ -61,6 +61,7 @@ func _ready() -> void:
 	%HapticsToggle.set_on_silent(bool(SaveData.setting("haptics")))
 	%HapticsToggle.toggled.connect(func(on): SaveData.set_setting("haptics", on); if on: AudioManager.vibrate(40))
 	%HapticsRow.visible = OS.has_feature("mobile") or OS.has_feature("editor") or true
+	_build_vibe_row()
 	%ReplayBtn.pressed.connect(_replay_tutorials)
 	%ResetBtn.pressed.connect(func(): AudioManager.click(); _show(%Confirm, true))
 	%ConfirmCancel.pressed.connect(func(): AudioManager.back(); _show(%Confirm, false); if _confirm_mode == "delete": _delete_cancel())
@@ -104,6 +105,67 @@ func _reset() -> void:
 	SaveData.reset_all()
 	_show(%Confirm, false)
 	_toast("PROGRESS RESET. THE VOID IS EMPTY AGAIN.")
+
+# ---------------------------------------------------------------- music vibe
+
+var _vibe_tabs := {}
+var _vibe_desc: Label
+
+## Picks what the background music feels like. Every bed is loudness-matched, so tapping
+## one crossfades a preview in straight away without the level jumping.
+func _build_vibe_row() -> void:
+	var left: Control = %MusicRow.get_parent()
+	var panel := PanelContainer.new()
+	panel.name = "VibeRow"
+	panel.add_theme_stylebox_override("panel", %MusicRow.get_theme_stylebox("panel"))
+	# Same shape as the rows around it - label on the left, control on the right - so the
+	# column stays short enough for a notched phone's safe-area inset.
+	var h := HBoxContainer.new()
+	h.add_theme_constant_override("separation", 20)
+	panel.add_child(h)
+	var t := VBoxContainer.new()
+	t.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	t.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	t.add_theme_constant_override("separation", 2)
+	h.add_child(t)
+	var title := Label.new()
+	title.add_theme_font_size_override("font_size", 24)
+	title.text = "Music vibe"
+	t.add_child(title)
+	_vibe_desc = Label.new()
+	_vibe_desc.theme_type_variation = &"MutedLabel"
+	_vibe_desc.add_theme_font_size_override("font_size", 18)
+	_vibe_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	t.add_child(_vibe_desc)
+	var tabs := HBoxContainer.new()
+	tabs.add_theme_constant_override("separation", 6)
+	tabs.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	for id in AudioManager.VIBE_ORDER:
+		var vibe_id := str(id)
+		var b := Button.new()
+		b.theme_type_variation = &"TabButton"
+		b.toggle_mode = true
+		b.text = str(AudioManager.VIBES[vibe_id]["label"])
+		b.add_theme_font_size_override("font_size", 15)
+		b.custom_minimum_size = Vector2(86, 44)
+		b.pressed.connect(_pick_vibe.bind(vibe_id))
+		tabs.add_child(b)
+		_vibe_tabs[vibe_id] = b
+	h.add_child(tabs)
+	left.add_child(panel)
+	left.move_child(panel, %MusicRow.get_index() + 1)
+	_show_vibe(AudioManager.current_vibe())
+
+func _pick_vibe(id: String) -> void:
+	AudioManager.click()
+	SaveData.set_setting("music_vibe", id)
+	_show_vibe(id)
+
+func _show_vibe(id: String) -> void:
+	for k in _vibe_tabs.keys():
+		_vibe_tabs[k].set_pressed_no_signal(k == id)
+		_vibe_tabs[k].add_theme_color_override("font_pressed_color", Globals.CYAN)
+	_vibe_desc.text = str(AudioManager.VIBES[id]["desc"])
 
 # ---------------------------------------------------------------- account
 

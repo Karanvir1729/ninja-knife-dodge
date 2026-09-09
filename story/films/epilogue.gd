@@ -22,7 +22,7 @@ func _shots() -> Array:
 
 func _dress() -> void:
 	_set_title("THE STAR SHINES", "EPILOGUE", "Every trial stays open. Come back. We will keep the light on.",
-		[["glyph_blade", Globals.GOLD], ["glyph_eye", Globals.GOLD], ["glyph_mind", Globals.GOLD], ["glyph_memory", Globals.GOLD]])
+		[["glyph_eye", Globals.GOLD], ["glyph_mind", Globals.GOLD], ["glyph_memory", Globals.GOLD], ["glyph_blade", Globals.GOLD]])
 
 # ---------------------------------------------------------------- stage
 
@@ -30,8 +30,8 @@ func _build_extra() -> void:
 	_show_dojo(0.0)
 	$Stage/Mid/Platform.scale = Vector2(1.35, 1.0)
 	# The four seals stand two to a side, clear of the lanterns.
-	var seals := [[-345.0, "blade", Globals.CYAN], [-260.0, "eye", Globals.ORANGE],
-		[260.0, "mind", Globals.MAGENTA], [345.0, "memory", Globals.VIOLET]]
+	var seals := [[-345.0, "eye", Globals.ORANGE], [-260.0, "mind", Globals.MAGENTA],
+		[260.0, "memory", Globals.VIOLET], [345.0, "blade", Globals.CYAN]]
 	for s in seals:
 		_sealed_pillar(s[0], s[1], s[2])
 	_old = _actor("sensei", _c + KURO_HOME, 0.72, true, "happy")

@@ -820,6 +820,10 @@ func _build_howto() -> void:
 	pro.pressed.connect(func(): AudioManager.click(); Globals.go("cinematic", {"return": "start"}))
 	%HowButtons.add_child(pro)
 	for g in Globals.GAMES:
+		# A walkthrough is a way into the game, so a closed chapter stays closed.
+		var cid := str(g.id)
+		if not Story.chapter(cid).is_empty() and not Story.chapter_unlocked(cid):
+			continue
 		var b := Button.new()
 		b.text = str(g.title)
 		b.add_theme_font_size_override("font_size", 20)

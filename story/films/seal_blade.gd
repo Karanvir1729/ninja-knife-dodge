@@ -1,10 +1,13 @@
 extends "res://story/films/blade.gd"
-## Chapter I's seal film: twenty-five daggers through one patch of empty air,
-## the first pillar rising on the very spot they missed, and the last lantern
-## brightening a touch. Plays once, on the hub, when the Seal of Empty Air is
-## earned.
+## Chapter IV's seal film: twenty-five daggers through one patch of empty air,
+## the last pillar rising on the very spot they missed beside the three seals
+## already standing, and the last lantern brightening a touch. Plays once, on
+## the hub, when the Seal of Empty Air is earned.
 
-const PATCH := Vector2(340.0, -10.0)    # the empty patch of air, relative to _c
+const PATCH := Vector2(345.0, -10.0)    # the empty patch of air, relative to _c
+## The trials that come before the Blade, laid out as the epilogue lays them:
+## trial id, glyph, colour. Only the ones actually sealed are staged.
+const STANDING := [[-345.0, "draw", "eye", Globals.ORANGE], [-260.0, "match", "mind", Globals.MAGENTA], [260.0, "simon", "memory", Globals.VIOLET]]
 const COUNT := 25
 
 var _counter: Label
@@ -20,16 +23,30 @@ func _shots() -> Array:
 	return [_shot_count, _shot_seal, _shot_lantern, _shot_title.bind(2.8)]
 
 func _dress() -> void:
-	_set_title("SEAL OF EMPTY AIR", "CHAPTER I COMPLETE", "The second chapter opens.", [["glyph_blade", Globals.GOLD]])
+	var closing := "Four seals. The star holds." if Story.seals_count() >= Story.ORDER.size() else "The daggers found empty air."
+	_set_title("SEAL OF EMPTY AIR", "CHAPTER IV COMPLETE", closing, [["glyph_blade", Globals.GOLD]])
 
 func _build_extra() -> void:
 	_show_dojo(0.0)
 	# A wider platform, as when the pillars rose in the prologue. No hunters
 	# tonight: the guides stand between the last lantern and the patch of air
 	# to their right, so the lantern stays in view for the final shot.
-	$Stage/Mid/Platform.scale = Vector2(1.25, 1.0)
+	$Stage/Mid/Platform.scale = Vector2(1.35, 1.0)
+	for s in STANDING:
+		if Story.seal_earned(str(s[1])):
+			_sealed_pillar(s[0], str(s[2]), s[3])
 	_old = _actor("sensei", _c + Vector2(-60, 62), 0.72, true, "happy")
 	_pip = _actor("pip", _c + Vector2(80, 92), 0.62, true, "happy")
+
+## A trial already sealed: the stone, its glyph in the trial's colour, and the
+## gold ring around it.
+func _sealed_pillar(x: float, glyph: String, accent: Color) -> void:
+	var pillar := _sprite($Stage/Mid, "pillar", _c + Vector2(x, 70), 0.62)
+	var slot := pillar.position + Vector2(0, -44 * 0.62)
+	var g := _sprite($Stage/FX, "glyph_" + glyph, slot, 0.4, accent, true)
+	_sprite(g, GLOW, Vector2.ZERO, 0.8, Color(accent, 0.5), true)
+	_sprite($Stage/FX, GLOW, slot, 0.7, Color(Globals.GOLD, 0.4), true)
+	_sprite($Stage/FX, "seal_ring", slot, 0.58, Globals.GOLD, true)
 
 ## The counter climbs; only ever upward, however the taps land.
 func _count(n: int) -> void:
@@ -69,7 +86,7 @@ func _shot_count() -> void:
 			break
 		var ang := -0.62 + 0.95 * fmod(i * 0.618034, 1.0)      # from the right, above or below
 		var dir := Vector2.from_angle(ang)
-		var over := 80.0 + 40.0 * fmod(i * 0.381966, 1.0)
+		var over := 5.0 + 20.0 * fmod(i * 0.381966, 1.0)   # stop short of the sealed pillars
 		var col: Color = Globals.CYAN if i % 2 == 0 else Globals.RED
 		_streak(patch + dir * 780.0, patch - dir * over, col, 0.26, -16.0)
 		create_tween().tween_callback(_count.bind(i + 1)).set_delay(0.2)
@@ -86,7 +103,7 @@ func _shot_seal() -> void:
 	_cam(1.1, Vector2(-40, 36), 4.0)
 	if _counter:
 		_tween_alpha(_counter, 0.0, 0.5)
-	# The first pillar rises on the spot the daggers kept missing.
+	# The fourth pillar rises on the spot the daggers kept missing.
 	var x := PATCH.x
 	var top := _c.y + 70.0
 	var slot_y := top - 44.0 * 0.62

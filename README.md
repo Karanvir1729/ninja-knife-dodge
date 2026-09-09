@@ -2,7 +2,7 @@
 
 A four-game offline arcade for iPhone and iPad, built with [Godot 4](https://godotengine.org), with two animated guides who talk you through it.
 
-**Story edition (branch `story-edition`, version 2.1).** The four games are the **Four Trials** of one story: Sensei Kuro, last master of the Star Dojo, trains a fallen star (Pip) so it can shine unbroken. The hub is a path of chapters unlocked one by one: the prologue film, Chapter I Blade = Knife Dodge, the Yard interlude (Star Cricket), II Eye = Quick Draw, the turn, III Mind = Shuriken Match, IV Name = Sensei Says, and the epilogue. Each chapter opens with a short in-engine film and closes with one when its seal is earned; a seal (a milestone in that game) opens the next chapter. Story data is in `story/story.gd`; films extend `story/film.gd` and live in `story/films/` (see `docs/FILMS.md`; film one with `godot --path . -- --film=/tmp/film --reel=<id>`).
+**Story edition (branch `story-edition`, version 2.3).** The four games are the **Four Trials** of one story: Sensei Kuro, last master of the Star Dojo, trains a fallen star (Pip) so it can shine unbroken. The hub is a path of chapters unlocked one by one: the prologue film, Chapter I Eye = Quick Draw, the Yard interlude (Star Cricket), II Mind = Shuriken Match, the turn, III Name = Sensei Says, IV Blade = Knife Dodge, and the epilogue. Each chapter opens with a short in-engine film and closes with one when its seal is earned; a seal (a milestone in that game) opens the next chapter. Story data is in `story/story.gd`; films extend `story/film.gd` and live in `story/films/` (see `docs/FILMS.md`; film one with `godot --path . -- --film=/tmp/film --reel=<id>`).
 
 **Mind games** (think ahead)
 - **Shuriken Match** — a match-3 campaign of 50 formula-driven levels on a winding level map. Line up three shurikens to clear them and hit the target before your moves run out. Four in a row forges a **Line**, an L or T a **Burst**, five a **Prism**; swapping two specials makes crossfires, mega bursts and total eclipses. Hints, extra moves, shuffles and a hammer are available as power-ups, and stuck players can skip a level.
@@ -12,7 +12,7 @@ A four-game offline arcade for iPhone and iPad, built with [Godot 4](https://god
 - **Knife Dodge** — you are a lone star adrift in the void. Tap to propel yourself away from your finger and dodge escalating waves of daggers. Near misses build a streak; one hit ends the run, unless you take a second wind.
 - **Quick Draw** — targets appear with a closing ring: tap them in time, never tap the red decoys, chain hits into combos. Three misses and it's over.
 
-Everything shares one menu with Mind and Skill categories, one tutorial format, a pause overlay, local top-10 leaderboards with lifetime stats and milestone titles, settings (ninja name, music, sound, haptics, tutorial replay, reset), and the guides: **Sensei Kuro** and **Pip** introduce the app on first launch, greet you on later ones, hand out tips when tapped, and pop in with a line on results screens.
+Everything shares one menu with Mind and Skill categories, one tutorial format, a pause overlay, local top-10 leaderboards with lifetime stats and milestone titles, settings (ninja name, music with a choice of vibe, sound, haptics, tutorial replay, reset), and the guides: **Sensei Kuro** and **Pip** introduce the app on first launch, greet you on later ones, hand out tips when tapped, and pop in with a line on results screens.
 
 - One-touch controls, landscape, works offline
 - Sign in with Apple backs up progress to a Supabase player account (`docs/RELEASE.md` section 2b); local leaderboards; no analytics
@@ -39,9 +39,10 @@ The ad ids live in Project Settings — `admob/general/ios/app_id`, `ninja/ads/r
 - `Globals.gd` — palette, viewport helpers (`view_rect`, safe-area margins) and the **game registry** `GAMES` / `CATEGORIES` that drives the menu, leaderboards, results and the debug tour
 - `match/` — `board_model.gd` (pure match-3 rules), `board_view.gd` (rendering, input, animation), `tile.gd`, `levels.gd`, `tutorial_layouts.gd`
 - `player/`, `objects/` — the star, the daggers and the wave spawner
-- `autoload/` — `SaveData` (JSON save at `user://save.json`; per-game stats, boards, boosters, guide state; migrates the v1 high score), `AudioManager` (music crossfade, pooled SFX, haptics), `Ads` (rewarded ads behind a provider interface; mock by default), `DebugTour` (screenshot + smoke test harness)
+- `autoload/` — `SaveData` (JSON save at `user://save.json`; per-game stats, boards, boosters, guide state; migrates the v1 high score), `AudioManager` (music vibes and crossfade, pooled SFX, haptics), `Ads` (rewarded ads behind a provider interface; mock by default), `DebugTour` (screenshot + smoke test harness)
 - `UI/` — `theme.tres` (neon theme), starfield background, transition, pause overlay, HUD, toggle, `mascot.gd` / `speech_bubble.gd` / `guide_director.gd` / `guide_cameo.gd` (the guides), `offer_overlay.gd` (use a booster or watch an ad), `mock_ad.gd`
 - `graphics/gen/`, `sounds/gen/` — sprites, the guides' layered parts and all sound effects, generated by `tools/gen_assets.py`, `tools/gen_mascots.py` (Pillow) and `tools/gen_sfx.py` (stdlib only)
+- **Music vibes** — Settings offers CLASSIC, DRIFT, RAIN and PULSE; each supplies the menu, knife and match beds, while the cinematic story score is shared. `tools/gen_music.py` synthesises the three calm vibes as seamless 24 s loops and re-masters the CLASSIC music box from `sounds/raw/` (hidden from the engine by a `.gdignore`). Every bed is loudness-matched near -24 LUFS with little energy above 1 kHz, so switching never jumps in level and long sessions do not tire the ears
 - `fonts/` — Game Continue 02 (titles) and Chakra Petch (UI, SIL OFL)
 - `ios_icons/` — App Store icon set (iPhone and iPad sizes)
 - `docs/` — support page, privacy policy (GitHub Pages) and `RELEASE.md`, the App Store update checklist

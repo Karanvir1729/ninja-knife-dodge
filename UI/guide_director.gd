@@ -122,8 +122,8 @@ func _end() -> void:
 static func intro(pname: String) -> Array:
 	return [
 		{"who": "pip", "mood": "excited", "gesture": "hop", "text": "Whoa, a new ninja! Welcome to the Star Dojo, %s!" % pname},
-		{"who": "sensei", "mood": "neutral", "gesture": "point", "target": "knife", "text": "I am Sensei Kuro. The story runs in chapters, one seal each. The Blade is first."},
-		{"who": "sensei", "mood": "think", "gesture": "point", "target": "draw", "text": "Earn a chapter's seal and the next one opens. Nothing here is skipped."},
+		{"who": "sensei", "mood": "neutral", "gesture": "point", "target": "draw", "text": "I am Sensei Kuro. The story runs in chapters, one seal each. The Eye is first."},
+		{"who": "sensei", "mood": "think", "gesture": "point", "target": "match", "text": "Earn a chapter's seal and the next one opens. Nothing here is skipped."},
 		{"who": "pip", "mood": "excited", "gesture": "hop", "text": "Every chapter starts with a little film. Earn all four seals and I'll shine unbroken!"},
 		{"who": "sensei", "mood": "happy", "text": "Tap either of us whenever you want a tip. Begin when you are ready."},
 	]

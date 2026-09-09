@@ -1,6 +1,6 @@
 # The Four Trials — story edition
 
-Branch `story-edition` (version 2.1). A separate edition of the app in which the
+Branch `story-edition` (version 2.3). A separate edition of the app in which the
 four games are framed as one story. `main` is untouched by this work.
 
 ## The premise
@@ -21,10 +21,13 @@ Kuro sits down, and Pip says his name out loud so that it stays.
 
 | Trial | Game | Glyph | Accent | Seal earned by |
 |---|---|---|---|---|
-| I — Blade | Knife Dodge | dagger | cyan | dodge 25 daggers in one run |
-| II — Eye | Quick Draw | eye | orange | score 20 in one round |
-| III — Mind | Shuriken Match | shuriken | magenta | clear level 3 |
-| IV — Name | Sensei Says | nine pads | violet | reach round 5 |
+| I — Eye | Quick Draw | eye | orange | score 20 in one round |
+| II — Mind | Shuriken Match | shuriken | magenta | clear level 3 |
+| III — Name | Sensei Says | nine pads | violet | reach round 5 |
+| IV — Blade | Knife Dodge | dagger | cyan | dodge 25 daggers in one run |
+
+The Blade moved to the end on 2026-09-09: twenty-five daggers was too hard a first
+gate, so the path now opens with the Eye and closes with the Blade.
 
 Seals are **derived from existing stats**, so past play counts and nothing new is
 stored except which seals have been celebrated. Earning all four unlocks the
@@ -33,9 +36,9 @@ epilogue, which plays once on the hub and is kept in the journal.
 ## The chapter path
 
 Since 2026-09-06 the hub is a path of chapters rather than a menu of games
-(`Story.CHAPTERS`, in order): the prologue, Chapter I (the Blade), the Yard
-interlude (Star Cricket), Chapter II (the Eye), the turn, Chapter III (the
-Mind), Chapter IV (the Name), the epilogue. A chapter is **unlocked when every
+(`Story.CHAPTERS`, in order): the prologue, Chapter I (the Eye), the Yard
+interlude (Star Cricket), Chapter II (the Mind), the turn, Chapter III (the
+Name), Chapter IV (the Blade), the epilogue. A chapter is **unlocked when every
 trial before it has its seal**; films and the interlude never gate. Locked
 chapters sit dimmed with a lock and ask Pip when tapped; a chapter that has just
 opened is revealed on the path (scroll, lock breaks, a line from Pip) the next

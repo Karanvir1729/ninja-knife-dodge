@@ -10,7 +10,7 @@ extends RefCounted
 ## Every scene below is a queue of lines for GuideDirector: {who, mood, gesture,
 ## target, text}. "{name}" is replaced with the player's ninja name.
 
-const ORDER := ["knife", "draw", "match", "simon"]
+const ORDER := ["draw", "match", "simon", "knife"]
 
 ## Seals earned before the midpoint scene plays.
 const MIDPOINT_AT := 2
@@ -23,13 +23,13 @@ const MIDPOINT_AT := 2
 const CHAPTERS := [
 	{"id": "prologue", "kind": "film", "film": "prologue", "label": "PROLOGUE", "title": "THE STAR DOJO",
 	 "hook": "The void, the dojo, and the star that fell into it.", "glyph": "res://graphics/gen/story/lantern.png", "accent": Color("ffd84d")},
-	{"id": "knife", "kind": "trial", "film": "blade", "seal_film": "seal_blade"},
-	{"id": "cricket", "kind": "yard", "film": "cricket", "goal_film": "cricket_fifty", "label": "INTERLUDE", "title": "THE TEAM FROM JAPAN"},
 	{"id": "draw", "kind": "trial", "film": "eye", "seal_film": "seal_eye"},
-	{"id": "midpoint", "kind": "film", "film": "midpoint", "label": "THE TURN", "title": "WHAT THE DAGGERS WERE",
-	 "hook": "Two seals buy the truth about what you have been dodging.", "glyph": "res://graphics/skeleton_sword.png", "accent": Color("ff3b5c")},
+	{"id": "cricket", "kind": "yard", "film": "cricket", "goal_film": "cricket_fifty", "label": "INTERLUDE", "title": "THE TEAM FROM JAPAN"},
 	{"id": "match", "kind": "trial", "film": "mind", "seal_film": "seal_mind"},
+	{"id": "midpoint", "kind": "film", "film": "midpoint", "label": "THE TURN", "title": "WHAT THE DAGGERS WERE",
+	 "hook": "Two seals buy the truth about the daggers of light.", "glyph": "res://graphics/skeleton_sword.png", "accent": Color("ff3b5c")},
 	{"id": "simon", "kind": "trial", "film": "name", "seal_film": "seal_name"},
+	{"id": "knife", "kind": "trial", "film": "blade", "seal_film": "seal_blade"},
 	{"id": "epilogue", "kind": "film", "film": "epilogue", "label": "EPILOGUE", "title": "THE STAR SHINES",
 	 "hook": "Four seals. Kuro sits down, and the dojo changes hands.", "glyph": "res://graphics/gen/player_star.png", "accent": Color("ffd84d")},
 ]
@@ -37,13 +37,13 @@ const FILM_DIR := "res://story/films/"
 
 const TRIALS := {
 	"knife": {
-		"numeral": "I", "trial": "TRIAL OF THE BLADE", "glyph": "blade",
+		"numeral": "IV", "trial": "TRIAL OF THE BLADE", "glyph": "blade",
 		"hook": "Be elsewhere when they arrive.",
-		"seal_name": "Seal of Empty Air", "seal_rule": "Dodge 25 daggers in one run", "seal_target": 25,
+		"seal_name": "Seal of Empty Air", "seal_rule": "Score 25 in one run", "seal_target": 25,
 		"lore": "The daggers of light hunt whatever is still burning, and out here that is a short list. Kuro's first lesson is the only one the dojo ever proved against them: a blade owns the thin line it travels on, and every other place in the void belongs to you. Move before you are moved.",
 		"opening": [
 			{"who": "sensei", "mood": "neutral", "gesture": "point", "target": "knife", "text": "The daggers hunt whatever is still burning. Tonight that is you. Be elsewhere when they arrive."},
-			{"who": "pip", "mood": "excited", "gesture": "hop", "text": "Twenty-five dodged in one run and the seal is yours. My record is eleven. Once."},
+			{"who": "pip", "mood": "excited", "gesture": "hop", "text": "Score twenty-five in one run and the seal is yours. Slip past one closely and it counts five."},
 			{"who": "sensei", "mood": "think", "text": "Move before you are moved, {name}. It is the one lesson this dojo ever proved."},
 		],
 		"seal_lines": [
@@ -53,7 +53,7 @@ const TRIALS := {
 		],
 	},
 	"draw": {
-		"numeral": "II", "trial": "TRIAL OF THE EYE", "glyph": "eye",
+		"numeral": "I", "trial": "TRIAL OF THE EYE", "glyph": "eye",
 		"hook": "The red ones are copies. Leave them.",
 		"seal_name": "Seal of the True Light", "seal_rule": "Score 20 in one round", "seal_target": 20,
 		"lore": "The Quiet makes nothing of its own. It copies what it has already taken and paints the copy red, because a hand that answers a lie is a hand out of position. Kuro answered one once, a long way from here. He will not say what it cost him, only that he now counts to one before he strikes.",
@@ -69,7 +69,7 @@ const TRIALS := {
 		],
 	},
 	"match": {
-		"numeral": "III", "trial": "TRIAL OF THE MIND", "glyph": "mind",
+		"numeral": "II", "trial": "TRIAL OF THE MIND", "glyph": "mind",
 		"hook": "Three of a colour. Nine hundred to go.",
 		"seal_name": "Seal of the Gathered", "seal_rule": "Clear level 3", "seal_target": 3,
 		"lore": "The Star Dojo kept nine hundred shurikens on nine hundred hooks. The Quiet scattered them in a single night, and Kuro has spent eighty years bringing them back three of a colour at a time. He says the gathering is the point. He also knows he will not finish, and he goes out for them anyway.",
@@ -85,7 +85,7 @@ const TRIALS := {
 		],
 	},
 	"simon": {
-		"numeral": "IV", "trial": "TRIAL OF THE NAME", "glyph": "memory",
+		"numeral": "III", "trial": "TRIAL OF THE NAME", "glyph": "memory",
 		"hook": "Nine pads. Nine masters. Hold the roll.",
 		"seal_name": "Seal of the Kept Name", "seal_rule": "Reach round 5", "seal_target": 5,
 		"lore": "Nine pads, one for each master of the Star Dojo, in the order they stood at dawn. Kuro is the ninth and can still play the whole roll without thinking. The eighth was his own master; he lost her name somewhere in the second fifty years and kept her drill instead. The Quiet does not kill things. It makes them forgotten, and forgotten is the worse half.",
@@ -124,7 +124,7 @@ const YARD := {
 
 ## The turn: the truth about the daggers, once the player has two seals.
 const MIDPOINT := [
-	{"who": "sensei", "mood": "neutral", "text": "{name}. Two seals. You have earned the truth about what you have been dodging."},
+	{"who": "sensei", "mood": "neutral", "text": "{name}. Two seals. You have earned the truth about the daggers of light."},
 	{"who": "sensei", "mood": "think", "text": "Every dagger of light was a star. The Quiet unmade them and kept the edges."},
 	{"who": "pip", "mood": "neutral", "text": "...I have been calling them light. This whole time. Out loud."},
 	{"who": "sensei", "mood": "think", "text": "You came through them whole, Pip. Nothing else ever has. That is why they keep coming."},
@@ -175,7 +175,7 @@ static func all_sealed() -> bool:
 static func pending_celebrations() -> Array:
 	var out := []
 	for id in ORDER:
-		if seal_earned(id) and not SaveData.seal_celebrated(id):
+		if seal_earned(id) and not SaveData.seal_celebrated(id) and _trials_before_sealed(id):
 			out.append(id)
 	return out
 
@@ -211,7 +211,8 @@ static func seal_name(id: String) -> String:
 
 ## The turn: played once, on the hub, at MIDPOINT_AT seals.
 static func midpoint_due() -> bool:
-	return seals_count() >= MIDPOINT_AT and not all_sealed() and not SaveData.story_flag("midpoint_seen")
+	return seals_count() >= MIDPOINT_AT and _trials_before_sealed("midpoint") \
+		and not all_sealed() and not SaveData.story_flag("midpoint_seen")
 
 static func midpoint_scene(pname: String) -> Array:
 	return _scene(MIDPOINT, pname)
@@ -252,7 +253,8 @@ static func seal_film(id: String) -> String:
 static func pending_films() -> Array:
 	var out := []
 	for id in ORDER:
-		if seal_earned(id) and not SaveData.seal_celebrated(id):
+		# A seal earned out of turn waits: its film stages the chapters before it.
+		if seal_earned(id) and not SaveData.seal_celebrated(id) and _trials_before_sealed(id):
 			var f := seal_film(id)
 			if not f.is_empty():
 				out.append({"film": f, "chapter": id, "return": "start"})
@@ -264,7 +266,7 @@ static func pending_films() -> Array:
 		if str(c.kind) == "yard":
 			var goal := str(c.get("goal_film", ""))
 			var y := yard(str(c.id))
-			if film_exists(goal) and not film_seen(goal) and int(y.get("goal_target", 0)) > 0 and SaveData.best_for(str(c.id)) >= int(y.goal_target):
+			if film_exists(goal) and not film_seen(goal) and _trials_before_sealed(str(c.id)) and int(y.get("goal_target", 0)) > 0 and SaveData.best_for(str(c.id)) >= int(y.goal_target):
 				out.append({"film": goal, "chapter": str(c.id), "return": "start"})
 	return out
 
@@ -298,8 +300,27 @@ static func chapter_ids() -> Array:
 		out.append(str(c.id))
 	return out
 
-## Unlocked when every trial before it in the path has its seal.
+## Unlocked when every trial before it in the path has its seal. A chapter the
+## player has already finished, or that the hub has already shown them as open,
+## never closes again: the path was reordered in 2.3 (the Blade moved to the
+## end), and nobody should lose a chapter they had already reached.
 static func chapter_unlocked(id: String) -> bool:
+	var idx := chapter_index(id)
+	if idx < 0:
+		return false
+	if chapter_done(id):
+		return true
+	# Build 11's hub marked the first two cards revealed by position, and the
+	# Blade sat second, so "revealed" alone would hand every old save a chapter
+	# it never reached. A trial has to have actually been entered.
+	if SaveData.chapter_revealed(id) and (str(CHAPTERS[idx].get("kind", "")) != "trial" or SaveData.trial_opened(id)):
+		return true
+	return _trials_before_sealed(id)
+
+## Is every trial that sits before this chapter in the path sealed? This is the
+## plain path test, without the clauses above that keep finished chapters open,
+## so the beats that belong to a place in the story can ask it directly.
+static func _trials_before_sealed(id: String) -> bool:
 	var idx := chapter_index(id)
 	if idx < 0:
 		return false

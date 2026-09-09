@@ -13,6 +13,7 @@ func _ready() -> void:
 	AudioManager.play_music("menu")
 	Globals.apply_safe_margins(%Root, 34)
 	%Back.pressed.connect(func(): AudioManager.back(); Globals.go("start"))
+	_build_game_center()
 	for c in %TabsBox.get_children():
 		c.queue_free()
 	for g in Globals.GAMES:
@@ -27,6 +28,31 @@ func _ready() -> void:
 	if not _tabs.has(tab):
 		tab = "knife"
 	_select(tab, true)
+
+## A way through to Apple's own boards, next to the title. Only on builds that
+## carry the Game Center plugin; the button says whether the player is signed in.
+var _gc_button: Button
+
+func _build_game_center() -> void:
+	if not GameCenter.available():
+		return
+	var title: Control = %Back.get_parent().get_node("Title")
+	_gc_button = Button.new()
+	_gc_button.theme_type_variation = &"PrimaryButton"
+	_gc_button.add_theme_font_size_override("font_size", 16)
+	_gc_button.custom_minimum_size = Vector2(0, 44)
+	_gc_button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_gc_button.focus_mode = Control.FOCUS_NONE
+	_gc_button.pressed.connect(func(): AudioManager.click(); GameCenter.show_board(tab))
+	title.get_parent().add_child(_gc_button)
+	title.get_parent().move_child(_gc_button, title.get_index() + 1)
+	GameCenter.state_changed.connect(_refresh_game_center)
+	_refresh_game_center()
+
+func _refresh_game_center() -> void:
+	if not is_instance_valid(_gc_button):
+		return
+	_gc_button.text = "GAME CENTER" if GameCenter.authenticated else "GAME CENTER  ·  SIGN IN"
 
 func _select(which: String, silent: bool = false) -> void:
 	if not silent:

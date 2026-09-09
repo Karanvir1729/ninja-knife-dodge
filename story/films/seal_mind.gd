@@ -1,5 +1,5 @@
 extends "res://story/films/mind.gd"
-## Chapter III's seal film: the Seal of the Gathered, earned by clearing level 3
+## Chapter II's seal film: the Seal of the Gathered, earned by clearing level 3
 ## of Shuriken Match. Shurikens come home in threes, the third pillar rises with
 ## its glyph and a gold seal, and Kuro is tired rather than bitter. Four shots;
 ## plays once, on the hub, when the seal is earned.
@@ -7,11 +7,11 @@ extends "res://story/films/mind.gd"
 ## The groups of three that come home in the first shot (hook indices) and their colours.
 const HOMECOMING := [[16, 17, 18], [27, 28, 29], [32, 33, 34], [35, 36, 37]]
 const HOMECOMING_COLORS := [0, 2, 3, 5]
-const PILLAR_GLYPHS := ["blade", "eye", "mind", "memory"]
+const PILLAR_GLYPHS := ["eye", "mind", "memory", "blade"]
 const PILLAR_SCALE := 0.62
 const RING_SCALE := 0.44
 
-var _pillar: Sprite2D           # the third pillar, waiting below the stage
+var _pillar: Sprite2D           # the second pillar, waiting below the stage
 var _glyph: Sprite2D            # its glyph
 
 func film_id() -> String:
@@ -21,7 +21,7 @@ func _shots() -> Array:
 	return [_shot_home, _shot_seal, _shot_tired, _shot_end]
 
 func _dress() -> void:
-	_set_title("SEAL OF THE GATHERED", "CHAPTER III COMPLETE", "One trial remains.", [["glyph_mind", Globals.GOLD]])
+	_set_title("SEAL OF THE GATHERED", "CHAPTER II COMPLETE", "Two seals buy the truth.", [["glyph_mind", Globals.GOLD]])
 
 # ---------------------------------------------------------------- stage
 
@@ -36,15 +36,14 @@ func _build_extra() -> void:
 		_hang(i, _gem(KURO_COLOR))
 	for i in [24, 25, 26]:
 		_hang(i, _gem(3))
-	# Chapters I and II are done: their pillars already stand, sealed in gold.
-	for i in 2:
-		_build_pillar(i, true)
-	_pillar = _build_pillar(2, false)
+	# Chapter I (the Eye) is done: its pillar already stands, sealed in gold.
+	_build_pillar(0, true)
+	_pillar = _build_pillar(1, false)
 	_old = _actor("sensei", _c + Vector2(-330, 62), 0.72, true, "happy")
 	_pip = _actor("pip", _c + Vector2(-195, 92), 0.62, true, "happy")
 
 func _accent(i: int) -> Color:
-	return [Globals.CYAN, Globals.ORANGE, Globals.MAGENTA, Globals.VIOLET][i]
+	return [Globals.ORANGE, Globals.MAGENTA, Globals.VIOLET, Globals.CYAN][i]
 
 ## The prologue's pillar positions, and the glyph's slot on a pillar.
 func _pillar_x(i: int) -> float:
