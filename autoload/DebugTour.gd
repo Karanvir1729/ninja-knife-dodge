@@ -1,6 +1,7 @@
 extends Node
 ## Development helper, inert unless launched with:
 ##   godot --path . -- --tour=/abs/output/dir [--quick]
+##   godot --path . -- --audio=/abs/output/dir
 ## Walks every screen at three aspect ratios (16:9, iPhone 19.5:9, iPad 4:3),
 ## saves PNG screenshots, runs functional smoke checks on both games and prints
 ## PASS/FAIL lines. Uses in-memory sample data only (nothing is saved to disk).
@@ -9,6 +10,7 @@ var out_dir := ""
 var quick := false
 var check_only := false
 var film_dir := ""
+var audio_dir := ""
 var film_reel := "prologue"
 var film_size := Vector2i(1408, 792)   # --film-size=WxH films at another aspect (store screenshots)
 var _fails := 0
@@ -25,6 +27,8 @@ func _ready() -> void:
 			check_only = true
 		if arg.begins_with("--film="):
 			film_dir = arg.trim_prefix("--film=")
+		if arg.begins_with("--audio="):
+			audio_dir = arg.trim_prefix("--audio=")
 		if arg.begins_with("--reel="):
 			film_reel = arg.trim_prefix("--reel=")
 		if arg.begins_with("--film-size="):
@@ -33,6 +37,11 @@ func _ready() -> void:
 				film_size = Vector2i(int(parts[0]), int(parts[1]))
 	if check_only:
 		call_deferred("_check_all")
+		return
+	if not audio_dir.is_empty():
+		SaveData.read_only = true
+		DirAccess.make_dir_recursive_absolute(audio_dir)
+		call_deferred("_audio")
 		return
 	if not film_dir.is_empty():
 		# Tours and films run with interstitials off so timing stays deterministic;
@@ -162,6 +171,19 @@ func _run() -> void:
 		await _wait(0.3)
 		await _shot("%s_05_settings" % tag)
 		var settings := _sm().get_node("CurrentState").get_child(0)
+		# Drive the vibe picker for real: press each chip and check the save, the
+		# AudioManager and the row's own highlight all followed.
+		var was_vibe: String = AudioManager.current_vibe()
+		for vibe in AudioManager.VIBE_ORDER:
+			settings._vibe_tabs[vibe].pressed.emit()
+			await _wait(0.2)
+			_check(str(SaveData.setting("music_vibe")) == vibe, "%s: pressing %s saves that vibe" % [tag, vibe])
+			_check(AudioManager.current_vibe() == vibe, "%s: pressing %s reaches AudioManager" % [tag, vibe])
+			_check(settings._vibe_tabs[vibe].button_pressed, "%s: the %s chip shows as chosen" % [tag, vibe])
+			_check(settings._vibe_desc.text == str(AudioManager.VIBES[vibe]["desc"]), "%s: the %s description follows" % [tag, vibe])
+		await _shot("%s_05b_settings_vibe_pulse" % tag)
+		settings._vibe_tabs[was_vibe].pressed.emit()
+		await _wait(0.2)
 		settings._show(settings.get_node("%Confirm"), true)
 		await _wait(0.25)
 		await _shot("%s_06_settings_confirm" % tag)
@@ -461,6 +483,38 @@ func _find_offer() -> OfferOverlay:
 ## `-- --film=<dir> [--reel=<name>]`: play one story film (the prologue by
 ## default), screenshot every 0.8 s with debug state in the log, then quit.
 ## Fast iteration on a film.
+## `-- --audio=<dir>`: tap the master bus and record a few seconds of every vibe and
+## slot, so the music can be measured as it actually reaches the speakers - through the
+## bus volume, the crossfade and the per-bed trim - instead of as files on disk.
+func _audio() -> void:
+	await _frames(3)
+	var master := AudioServer.get_bus_index("Master")
+	var rec := AudioEffectRecord.new()
+	AudioServer.add_bus_effect(master, rec)
+	SaveData.set_setting("music", true)
+	SaveData.set_setting("music_volume", 0.8)
+	SaveData.set_setting("sfx", false)          # keep the capture pure music
+	var made := 0
+	for vibe in AudioManager.VIBE_ORDER:
+		SaveData.set_setting("music_vibe", vibe)
+		for slot in ["menu", "knife", "match"]:
+			AudioManager.stop_music()
+			await _wait(1.0)
+			AudioManager.play_music(slot)
+			await _wait(1.4)                     # let the crossfade land before recording
+			rec.set_recording_active(true)
+			await _wait(25.0)     # a full 24 s loop: a shorter window measures one phase of it
+			rec.set_recording_active(false)
+			var clip: AudioStreamWAV = rec.get_recording()
+			if clip == null:
+				print("AUDIO  %s/%s captured nothing" % [vibe, slot])
+				continue
+			clip.save_to_wav("%s/%s_%s.wav" % [audio_dir, vibe, slot])
+			made += 1
+			print("AUDIO  %s/%s  %.1fs" % [vibe, slot, clip.get_length()])
+	print("AUDIO done: %d clips in %s" % [made, audio_dir])
+	get_tree().quit()
+
 func _film() -> void:
 	await _frames(3)
 	var screen := DisplayServer.screen_get_size()

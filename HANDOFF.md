@@ -93,7 +93,7 @@ Improve the existing game with a state-of-the-art UI, menu, leaderboards, and cr
 - `Globals.gd` owns palette constants, formatting, viewport helpers, safe-area calculation, and state navigation.
 - `States/state_machine.gd` swaps all screens with a fade. State names include `start`, `tutorial`, `play`, `lose`, `match_levels`, `match_tutorial`, `match_play`, `match_result`, `leaderboard`, and `settings`.
 - `autoload/SaveData.gd` owns the version 2 JSON save at `user://save.json`, local leaderboards, settings, stats, tutorials, and v1 migration.
-- `autoload/AudioManager.gd` owns the music vibes (`VIBES`/`VIBE_ORDER`), crossfades, pooled SFX, volume settings, and haptics.
+- `autoload/AudioManager.gd` owns the music vibes (`VIBES`/`VIBE_ORDER`), the per-bed `TRIM` that levels them against each other, crossfades, pooled SFX, volume settings, and haptics.
 - `autoload/DebugTour.gd` loads every scene, captures responsive screenshots, and executes gameplay/tutorial smoke checks with in-memory sample data.
 - `match/board_model.gd` is the pure puzzle rules engine: valid moves, run detection, special creation/combinations, cascades, gravity, refill, hints, and shuffle.
 - `match/board_view.gd` renders and animates the board and owns pointer input.
@@ -104,6 +104,7 @@ Improve the existing game with a state-of-the-art UI, menu, leaderboards, and cr
 - `tools/gen_assets.py` regenerates the files in `graphics/gen/` and requires Pillow.
 - `tools/gen_sfx.py` regenerates the files in `sounds/gen/` using only the Python standard library.
 - `tools/gen_music.py` regenerates the DRIFT/RAIN/PULSE beds and re-masters `sounds/music_box_soft.mp3` from `sounds/raw/`; it needs ffmpeg on PATH to loudness-match each track.
+- `godot --path . -- --audio=<dir>` records the master bus through a full loop of every vibe and slot, so music levels can be measured as they actually play rather than as files; re-run it after touching any bed and update `AudioManager.TRIM`.
 
 ## Design and layout rules
 

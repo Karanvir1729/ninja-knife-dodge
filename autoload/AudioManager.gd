@@ -34,6 +34,20 @@ const VIBES := {
 		"match": "res://sounds/gen/pulse_play.wav",
 	},
 }
+## Per-bed trim in dB. The synthesised beds are rendered to a common target, but the
+## licensed CLASSIC tracks and the older match ambience are not - left alone they span
+## 7 dB, so picking CLASSIC jumped out at you in Shuriken Match and vanished in Knife
+## Dodge. These come from `-- --audio=<dir>` captures of the running game rather than
+## from the files: Mysterious is 87 s long, so its gated whole-file loudness describes
+## a stretch the player rarely reaches, while a round only ever hears its quieter
+## opening. They aim at roughly -23.5 LUFS, the level the calm beds already sit at, so
+## the set is levelled by pulling the loud ones down rather than pushing the quiet one
+## up. Re-measure with that mode after touching any bed.
+const TRIM := {
+	"res://sounds/music_box_soft.mp3": 0.8,    # untrimmed it captures -24.3 LUFS in game
+	"res://sounds/Mysterious.mp3": 5.3,        # -28.8: its opening, not its -25.8 whole-file figure
+	"res://sounds/gen/match_loop.wav": -4.0,   # -19.5: the loudest bed, pulled down to match
+}
 const VIBE_ORDER := ["classic", "drift", "rain", "pulse"]
 const DEFAULT_VIBE := "classic"
 const STORY_TRACK := "res://sounds/gen/story_theme.wav"
@@ -156,7 +170,7 @@ func _swap_to(path: String, loop: bool = true) -> void:
 	next.stream = stream
 	next.volume_db = -80
 	next.play()
-	_fade(next, 0.0)
+	_fade(next, float(TRIM.get(path, 0.0)))
 	_fade(prev, -80.0, true)
 
 func stop_music() -> void:

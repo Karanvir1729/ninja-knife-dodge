@@ -15,7 +15,9 @@ OUT.mkdir(parents=True, exist_ok=True)
 SR = 11025          # these beds carry nothing above ~4 kHz, so half rate costs nothing
 L = 24.0            # loop length; 2/3/4/6/8/12 s LFOs all divide it
 N = int(SR * L)
-TARGET_LUFS = -24.0  # matches story_theme, ~9 dB below the old menu track
+TARGET_LUFS = -24.0  # matches story_theme, ~9 dB below the old menu track. Play beds use it
+                     # too: music that has to be loud to be heard over the effects is the
+                     # thing that tires the ears, and the volume slider is right there.
 CEILING = 0.6
 
 NOTE = lambda n: 440.0 * 2 ** ((n - 69) / 12)
@@ -228,7 +230,7 @@ def build():
 	for name, fn, seed in (("drift", drift, 11), ("rain", rain, 23), ("pulse", pulse, 37)):
 		random.seed(seed)
 		write(f"{name}_calm", fn(False))
-		write(f"{name}_play", fn(True), TARGET_LUFS + 2.0)  # play beds sit under SFX, so a hair louder
+		write(f"{name}_play", fn(True))   # same target as the calm bed: see TARGET_LUFS
 
 
 if __name__ == "__main__":
