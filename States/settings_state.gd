@@ -35,8 +35,9 @@ const CREDITS_TEXT := """[b]Design & code[/b]  Karanvir Khanna
 
 [b]Sound[/b]
 • Fast swing air woosh by cosmicembers (freesound)
+• Koto, Garden and Dusk by Tozan (opengameart.org, CC0) - looped and levelled for this game
 • Mysterious; Music Box Game Over 2, re-mastered quieter and softer for this game
-• The Drift, Rain and Pulse vibes, the Shuriken Match ambience and every other effect are synthesised in-house"""
+• The Loop Room's twenty tunes, the Shuriken Match ambience, the story score and every other effect are synthesised in-house"""
 
 func init(_params: Dictionary) -> void:
 	pass

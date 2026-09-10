@@ -25,7 +25,7 @@ func _defaults() -> Dictionary:
 	return {
 		"version": 3,
 		"profile": {"name": DEFAULT_NAME},
-		"settings": {"music": true, "music_volume": 0.8, "music_vibe": "classic", "sfx": true, "sfx_volume": 1.0, "haptics": true},
+		"settings": {"music": true, "music_volume": 0.8, "music_vibe": "koto", "sfx": true, "sfx_volume": 1.0, "haptics": true},
 		"loop_mix": [],
 		"tutorials": {},
 		"guides": {"intro_seen": false, "launches": 0},

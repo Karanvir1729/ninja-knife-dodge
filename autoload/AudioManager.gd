@@ -4,6 +4,10 @@ extends Node
 ## Music vibes. Each one supplies the three ambient beds; the cinematic story score is
 ## shared. Every bed is loudness-matched near -24 LUFS with little energy above 1 kHz,
 ## so switching vibe never jumps in level and none of them tire the ears on a long loop.
+##
+## KOTO, GARDEN and DUSK are Tozan's CC0 Japanese ambient pieces, made seamless and
+## levelled by tools/prep_music.py. CLASSIC is the game's original pair. YOURS is
+## whatever the player layered together in The Loop Room.
 const VIBES := {
 	"classic": {
 		"label": "CLASSIC",
@@ -12,31 +16,31 @@ const VIBES := {
 		"knife": "res://sounds/Mysterious.mp3",
 		"match": "res://sounds/gen/match_loop.wav",
 	},
-	"drift": {
-		"label": "DRIFT",
-		"desc": "Weightless warm pads. The quietest one.",
-		"menu": "res://sounds/gen/drift_calm.wav",
-		"knife": "res://sounds/gen/drift_play.wav",
-		"match": "res://sounds/gen/drift_play.wav",
+	"koto": {
+		"label": "KOTO",
+		"desc": "A koto turning over slowly in the dark.",
+		"menu": "res://sounds/oga_koto.mp3",
+		"knife": "res://sounds/oga_koto.mp3",
+		"match": "res://sounds/oga_koto.mp3",
 	},
-	"rain": {
-		"label": "RAIN",
-		"desc": "Dojo rain, wind and a far-off temple bell.",
-		"menu": "res://sounds/gen/rain_calm.wav",
-		"knife": "res://sounds/gen/rain_play.wav",
-		"match": "res://sounds/gen/rain_play.wav",
+	"garden": {
+		"label": "GARDEN",
+		"desc": "A still garden at night.",
+		"menu": "res://sounds/oga_garden.mp3",
+		"knife": "res://sounds/oga_garden.mp3",
+		"match": "res://sounds/oga_garden.mp3",
+	},
+	"dusk": {
+		"label": "DUSK",
+		"desc": "The long, low hour after sundown.",
+		"menu": "res://sounds/oga_dusk.mp3",
+		"knife": "res://sounds/oga_dusk.mp3",
+		"match": "res://sounds/oga_dusk.mp3",
 	},
 	"yours": {
 		"label": "YOURS",
 		"desc": "The mix you built in The Loop Room.",
 		"menu": "", "knife": "", "match": "",
-	},
-	"pulse": {
-		"label": "PULSE",
-		"desc": "A slow warm heartbeat under the void.",
-		"menu": "res://sounds/gen/pulse_calm.wav",
-		"knife": "res://sounds/gen/pulse_play.wav",
-		"match": "res://sounds/gen/pulse_play.wav",
 	},
 }
 ## Per-bed trim in dB. The synthesised beds are rendered to a common target, but the
@@ -49,12 +53,15 @@ const VIBES := {
 ## the set is levelled by pulling the loud ones down rather than pushing the quiet one
 ## up. Re-measure with that mode after touching any bed.
 const TRIM := {
-	"res://sounds/music_box_soft.mp3": 0.8,    # untrimmed it captures -24.3 LUFS in game
+	"res://sounds/oga_koto.mp3": 3.7,          # captured -27.7 LUFS in game
+	"res://sounds/oga_garden.mp3": 2.1,        # captured -26.1
+	"res://sounds/oga_dusk.mp3": 2.5,          # captured -26.5
+	"res://sounds/music_box_soft.mp3": 0.3,    # captured -23.5, the loudest, eased down
 	"res://sounds/Mysterious.mp3": 5.3,        # -28.8: its opening, not its -25.8 whole-file figure
 	"res://sounds/gen/match_loop.wav": -4.0,   # -19.5: the loudest bed, pulled down to match
 }
-const VIBE_ORDER := ["classic", "drift", "rain", "pulse", "yours"]
-const DEFAULT_VIBE := "classic"
+const VIBE_ORDER := ["koto", "garden", "dusk", "classic", "yours"]
+const DEFAULT_VIBE := "koto"
 const STORY_TRACK := "res://sounds/gen/story_theme.wav"
 ## The Loop Room's 20 tunes. The order is the save format, so only ever append.
 const LOOPS := ["heart", "taiko", "shaker", "rim", "frame", "sub", "bass", "fifth",

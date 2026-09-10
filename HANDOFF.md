@@ -104,7 +104,7 @@ Improve the existing game with a state-of-the-art UI, menu, leaderboards, and cr
 - `tools/gen_assets.py` regenerates the files in `graphics/gen/` and requires Pillow.
 - `tools/gen_sfx.py` regenerates the files in `sounds/gen/` using only the Python standard library.
 - `tools/gen_loops.py` regenerates The Loop Room's twenty tunes. They must all stay exactly 6.000 s at 80 BPM in A minor pentatonic, or layers drift apart; a smoke check asserts the shared length.
-- `tools/gen_music.py` regenerates the DRIFT/RAIN/PULSE beds and re-masters `sounds/music_box_soft.mp3` from `sounds/raw/`; it needs ffmpeg on PATH to loudness-match each track.
+- `tools/prep_music.py` rebuilds every licensed music bed from `sounds/raw/` — the three CC0 Japanese tracks (crossfade-looped, normalised) and `sounds/music_box_soft.mp3` (de-harshed). Needs ffmpeg on PATH.
 - `godot --path . -- --audio=<dir>` records the master bus through a full loop of every vibe and slot, so music levels can be measured as they actually play rather than as files; re-run it after touching any bed and update `AudioManager.TRIM`.
 
 ## Design and layout rules
